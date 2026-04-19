@@ -144,6 +144,18 @@ function move(e) {
   velocity = dx;
 
   card.style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
+
+  // Mostrar badges
+  const like = document.getElementById("likeBadge");
+  const skip = document.getElementById("skipBadge");
+
+  if (dx > 0) {
+    like.style.opacity = Math.min(dx / 100, 1);
+    skip.style.opacity = 0;
+  } else {
+    skip.style.opacity = Math.min(Math.abs(dx) / 100, 1);
+    like.style.opacity = 0;
+  }
 }
 
 function end() {
