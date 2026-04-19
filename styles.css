@@ -13,22 +13,7 @@ body {
   padding: 20px;
 }
 
-.hidden {
-  display: none;
-}
-
-.setup input {
-  width: 65%;
-  padding: 10px;
-}
-
-.setup button {
-  padding: 10px;
-}
-
-#playersList {
-  margin: 10px 0;
-}
+.hidden { display: none; }
 
 .top-bar {
   display: flex;
@@ -49,7 +34,7 @@ select {
 
 .swipe-container {
   position: relative;
-  height: 300px;
+  height: 320px;
 }
 
 .card {
@@ -58,34 +43,43 @@ select {
   height: 100%;
   border-radius: 20px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
+  align-items: center;
   text-align: center;
+  padding: 20px;
+  transition: transform 0.3s ease;
+}
+
+.layer3 {
+  background: #333;
+  transform: scale(0.9);
+  z-index: 1;
+}
+
+.layer2 {
+  background: #444;
+  transform: scale(0.95);
+  z-index: 2;
 }
 
 .active {
   background: #1c1c24;
-  z-index: 2;
-}
-
-.next-card {
-  background: #2a2a35;
-  transform: scale(0.95);
-  z-index: 1;
+  z-index: 3;
+  cursor: grab;
 }
 
 .buttons {
-  margin-top: 20px;
   display: flex;
-  gap: 5px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 button {
   flex: 1;
   padding: 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #7c8cff;
   color: white;
+  font-size: 18px;
 }
