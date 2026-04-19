@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Party Games 🔥</title>
+  <title>Party Swipe 🔥</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-  <h1>🔥 Party Games</h1>
+<div class="app">
+  <h1>🔥 Party Swipe</h1>
 
   <div class="controls">
     <select id="game">
@@ -25,11 +25,16 @@
     </select>
   </div>
 
-  <div class="card" id="card">
-    <p id="question">Presiona "Siguiente" para empezar</p>
+  <div class="swipe-container">
+    <div class="card" id="card">
+      <p id="question">Cargando...</p>
+    </div>
   </div>
 
-  <button id="nextBtn">Siguiente</button>
+  <div class="buttons">
+    <button id="skip">⬅️ Pasar</button>
+    <button id="next">➡️ Siguiente</button>
+  </div>
 </div>
 
 <script src="app.js"></script>
