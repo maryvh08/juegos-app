@@ -11,10 +11,10 @@ body {
   width: 100%;
   max-width: 420px;
   padding: 20px;
-
+  height: 100vh;
+  overflow: hidden; /* 🔥 evita que la tarjeta se salga */
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
 h1 {
@@ -51,9 +51,9 @@ select {
 /* SWIPE AREA */
 .swipe-container {
   position: relative;
-  flex: 1; /* 🔥 ocupa el espacio disponible */
+  flex: 1;
   margin-bottom: 10px;
-  height: 60vh;
+  min-height: 0; /* 🔥 CLAVE para que no desborde */
 }
 
 /* TARJETAS */
@@ -101,6 +101,8 @@ select {
 .card p {
   line-height: 1.5;
   font-weight: 500;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 /* BADGES */
@@ -127,9 +129,11 @@ select {
 
 /* BOTONES */
 .buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: auto; /* 🔥 empuja hacia abajo */
+  position: sticky;
+  bottom: 0;
+  background: rgba(15,15,20,0.6);
+  backdrop-filter: blur(10px);
+  padding-top: 10px;
 }
 
 button {
