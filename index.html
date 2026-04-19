@@ -42,17 +42,62 @@
       </select>
     </div>
 
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Party Swipe 🔥</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <h1>🔥 Party Swipe</h1>
+
+  <!-- SETUP -->
+  <div class="setup" id="setup">
+    <input id="playerInput" placeholder="Nombre jugador">
+    <button id="addPlayer">Agregar</button>
+    <div id="playersList"></div>
+    <button id="startGame">Iniciar</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="game hidden" id="gameUI">
+
+    <div class="top-bar">
+      <span id="currentPlayer"></span>
+      <span id="shots">🍻 0</span>
+    </div>
+
+    <div class="controls">
+      <select id="game">
+        <option value="verdad">Verdad</option>
+        <option value="reto">Reto</option>
+        <option value="nunca">Nunca</option>
+      </select>
+
+      <select id="level">
+        <option value="suave">Suave 😇</option>
+        <option value="medio">Medio 😏</option>
+        <option value="alto">Alto 🔥</option>
+      </select>
+    </div>
+
     <div class="swipe-container">
-      <div class="card next-card"></div>
+      <div class="card layer3"></div>
+      <div class="card layer2"></div>
       <div class="card active" id="card">
         <p id="question"></p>
       </div>
     </div>
 
     <div class="buttons">
-      <button id="skip">⬅️ Pasar</button>
-      <button id="shot">🍻 Shot</button>
-      <button id="next">➡️ Aceptar</button>
+      <button id="skip">⬅️</button>
+      <button id="shot">🍻</button>
+      <button id="accept">➡️</button>
     </div>
 
   </div>
