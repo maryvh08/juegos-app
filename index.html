@@ -2,35 +2,60 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Party Swipe 🔥</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Party Swipe 🔥</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="app">
 
-  <h1>🔥 Party Swipe</h1>
+  <!-- HEADER -->
+  <header class="header">
+    <h1>🔥 Party Swipe</h1>
+
+    <div class="hud">
+      <div id="currentPlayer">Turno: -</div>
+      <div id="shots">🍻 0</div>
+      <div id="streak">🔥 0</div>
+    </div>
+  </header>
 
   <!-- SETUP -->
-  <div class="setup" id="setup">
-    <span id="score"></span>
-    <span id="streak"></span>
-    <input id="playerInput" placeholder="Nombre jugador">
-    <button id="addPlayer">Agregar</button>
-    <div id="playersList"></div>
-    <button id="startGame">Iniciar</button>
-  </div>
+  <section class="setup" id="setup">
 
-  <!-- GAME -->
-  <div class="game hidden" id="gameUI">
+    <div class="card setup-card">
 
-    <div class="top-bar">
-      <span id="currentPlayer"></span>
-      <span id="shots">🍻 0</span>
+      <h2>👥 Jugadores</h2>
+
+      <input
+        id="playerInput"
+        type="text"
+        placeholder="Nombre del jugador"
+        autocomplete="off"
+      />
+
+      <button id="addPlayer">Agregar jugador</button>
+
+      <div id="playersList" class="players-list"></div>
+
+      <button id="startGame" class="primary">
+        🚀 Iniciar juego
+      </button>
+
     </div>
 
+  </section>
+
+  <!-- GAME -->
+  <main class="game hidden" id="gameUI">
+
+    <!-- CONTROLES -->
     <div class="controls">
+
       <select id="game">
         <option value="verdad">Verdad</option>
         <option value="reto">Reto</option>
@@ -42,31 +67,53 @@
         <option value="medio">Medio 😏</option>
         <option value="alto">Alto 🔥</option>
       </select>
+
     </div>
 
-    <div class="swipe-container">
+    <!-- SWIPE AREA -->
+    <section class="swipe-container">
 
+      <!-- BACK CARDS (depth effect) -->
       <div class="card layer3"></div>
       <div class="card layer2"></div>
-    
+
+      <!-- MAIN CARD -->
       <div class="card active" id="card">
-        <p id="question"></p>
+
+        <p id="question">
+          Cargando...
+        </p>
+
+        <!-- BADGES -->
+        <div class="badge like" id="likeBadge">✔</div>
+        <div class="badge skip" id="skipBadge">✖</div>
+
       </div>
-    
-      <div class="badge like" id="likeBadge">✔</div>
-      <div class="badge skip" id="skipBadge">✖</div>
-    
-    </div>
 
-    <div class="buttons">
-      <button id="skip">⬅️</button>
-      <button id="shot">🍻</button>
-      <button id="accept">➡️</button>
-    </div>
+    </section>
 
-  </div>
+    <!-- ACTION BUTTONS -->
+    <footer class="buttons">
+
+      <button id="skip" aria-label="Rechazar">
+        ⬅️
+      </button>
+
+      <button id="shot" aria-label="Tomar shot" class="danger">
+        🍻
+      </button>
+
+      <button id="accept" aria-label="Aceptar">
+        ➡️
+      </button>
+
+    </footer>
+
+  </main>
 
 </div>
+
 <script src="app.js"></script>
+
 </body>
 </html>
