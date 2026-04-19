@@ -115,6 +115,27 @@ document.getElementById("startGame").onclick = () => {
 // --------------------
 // DATA
 // --------------------
+function updateColor() {
+  const card = document.getElementById("card");
+
+  if (!card) return;
+
+  if (currentLevel === "suave") {
+    card.style.background =
+      "linear-gradient(135deg, #2e7d32, #66bb6a)";
+  }
+
+  if (currentLevel === "medio") {
+    card.style.background =
+      "linear-gradient(135deg, #f9a825, #fdd835)";
+  }
+
+  if (currentLevel === "alto") {
+    card.style.background =
+      "linear-gradient(135deg, #c62828, #ef5350)";
+  }
+}
+
 async function loadData() {
   try {
     const res = await fetch(`data/${currentGame}.json`);
