@@ -1,15 +1,45 @@
 let data = {};
 let currentGame = "verdad";
 let currentLevel = "suave";
+
+let players = [];
+let currentPlayerIndex = 0;
+let shots = 0;
+
 let usedQuestions = [];
 
 const card = document.getElementById("card");
 const questionEl = document.getElementById("question");
 
-let startX = 0;
-let currentX = 0;
-let isDragging = false;
+// --------------------
+// PLAYERS
+// --------------------
+document.getElementById("addPlayer").onclick = () => {
+  const input = document.getElementById("playerInput");
+  if (!input.value) return;
 
+  players.push(input.value);
+  input.value = "";
+  renderPlayers();
+};
+
+function renderPlayers() {
+  document.getElementById("playersList").innerText = players.join(", ");
+}
+
+document.getElementById("startGame").onclick = async () => {
+  if (players.length === 0) return alert("Agrega jugadores");
+
+  document.querySelector(".setup").classList.add("hidden");
+  document.querySelector(".game").classList.remove("hidden");
+
+  await loadData();
+  updatePlayer();
+};
+
+// --------------------
+// DATA
+// --------------------
 async function loadData() {
   const res = await fetch(`data/${currentGame}.json`);
   data = await res.json();
@@ -26,92 +56,61 @@ function getRandomQuestion() {
 
   let pregunta;
   do {
-    const index = Math.floor(Math.random() * preguntas.length);
-    pregunta = preguntas[index];
+    pregunta = preguntas[Math.floor(Math.random() * preguntas.length)];
   } while (usedQuestions.includes(pregunta));
 
   usedQuestions.push(pregunta);
   return pregunta;
 }
 
+// --------------------
+// GAME FLOW
+// --------------------
+function updatePlayer() {
+  document.getElementById("currentPlayer").innerText =
+    "Turno: " + players[currentPlayerIndex];
+}
+
+function nextTurn() {
+  currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  updatePlayer();
+  showNewCard();
+}
+
 function showNewCard() {
-  const pregunta = getRandomQuestion();
-  questionEl.innerText = pregunta;
+  questionEl.innerText = getRandomQuestion();
+  updateCardColor();
+}
 
-  card.style.transform = "translateX(0) rotate(0)";
+function updateCardColor() {
+  if (currentLevel === "suave") card.style.background = "#2e7d32";
+  if (currentLevel === "medio") card.style.background = "#f9a825";
+  if (currentLevel === "alto") card.style.background = "#c62828";
 }
 
 // --------------------
-// SWIPE LOGIC
+// ACTIONS
 // --------------------
-card.addEventListener("mousedown", startDrag);
-card.addEventListener("touchstart", startDrag);
+document.getElementById("next").onclick = nextTurn;
 
-function startDrag(e) {
-  isDragging = true;
-  startX = e.touches ? e.touches[0].clientX : e.clientX;
+document.getElementById("skip").onclick = nextTurn;
 
-  document.addEventListener("mousemove", onDrag);
-  document.addEventListener("touchmove", onDrag);
-  document.addEventListener("mouseup", endDrag);
-  document.addEventListener("touchend", endDrag);
-}
-
-function onDrag(e) {
-  if (!isDragging) return;
-
-  currentX = e.touches ? e.touches[0].clientX : e.clientX;
-  const diff = currentX - startX;
-
-  card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
-}
-
-function endDrag() {
-  isDragging = false;
-
-  const diff = currentX - startX;
-
-  if (diff > 100) {
-    swipeRight();
-  } else if (diff < -100) {
-    swipeLeft();
-  } else {
-    card.style.transform = "translateX(0) rotate(0)";
-  }
-
-  document.removeEventListener("mousemove", onDrag);
-  document.removeEventListener("touchmove", onDrag);
-}
-
-function swipeRight() {
-  card.style.transform = "translateX(500px) rotate(20deg)";
-  setTimeout(showNewCard, 300);
-}
-
-function swipeLeft() {
-  card.style.transform = "translateX(-500px) rotate(-20deg)";
-  setTimeout(showNewCard, 300);
-}
+document.getElementById("shot").onclick = () => {
+  shots++;
+  document.getElementById("shots").innerText = "🍻 " + shots;
+  nextTurn();
+};
 
 // --------------------
-// BOTONES
+// SELECTS
 // --------------------
-document.getElementById("skip").onclick = swipeLeft;
-document.getElementById("next").onclick = swipeRight;
-
-// --------------------
-// SELECTORES
-// --------------------
-document.getElementById("game").addEventListener("change", async (e) => {
+document.getElementById("game").onchange = async (e) => {
   currentGame = e.target.value;
   await loadData();
-});
+};
 
-document.getElementById("level").addEventListener("change", (e) => {
+document.getElementById("level").onchange = (e) => {
   currentLevel = e.target.value;
   usedQuestions = [];
   showNewCard();
-});
-
-// INIT
-loadData();
+};
