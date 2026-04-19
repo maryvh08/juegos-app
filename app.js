@@ -59,6 +59,9 @@ const GameEngine = {
 // --------------------
 let data = {};
 let currentGame = "verdad";
+const games = ["verdad", "reto", "nunca"];
+let gameIndex = 0;
+
 let currentLevel = "suave";
 let usedQuestions = [];
 let skipTurnChange = false;
@@ -116,24 +119,59 @@ document.getElementById("startGame").onclick = () => {
 };
 
 // --------------------
+// GAME SWITCH
+// --------------------
+function nextGame() {
+  gameIndex = (gameIndex + 1) % games.length;
+  currentGame = games[gameIndex];
+}
+
+// --------------------
 // DATA
 // --------------------
 async function loadData() {
   try {
     const res = await fetch(`data/${currentGame}.json`);
-
     if (!res.ok) throw new Error("Error cargando JSON");
 
     data = await res.json();
     usedQuestions = [];
-
-    showCard();
   } catch (e) {
     console.error(e);
     questionEl.innerText = "Error cargando preguntas 😢";
   }
 }
 
+// --------------------
+// FLOW
+// --------------------
+async function startGame() {
+  await loadData();
+  updateUI();
+  animateIn();
+}
+
+async function changeGame() {
+  nextGame();
+  await loadData();
+  showCard();
+  updateUI();
+}
+
+function nextTurn() {
+  if (!skipTurnChange) {
+    GameEngine.nextPlayer();
+  }
+
+  skipTurnChange = false;
+  GameEngine.state.streak++;
+
+  changeGame();
+}
+
+// --------------------
+// QUESTIONS
+// --------------------
 function getRandomQuestion() {
   const preguntas = data[currentLevel];
 
@@ -153,54 +191,10 @@ function getRandomQuestion() {
 }
 
 // --------------------
-// FLOW
-// --------------------
-function startGame() {
-  loadData().then(() => {
-    updateUI();
-    animateIn();
-  });
-}
-
-function nextTurn() {
-  if (!skipTurnChange) {
-    GameEngine.nextPlayer();
-  }
-
-  skipTurnChange = false;
-  GameEngine.state.streak++;
-
-  updateUI();
-  showCard();
-}
-
-// --------------------
-// ACTION SYSTEM
-// --------------------
-function resolveAction(action) {
-  const player = GameEngine.currentPlayer();
-
-  switch (action) {
-    case "accept":
-      GameEngine.addPoint(player);
-      break;
-
-    case "shot":
-      GameEngine.addShot();
-      break;
-
-    case "skip":
-      GameEngine.resetStreak();
-      break;
-  }
-}
-
-// --------------------
 // CARD
 // --------------------
 function showCard() {
   const question = getRandomQuestion();
-
   questionEl.innerText = question;
 
   resetCard();
@@ -213,43 +207,28 @@ function showCard() {
 function updateUI() {
   const player = GameEngine.currentPlayer();
 
-  const currentPlayerEl = document.getElementById("currentPlayer");
-  const shotsEl = document.getElementById("shots");
-  const streakEl = document.getElementById("streak");
-  const scoreEl = document.getElementById("score");
-
-  if (currentPlayerEl)
-    currentPlayerEl.innerText = "Turno: " + player;
-
-  if (shotsEl)
-    shotsEl.innerText = "🍻 " + GameEngine.state.shots;
-
-  if (streakEl)
-    streakEl.innerText = "🔥 " + GameEngine.state.streak;
-
-  if (scoreEl)
-    scoreEl.innerText =
-      "⭐ " + (GameEngine.state.scores[player] || 0);
+  document.getElementById("currentPlayer").innerText = "Turno: " + player;
+  document.getElementById("shots").innerText = "🍻 " + GameEngine.state.shots;
+  document.getElementById("streak").innerText = "🔥 " + GameEngine.state.streak;
+  document.getElementById("score").innerText =
+    "⭐ " + (GameEngine.state.scores[player] || 0);
 }
 
 // --------------------
-// COLOR LEVEL
+// COLOR
 // --------------------
 function updateColor() {
-  const cardEl = document.getElementById("card");
-  if (!cardEl) return;
-
   const colors = {
     suave: "linear-gradient(135deg, #2e7d32, #66bb6a)",
     medio: "linear-gradient(135deg, #f9a825, #fdd835)",
     alto: "linear-gradient(135deg, #c62828, #ef5350)"
   };
 
-  cardEl.style.background = colors[currentLevel] || colors.suave;
+  card.style.background = colors[currentLevel] || colors.suave;
 }
 
 // --------------------
-// SWIPE
+// SWIPE (FIXED)
 // --------------------
 let startX = 0;
 let currentX = 0;
@@ -262,11 +241,7 @@ card.addEventListener("mousedown", start);
 card.addEventListener("touchstart", start);
 
 function start(e) {
-  // 🔒 Solo permitir si el target está dentro de la card
   if (!e.target.closest("#card")) return;
-
-  e.stopPropagation();
-  e.preventDefault();
 
   isDragging = true;
   startX = getX(e);
@@ -284,9 +259,6 @@ function start(e) {
 
 function move(e) {
   if (!isDragging) return;
-  if (!card) return;
-
-  e.preventDefault(); // evita scroll en móvil
 
   currentX = getX(e);
   const dx = currentX - startX;
@@ -325,11 +297,8 @@ function swipe(dir) {
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  if (dir === 1) {
-    resolveAction("accept");
-  } else {
-    resolveAction("shot");
-  }
+  if (dir === 1) GameEngine.addPoint(GameEngine.currentPlayer());
+  else GameEngine.addShot();
 
   vibrate();
 
@@ -340,7 +309,7 @@ function swipe(dir) {
 }
 
 // --------------------
-// CARD UI FX
+// CARD FX
 // --------------------
 function resetCard() {
   card.style.transform = "translateX(0) rotate(0)";
@@ -399,10 +368,6 @@ document.getElementById("accept").onclick = () => swipe(1);
 document.getElementById("skip").onclick = () => swipe(-1);
 
 document.getElementById("shot").onclick = () => {
-  resolveAction("shot");
+  GameEngine.addShot();
   nextTurn();
 };
-
-card.addEventListener("pointerdown", start);
-document.addEventListener("pointermove", move);
-document.addEventListener("pointerup", end);
