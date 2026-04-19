@@ -108,9 +108,15 @@ function showCard() {
 }
 
 function updateColor() {
-  if (currentLevel === "suave") card.style.background = "#2e7d32";
-  if (currentLevel === "medio") card.style.background = "#f9a825";
-  if (currentLevel === "alto") card.style.background = "#c62828";
+  if (currentLevel === "suave") {
+    card.style.background = "linear-gradient(135deg, #2e7d32, #66bb6a)";
+  }
+  if (currentLevel === "medio") {
+    card.style.background = "linear-gradient(135deg, #f9a825, #fdd835)";
+  }
+  if (currentLevel === "alto") {
+    card.style.background = "linear-gradient(135deg, #c62828, #ef5350)";
+  }
 }
 
 // --------------------
@@ -181,6 +187,8 @@ function swipe(dir) {
 
 function resetCard() {
   card.style.transform = "translateX(0) rotate(0)";
+  document.getElementById("likeBadge").style.opacity = 0;
+  document.getElementById("skipBadge").style.opacity = 0;
 }
 
 function getX(e) {
