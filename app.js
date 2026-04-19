@@ -4,10 +4,11 @@
 let data = {};
 let currentGame = "verdad";
 let currentLevel = "suave";
-
+let scores = JSON.parse(localStorage.getItem("scores")) || {};
 let players = JSON.parse(localStorage.getItem("players")) || [];
 let currentPlayerIndex = 0;
 let shots = Number(localStorage.getItem("shots")) || 0;
+let streak = 0;
 
 let usedQuestions = [];
 
@@ -39,6 +40,8 @@ document.getElementById("addPlayer").onclick = () => {
   if (!input.value) return;
 
   players.push(input.value);
+  scores[input.value] = 0;
+  localStorage.setItem("scores", JSON.stringify(scores));
   localStorage.setItem("players", JSON.stringify(players));
   input.value = "";
   renderPlayers();
@@ -87,6 +90,11 @@ function getRandomQuestion() {
   return q;
 }
 
+function addPoint(player) {
+  scores[player] += 1;
+  localStorage.setItem("scores", JSON.stringify(scores));
+}
+
 // --------------------
 // FLOW
 // --------------------
@@ -97,14 +105,46 @@ function updatePlayer() {
 
 function nextTurn() {
   currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  addPoint(players[currentPlayerIndex]);
   updatePlayer();
   showCard();
 }
 
 function showCard() {
+  let event = randomEvent();
+
+  if (event) {
+    questionEl.innerText = event;
+    return;
+  }
+  
+  questionEl.innerText = getRandomQuestion();
   questionEl.innerText = getRandomQuestion();
   resetCard();
   updateColor();
+}
+
+function randomEvent() {
+  const chance = Math.random();
+
+  if (chance < 0.15) {
+    return "🔥 DOBLE TURNO: repite";
+  }
+
+  if (chance < 0.30) {
+    return "🍻 TODOS BEBEN";
+  }
+
+  if (chance < 0.45) {
+    return "⚡ RETO EXTRA";
+  }
+
+  return null;
+}
+function updatePlayer() {
+  const player = players[currentPlayerIndex];
+  document.getElementById("currentPlayer").innerText = "Turno: " + player;
+  document.getElementById("score").innerText = "⭐ " + scores[player];
 }
 
 function updateColor() {
@@ -117,6 +157,16 @@ function updateColor() {
   if (currentLevel === "alto") {
     card.style.background = "linear-gradient(135deg, #c62828, #ef5350)";
   }
+}
+
+function tensionEvent() {
+  const chance = Math.random();
+
+  if (chance < 0.1) {
+    return "👀 EL GRUPO DECIDE: ¿acepta o shot?";
+  }
+
+  return null;
 }
 
 // --------------------
@@ -275,3 +325,5 @@ document.getElementById("level").onchange = (e) => {
   usedQuestions = [];
   showCard();
 };
+
+document.getElementById("streak").innerText = "🔥 " + streak;
