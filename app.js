@@ -222,19 +222,10 @@ function resolveAction(action) {
 // CARD
 // --------------------
 function showCard() {
-  const event = tensionEvent();
-
   questionEl.innerText = event || getRandomQuestion();
 
   resetCard();
   updateColor();
-}
-
-function tensionEvent() {
-  if (Math.random() < 0.08) {
-    return "👀 EL GRUPO DECIDE: ¿acepta o shot?";
-  }
-  return null;
 }
 
 // --------------------
