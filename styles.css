@@ -1,4 +1,3 @@
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -8,16 +7,17 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 
-.container {
-  text-align: center;
-  width: 90%;
+.app {
+  width: 100%;
   max-width: 400px;
+  text-align: center;
 }
 
 h1 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .controls {
@@ -33,33 +33,39 @@ select {
   border: none;
 }
 
+.swipe-container {
+  position: relative;
+  height: 300px;
+}
+
 .card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   background: #1c1c24;
-  padding: 30px;
-  border-radius: 16px;
-  min-height: 120px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  font-size: 18px;
-  transition: transform 0.2s;
+  padding: 20px;
+  cursor: grab;
+  transition: transform 0.3s ease;
+  user-select: none;
 }
 
-.card.animate {
-  transform: scale(1.05);
+.buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
 }
 
 button {
-  padding: 12px 20px;
+  width: 48%;
+  padding: 12px;
   border: none;
   border-radius: 10px;
   background: #7c8cff;
   color: white;
   font-size: 16px;
   cursor: pointer;
-}
-
-button:hover {
-  opacity: 0.9;
 }
