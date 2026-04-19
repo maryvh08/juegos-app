@@ -196,33 +196,11 @@ function resolveAction(action) {
 // CARD
 // --------------------
 function showCard() {
-  const event = randomEvent() || tensionEvent();
 
   questionEl.innerText = event || getRandomQuestion();
 
   resetCard();
   updateColor();
-}
-
-function randomEvent() {
-  const r = Math.random();
-
-  if (r < 0.1) {
-    skipTurnChange = true;
-    return "🔥 DOBLE TURNO";
-  }
-  if (r < 0.2) return "🍻 TODOS BEBEN";
-  if (r < 0.3) return "🎯 RETO A ALGUIEN";
-  if (r < 0.4) return "⚡ RESPONDE RÁPIDO O SHOT";
-
-  return null;
-}
-
-function tensionEvent() {
-  if (Math.random() < 0.05) {
-    return "👀 EL GRUPO DECIDE";
-  }
-  return null;
 }
 
 // --------------------
