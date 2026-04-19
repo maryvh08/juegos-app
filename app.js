@@ -118,10 +118,18 @@ document.getElementById("startGame").onclick = () => {
 async function loadData() {
   try {
     const res = await fetch(`data/${currentGame}.json`);
+
+    if (!res.ok) {
+      throw new Error("No se pudo cargar el JSON");
+    }
+
     data = await res.json();
+
     usedQuestions = [];
+
     showCard();
   } catch (e) {
+    console.error(e);
     questionEl.innerText = "Error cargando preguntas 😢";
   }
 }
@@ -228,17 +236,27 @@ function tensionEvent() {
 function updateUI() {
   const player = GameEngine.currentPlayer();
 
-  document.getElementById("currentPlayer").innerText =
-    "Turno: " + player;
+  const currentPlayerEl = document.getElementById("currentPlayer");
+  const scoreEl = document.getElementById("score");
+  const shotsEl = document.getElementById("shots");
+  const streakEl = document.getElementById("streak");
 
-  document.getElementById("score").innerText =
-    "⭐ " + (GameEngine.state.scores[player] || 0);
+  if (currentPlayerEl) {
+    currentPlayerEl.innerText = "Turno: " + player;
+  }
 
-  document.getElementById("shots").innerText =
-    "🍻 " + GameEngine.state.shots;
+  if (scoreEl) {
+    scoreEl.innerText =
+      "⭐ " + (GameEngine.state.scores[player] || 0);
+  }
 
-  document.getElementById("streak").innerText =
-    "🔥 " + GameEngine.state.streak;
+  if (shotsEl) {
+    shotsEl.innerText = "🍻 " + GameEngine.state.shots;
+  }
+
+  if (streakEl) {
+    streakEl.innerText = "🔥 " + GameEngine.state.streak;
+  }
 }
 
 function updateHUD() {
@@ -435,3 +453,8 @@ const el = $("score");
 if (el) el.innerText = "...";
 
 document.addEventListener("DOMContentLoaded", init);
+
+function get(id) {
+  return document.getElementById(id);
+}
+
