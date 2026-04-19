@@ -6,10 +6,9 @@ let currentGame = "verdad";
 let currentLevel = "suave";
 let scores = JSON.parse(localStorage.getItem("scores")) || {};
 let players = JSON.parse(localStorage.getItem("players")) || [];
-let currentPlayerIndex = 0;
 let shots = Number(localStorage.getItem("shots")) || 0;
 let streak = 0;
-
+let currentPlayerIndex = Number(localStorage.getItem("turn")) || 0;
 let usedQuestions = [];
 
 // DOM
@@ -68,10 +67,15 @@ async function startGame() {
 // DATA
 // --------------------
 async function loadData() {
-  const res = await fetch(`data/${currentGame}.json`);
-  data = await res.json();
-  usedQuestions = [];
-  showCard();
+  try {
+    const res = await fetch(`data/${currentGame}.json`);
+    data = await res.json();
+    usedQuestions = [];
+    showCard();
+  } catch (e) {
+    questionEl.innerText = "Error cargando preguntas 😢";
+    console.error(e);
+  }
 }
 
 function getRandomQuestion() {
@@ -91,6 +95,7 @@ function getRandomQuestion() {
 }
 
 function addPoint(player) {
+  if (!scores[player]) scores[player] = 0;
   scores[player] += 1;
   localStorage.setItem("scores", JSON.stringify(scores));
 }
@@ -98,17 +103,25 @@ function addPoint(player) {
 // --------------------
 // FLOW
 // --------------------
+card.style.opacity = "0";
+setTimeout(() => {
+  nextTurn();
+  animateIn();
+}, 200);
+
 function nextTurn() {
   const currentPlayer = players[currentPlayerIndex];
 
-  // sumar punto al jugador actual
   addPoint(currentPlayer);
   streak++;
 
   document.getElementById("streak").innerText = "🔥 " + streak;
 
-  // cambiar turno
-  currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  if (!skipTurnChange) {
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  }
+
+  skipTurnChange = false;
 
   updatePlayer();
   showCard();
@@ -127,17 +140,22 @@ function showCard() {
   updateColor();
 }
 
+let skipTurnChange = false;
+
 function randomEvent() {
   const chance = Math.random();
 
-  if (chance < 0.1) return "🔥 DOBLE TURNO (no cambias)";
+  if (chance < 0.1) {
+    skipTurnChange = true;
+    return "🔥 DOBLE TURNO (no cambias)";
+  }
+
   if (chance < 0.2) return "🍻 TODOS BEBEN";
   if (chance < 0.3) return "🎯 ELIGE A ALGUIEN PARA RETO";
   if (chance < 0.4) return "⚡ RESPONDE RÁPIDO O SHOT";
 
   return null;
 }
-
 function updatePlayer() {
   const player = players[currentPlayerIndex];
   document.getElementById("currentPlayer").innerText = "Turno: " + player;
@@ -193,9 +211,21 @@ function start(e) {
   document.addEventListener("touchend", end);
 }
 
+let frameRequested = false;
+
 function move(e) {
   if (!isDragging) return;
 
+  if (!frameRequested) {
+    requestAnimationFrame(() => {
+      handleMove(e);
+      frameRequested = false;
+    });
+    frameRequested = true;
+  }
+}
+
+function handleMove(e) {
   currentX = getX(e);
   let dx = currentX - startX;
 
@@ -205,7 +235,6 @@ function move(e) {
   lastX = currentX;
   lastTime = now;
 
-  // efecto elástico
   let rotate = dx * 0.06;
   card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
 
@@ -232,6 +261,14 @@ function end() {
 function swipe(dir) {
   card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
+  if (dir === -1) {
+    shots++;
+    localStorage.setItem("shots", shots);
+  
+    document.getElementById("shots").innerText = "🍻 " + shots;
+    streak = 0;
+  }
+  
   if (dir === 1) {
     // aceptación → recompensa visual
     card.style.boxShadow = "0 0 40px rgba(0,255,100,0.6)";
@@ -337,3 +374,5 @@ document.getElementById("level").onchange = (e) => {
 };
 
 document.getElementById("streak").innerText = "🔥 " + streak;
+
+localStorage.setItem("turn", currentPlayerIndex);
