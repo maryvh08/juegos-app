@@ -1,17 +1,37 @@
-<h1>🔥 Party Game</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Party Games 🔥</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-<select id="game">
-  <option value="verdad">Verdad o Shot</option>
-  <option value="reto">Verdad o Reto</option>
-  <option value="nunca">Yo Nunca Nunca</option>
-</select>
+<div class="container">
+  <h1>🔥 Party Games</h1>
 
-<select id="level">
-  <option value="suave">Suave</option>
-  <option value="medio">Medio</option>
-  <option value="alto">Alto</option>
-</select>
+  <div class="controls">
+    <select id="game">
+      <option value="verdad">Verdad o Shot</option>
+      <option value="reto">Verdad o Reto</option>
+      <option value="nunca">Yo Nunca Nunca</option>
+    </select>
 
-<button onclick="nextQuestion()">Siguiente</button>
+    <select id="level">
+      <option value="suave">Suave 😇</option>
+      <option value="medio">Medio 😏</option>
+      <option value="alto">Alto 🔥</option>
+    </select>
+  </div>
 
-<p id="question"></p>
+  <div class="card" id="card">
+    <p id="question">Presiona "Siguiente" para empezar</p>
+  </div>
+
+  <button id="nextBtn">Siguiente</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
