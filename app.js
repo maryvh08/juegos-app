@@ -258,11 +258,15 @@ let isDragging = false;
 let lastX = 0;
 let lastTime = 0;
 
-card.addEventListener("mousedown", start, true);
-card.addEventListener("touchstart", start, true);
+card.addEventListener("mousedown", start);
+card.addEventListener("touchstart", start);
 
 function start(e) {
+  // 🔒 Solo permitir si el target está dentro de la card
+  if (!e.target.closest("#card")) return;
+
   e.stopPropagation();
+  e.preventDefault();
 
   isDragging = true;
   startX = getX(e);
@@ -273,13 +277,16 @@ function start(e) {
   card.style.transition = "none";
 
   document.addEventListener("mousemove", move);
-  document.addEventListener("touchmove", move);
+  document.addEventListener("touchmove", move, { passive: false });
   document.addEventListener("mouseup", end);
   document.addEventListener("touchend", end);
 }
 
 function move(e) {
   if (!isDragging) return;
+  if (!card) return;
+
+  e.preventDefault(); // evita scroll en móvil
 
   currentX = getX(e);
   const dx = currentX - startX;
@@ -395,3 +402,7 @@ document.getElementById("shot").onclick = () => {
   resolveAction("shot");
   nextTurn();
 };
+
+card.addEventListener("pointerdown", start);
+document.addEventListener("pointermove", move);
+document.addEventListener("pointerup", end);
