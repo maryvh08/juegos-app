@@ -222,26 +222,12 @@ function resolveAction(action) {
 // CARD
 // --------------------
 function showCard() {
-  const event = tensionEvent() || randomEvent();
+  const event = tensionEvent();
 
   questionEl.innerText = event || getRandomQuestion();
 
   resetCard();
   updateColor();
-}
-
-function randomEvent() {
-  const chance = Math.random();
-
-  if (chance < 0.1) {
-    skipTurnChange = true;
-    return "🔥 DOBLE TURNO (no cambia)";
-  }
-  if (chance < 0.2) return "🍻 TODOS BEBEN";
-  if (chance < 0.3) return "🎯 ELIGE A ALGUIEN PARA RETO";
-  if (chance < 0.4) return "⚡ RESPONDE RÁPIDO O SHOT";
-
-  return null;
 }
 
 function tensionEvent() {
