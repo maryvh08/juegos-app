@@ -29,6 +29,8 @@ const GameEngine = {
   },
 
   nextPlayer() {
+    if (!this.state.players.length) return;
+
     this.state.currentIndex =
       (this.state.currentIndex + 1) % this.state.players.length;
 
@@ -119,6 +121,7 @@ document.getElementById("startGame").onclick = () => {
 async function loadData() {
   try {
     const res = await fetch(`data/${currentGame}.json`);
+
     if (!res.ok) throw new Error("Error cargando JSON");
 
     data = await res.json();
@@ -172,7 +175,7 @@ function nextTurn() {
 }
 
 // --------------------
-// ACTIONS
+// ACTION SYSTEM
 // --------------------
 function resolveAction(action) {
   const player = GameEngine.currentPlayer();
@@ -196,8 +199,9 @@ function resolveAction(action) {
 // CARD
 // --------------------
 function showCard() {
+  const question = getRandomQuestion();
 
-  questionEl.innerText = event || getRandomQuestion();
+  questionEl.innerText = question;
 
   resetCard();
   updateColor();
@@ -229,7 +233,7 @@ function updateUI() {
 }
 
 // --------------------
-// COLOR
+// COLOR LEVEL
 // --------------------
 function updateColor() {
   const cardEl = document.getElementById("card");
@@ -241,18 +245,18 @@ function updateColor() {
     alto: "linear-gradient(135deg, #c62828, #ef5350)"
   };
 
-  cardEl.style.background = colors[currentLevel];
+  cardEl.style.background = colors[currentLevel] || colors.suave;
 }
 
 // --------------------
-// SWIPE (limpio)
+// SWIPE
 // --------------------
 let startX = 0;
 let currentX = 0;
+let velocity = 0;
 let isDragging = false;
 let lastX = 0;
 let lastTime = 0;
-let velocity = 0;
 
 card.addEventListener("mousedown", start, true);
 card.addEventListener("touchstart", start, true);
@@ -286,7 +290,8 @@ function move(e) {
   lastX = currentX;
   lastTime = now;
 
-  card.style.transform = `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
+  const rotate = dx * 0.06;
+  card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
 
   updateBadges(dx);
 }
@@ -306,11 +311,18 @@ function end() {
   document.removeEventListener("touchmove", move);
 }
 
+// --------------------
+// SWIPE RESULT
+// --------------------
 function swipe(dir) {
-  card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
+  card.style.transform =
+    `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  if (dir === 1) resolveAction("accept");
-  else resolveAction("shot");
+  if (dir === 1) {
+    resolveAction("accept");
+  } else {
+    resolveAction("shot");
+  }
 
   vibrate();
 
@@ -321,7 +333,7 @@ function swipe(dir) {
 }
 
 // --------------------
-// UI FX
+// CARD UI FX
 // --------------------
 function resetCard() {
   card.style.transform = "translateX(0) rotate(0)";
@@ -372,3 +384,14 @@ function vibrate() {
 function getX(e) {
   return e.touches ? e.touches[0].clientX : e.clientX;
 }
+
+// --------------------
+// BUTTONS
+// --------------------
+document.getElementById("accept").onclick = () => swipe(1);
+document.getElementById("skip").onclick = () => swipe(-1);
+
+document.getElementById("shot").onclick = () => {
+  resolveAction("shot");
+  nextTurn();
+};
