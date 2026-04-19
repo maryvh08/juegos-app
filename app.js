@@ -98,28 +98,31 @@ function addPoint(player) {
 // --------------------
 // FLOW
 // --------------------
-function updatePlayer() {
-  document.getElementById("currentPlayer").innerText =
-    "Turno: " + players[currentPlayerIndex];
-}
-
 function nextTurn() {
+  const currentPlayer = players[currentPlayerIndex];
+
+  // sumar punto al jugador actual
+  addPoint(currentPlayer);
+  streak++;
+
+  document.getElementById("streak").innerText = "🔥 " + streak;
+
+  // cambiar turno
   currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-  addPoint(players[currentPlayerIndex]);
+
   updatePlayer();
   showCard();
 }
 
 function showCard() {
-  let event = randomEvent();
+  let event = tensionEvent() || randomEvent();
 
   if (event) {
     questionEl.innerText = event;
-    return;
+  } else {
+    questionEl.innerText = getRandomQuestion();
   }
-  
-  questionEl.innerText = getRandomQuestion();
-  questionEl.innerText = getRandomQuestion();
+
   resetCard();
   updateColor();
 }
@@ -127,20 +130,14 @@ function showCard() {
 function randomEvent() {
   const chance = Math.random();
 
-  if (chance < 0.15) {
-    return "🔥 DOBLE TURNO: repite";
-  }
-
-  if (chance < 0.30) {
-    return "🍻 TODOS BEBEN";
-  }
-
-  if (chance < 0.45) {
-    return "⚡ RETO EXTRA";
-  }
+  if (chance < 0.1) return "🔥 DOBLE TURNO (no cambias)";
+  if (chance < 0.2) return "🍻 TODOS BEBEN";
+  if (chance < 0.3) return "🎯 ELIGE A ALGUIEN PARA RETO";
+  if (chance < 0.4) return "⚡ RESPONDE RÁPIDO O SHOT";
 
   return null;
 }
+
 function updatePlayer() {
   const player = players[currentPlayerIndex];
   document.getElementById("currentPlayer").innerText = "Turno: " + player;
@@ -235,6 +232,14 @@ function end() {
 function swipe(dir) {
   card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
+  if (dir === 1) {
+    // aceptación → recompensa visual
+    card.style.boxShadow = "0 0 40px rgba(0,255,100,0.6)";
+  } else {
+    // rechazo → rojo
+    card.style.boxShadow = "0 0 40px rgba(255,0,80,0.6)";
+  }
+
   vibrate();
 
   setTimeout(() => {
@@ -307,8 +312,13 @@ document.getElementById("skip").onclick = () => swipe(-1);
 
 document.getElementById("shot").onclick = () => {
   shots++;
+  streak = 0;
+
   localStorage.setItem("shots", shots);
+
   document.getElementById("shots").innerText = "🍻 " + shots;
+  document.getElementById("streak").innerText = "🔥 0";
+
   nextTurn();
 };
 
