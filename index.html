@@ -9,32 +9,54 @@
 <body>
 
 <div class="app">
+
   <h1>🔥 Party Swipe</h1>
 
-  <div class="controls">
-    <select id="game">
-      <option value="verdad">Verdad o Shot</option>
-      <option value="reto">Verdad o Reto</option>
-      <option value="nunca">Yo Nunca Nunca</option>
-    </select>
-
-    <select id="level">
-      <option value="suave">Suave 😇</option>
-      <option value="medio">Medio 😏</option>
-      <option value="alto">Alto 🔥</option>
-    </select>
+  <!-- Setup jugadores -->
+  <div class="setup">
+    <input id="playerInput" placeholder="Nombre jugador">
+    <button id="addPlayer">Agregar</button>
+    <div id="playersList"></div>
+    <button id="startGame">Iniciar Juego</button>
   </div>
 
-  <div class="swipe-container">
-    <div class="card" id="card">
-      <p id="question">Cargando...</p>
+  <!-- Juego -->
+  <div class="game hidden">
+
+    <div class="top-bar">
+      <span id="currentPlayer"></span>
+      <span id="shots">🍻 0</span>
     </div>
+
+    <div class="controls">
+      <select id="game">
+        <option value="verdad">Verdad o Shot</option>
+        <option value="reto">Verdad o Reto</option>
+        <option value="nunca">Yo Nunca Nunca</option>
+      </select>
+
+      <select id="level">
+        <option value="suave">Suave 😇</option>
+        <option value="medio">Medio 😏</option>
+        <option value="alto">Alto 🔥</option>
+      </select>
+    </div>
+
+    <div class="swipe-container">
+      <div class="card next-card"></div>
+      <div class="card active" id="card">
+        <p id="question"></p>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="skip">⬅️ Pasar</button>
+      <button id="shot">🍻 Shot</button>
+      <button id="next">➡️ Aceptar</button>
+    </div>
+
   </div>
 
-  <div class="buttons">
-    <button id="skip">⬅️ Pasar</button>
-    <button id="next">➡️ Siguiente</button>
-  </div>
 </div>
 
 <script src="app.js"></script>
