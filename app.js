@@ -40,20 +40,20 @@ const GameEngine = {
     this.save();
   },
 
+  currentPlayer() {
+    return this.state.players[this.state.currentIndex];
+  },
+
   save() {
     localStorage.setItem("players", JSON.stringify(this.state.players));
     localStorage.setItem("scores", JSON.stringify(this.state.scores));
     localStorage.setItem("shots", this.state.shots);
     localStorage.setItem("turn", this.state.currentIndex);
-  },
-
-  currentPlayer() {
-    return this.state.players[this.state.currentIndex];
   }
 };
 
 // --------------------
-// GAME CONFIG
+// CONFIG
 // --------------------
 let data = {};
 let currentGame = "verdad";
@@ -70,10 +70,11 @@ const questionEl = document.getElementById("question");
 // --------------------
 // INIT
 // --------------------
+document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   renderPlayers();
-  updateHUD();
+  updateUI();
 
   if (GameEngine.state.players.length > 0) {
     document.getElementById("setup").classList.add("hidden");
@@ -93,7 +94,7 @@ document.getElementById("addPlayer").onclick = () => {
   input.value = "";
 
   renderPlayers();
-  updateHUD();
+  updateUI();
 };
 
 function renderPlayers() {
@@ -102,7 +103,7 @@ function renderPlayers() {
 }
 
 document.getElementById("startGame").onclick = () => {
-  if (GameEngine.state.players.length === 0) {
+  if (!GameEngine.state.players.length) {
     return alert("Agrega jugadores");
   }
 
@@ -115,37 +116,12 @@ document.getElementById("startGame").onclick = () => {
 // --------------------
 // DATA
 // --------------------
-function updateColor() {
-  const card = document.getElementById("card");
-
-  if (!card) return;
-
-  if (currentLevel === "suave") {
-    card.style.background =
-      "linear-gradient(135deg, #2e7d32, #66bb6a)";
-  }
-
-  if (currentLevel === "medio") {
-    card.style.background =
-      "linear-gradient(135deg, #f9a825, #fdd835)";
-  }
-
-  if (currentLevel === "alto") {
-    card.style.background =
-      "linear-gradient(135deg, #c62828, #ef5350)";
-  }
-}
-
 async function loadData() {
   try {
     const res = await fetch(`data/${currentGame}.json`);
-
-    if (!res.ok) {
-      throw new Error("No se pudo cargar el JSON");
-    }
+    if (!res.ok) throw new Error("Error cargando JSON");
 
     data = await res.json();
-
     usedQuestions = [];
 
     showCard();
@@ -196,7 +172,7 @@ function nextTurn() {
 }
 
 // --------------------
-// ACTION RESOLUTION (CLAVE)
+// ACTIONS
 // --------------------
 function resolveAction(action) {
   const player = GameEngine.currentPlayer();
@@ -214,75 +190,98 @@ function resolveAction(action) {
       GameEngine.resetStreak();
       break;
   }
-
-  updateHUD();
 }
 
 // --------------------
 // CARD
 // --------------------
 function showCard() {
+  const event = randomEvent() || tensionEvent();
+
   questionEl.innerText = event || getRandomQuestion();
 
   resetCard();
   updateColor();
 }
 
+function randomEvent() {
+  const r = Math.random();
+
+  if (r < 0.1) {
+    skipTurnChange = true;
+    return "🔥 DOBLE TURNO";
+  }
+  if (r < 0.2) return "🍻 TODOS BEBEN";
+  if (r < 0.3) return "🎯 RETO A ALGUIEN";
+  if (r < 0.4) return "⚡ RESPONDE RÁPIDO O SHOT";
+
+  return null;
+}
+
+function tensionEvent() {
+  if (Math.random() < 0.05) {
+    return "👀 EL GRUPO DECIDE";
+  }
+  return null;
+}
+
 // --------------------
-// UI UPDATE
+// UI
 // --------------------
 function updateUI() {
   const player = GameEngine.currentPlayer();
 
   const currentPlayerEl = document.getElementById("currentPlayer");
-  const scoreEl = document.getElementById("score");
   const shotsEl = document.getElementById("shots");
   const streakEl = document.getElementById("streak");
+  const scoreEl = document.getElementById("score");
 
-  if (currentPlayerEl) {
+  if (currentPlayerEl)
     currentPlayerEl.innerText = "Turno: " + player;
-  }
 
-  if (scoreEl) {
+  if (shotsEl)
+    shotsEl.innerText = "🍻 " + GameEngine.state.shots;
+
+  if (streakEl)
+    streakEl.innerText = "🔥 " + GameEngine.state.streak;
+
+  if (scoreEl)
     scoreEl.innerText =
       "⭐ " + (GameEngine.state.scores[player] || 0);
-  }
-
-  if (shotsEl) {
-    shotsEl.innerText = "🍻 " + GameEngine.state.shots;
-  }
-
-  if (streakEl) {
-    streakEl.innerText = "🔥 " + GameEngine.state.streak;
-  }
-}
-
-function updateHUD() {
-  const player = GameEngine.currentPlayer();
-
-  const playerEl = document.getElementById("currentPlayer");
-  const shotsEl = document.getElementById("shots");
-  const streakEl = document.getElementById("streak");
-
-  if (playerEl) playerEl.innerText = "Turno: " + player;
-  if (shotsEl) shotsEl.innerText = "🍻 " + GameEngine.state.shots;
-  if (streakEl) streakEl.innerText = "🔥 " + GameEngine.state.streak;
 }
 
 // --------------------
-// SWIPE
+// COLOR
+// --------------------
+function updateColor() {
+  const cardEl = document.getElementById("card");
+  if (!cardEl) return;
+
+  const colors = {
+    suave: "linear-gradient(135deg, #2e7d32, #66bb6a)",
+    medio: "linear-gradient(135deg, #f9a825, #fdd835)",
+    alto: "linear-gradient(135deg, #c62828, #ef5350)"
+  };
+
+  cardEl.style.background = colors[currentLevel];
+}
+
+// --------------------
+// SWIPE (limpio)
 // --------------------
 let startX = 0;
 let currentX = 0;
-let velocity = 0;
 let isDragging = false;
 let lastX = 0;
 let lastTime = 0;
+let velocity = 0;
 
-card.addEventListener("mousedown", start);
-card.addEventListener("touchstart", start);
+card.addEventListener("mousedown", start, true);
+card.addEventListener("touchstart", start, true);
 
 function start(e) {
+  e.stopPropagation();
+
   isDragging = true;
   startX = getX(e);
 
@@ -297,21 +296,9 @@ function start(e) {
   document.addEventListener("touchend", end);
 }
 
-let frameRequested = false;
-
 function move(e) {
   if (!isDragging) return;
 
-  if (!frameRequested) {
-    requestAnimationFrame(() => {
-      handleMove(e);
-      frameRequested = false;
-    });
-    frameRequested = true;
-  }
-}
-
-function handleMove(e) {
   currentX = getX(e);
   const dx = currentX - startX;
 
@@ -321,8 +308,7 @@ function handleMove(e) {
   lastX = currentX;
   lastTime = now;
 
-  const rotate = dx * 0.06;
-  card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
+  card.style.transform = `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
 
   updateBadges(dx);
 }
@@ -330,17 +316,13 @@ function handleMove(e) {
 function end() {
   isDragging = false;
 
-  card.style.transition = "transform 0.4s cubic-bezier(.22,1,.36,1)";
-
   const dx = currentX - startX;
 
-  if (velocity > 0.5 || dx > 120) {
-    swipe(1);
-  } else if (velocity < -0.5 || dx < -120) {
-    swipe(-1);
-  } else {
-    resetCard();
-  }
+  card.style.transition = "transform 0.4s cubic-bezier(.22,1,.36,1)";
+
+  if (velocity > 0.5 || dx > 120) swipe(1);
+  else if (velocity < -0.5 || dx < -120) swipe(-1);
+  else resetCard();
 
   document.removeEventListener("mousemove", move);
   document.removeEventListener("touchmove", move);
@@ -349,13 +331,8 @@ function end() {
 function swipe(dir) {
   card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  if (dir === 1) {
-    resolveAction("accept");
-    card.style.boxShadow = "0 0 40px rgba(0,255,100,0.6)";
-  } else {
-    resolveAction("shot");
-    card.style.boxShadow = "0 0 40px rgba(255,0,80,0.6)";
-  }
+  if (dir === 1) resolveAction("accept");
+  else resolveAction("shot");
 
   vibrate();
 
@@ -365,14 +342,14 @@ function swipe(dir) {
   }, 250);
 }
 
+// --------------------
+// UI FX
+// --------------------
 function resetCard() {
   card.style.transform = "translateX(0) rotate(0)";
   hideBadges();
 }
 
-// --------------------
-// ANIMATION
-// --------------------
 function animateIn() {
   card.style.transition = "none";
   card.style.transform = "scale(0.85) translateY(40px)";
@@ -381,7 +358,7 @@ function animateIn() {
   setTimeout(() => {
     card.style.transition =
       "all 0.4s cubic-bezier(.22,1,.36,1)";
-    card.style.transform = "scale(1) translateY(0)";
+    card.style.transform = "scale(1)";
     card.style.opacity = "1";
   }, 10);
 }
@@ -417,42 +394,3 @@ function vibrate() {
 function getX(e) {
   return e.touches ? e.touches[0].clientX : e.clientX;
 }
-
-// --------------------
-// BUTTONS
-// --------------------
-document.getElementById("accept").onclick = () => swipe(1);
-document.getElementById("skip").onclick = () => swipe(-1);
-
-document.getElementById("shot").onclick = () => {
-  resolveAction("shot");
-  nextTurn();
-};
-
-// --------------------
-// SELECTS
-// --------------------
-document.getElementById("game").onchange = async (e) => {
-  currentGame = e.target.value;
-  await loadData();
-};
-
-document.getElementById("level").onchange = (e) => {
-  currentLevel = e.target.value;
-  usedQuestions = [];
-  showCard();
-};
-
-function $(id) {
-  return document.getElementById(id);
-}
-
-const el = $("score");
-if (el) el.innerText = "...";
-
-document.addEventListener("DOMContentLoaded", init);
-
-function get(id) {
-  return document.getElementById(id);
-}
-
