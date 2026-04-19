@@ -1,7 +1,10 @@
 :root {
-  --bg: #0f0f14;
-  --card: rgba(255,255,255,0.06);
-  --card-strong: rgba(255,255,255,0.1);
+  --bg: #0b0c12;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-strong: rgba(255, 255, 255, 0.12);
+
+  --text: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.6);
 
   --primary: #ff6b00;
   --danger: #ff1744;
@@ -10,219 +13,330 @@
   --radius: 18px;
   --radius-lg: 28px;
 
-  --shadow: 0 10px 30px rgba(0,0,0,0.4);
+  --shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+  --blur: blur(18px);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  background: radial-gradient(circle at 20% 0%, #1a1a2e, var(--bg));
+  color: var(--text);
+
   display: flex;
   justify-content: center;
-  background: radial-gradient(circle at 20% 0%, #1a1a2e, var(--bg));
+
+  height: 100vh;
+  overflow: hidden;
 }
 
+/* -------------------- */
+/* APP CONTAINER */
+/* -------------------- */
 .app {
   width: 100%;
-  max-width: 420px;
+  max-width: 430px;
   height: 100vh;
-  overflow: hidden; 
+
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 12px;
-  }
 
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-  font-weight: 600;
-  font-size: 20px;
-  letter-spacing: 0.5px;
-  margin: 10px 0 16px;
-  opacity: 0.95;
+  padding: 14px;
+  gap: 12px;
 }
 
-/* TOP BAR */
-.top-bar {
+/* -------------------- */
+/* HEADER */
+/* -------------------- */
+.header {
+  text-align: center;
+}
+
+.header h1 {
+  margin: 8px 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.hud {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
-  opacity: 0.9;
+
+  font-size: 13px;
+  color: var(--muted);
+
+  padding: 6px 10px;
 }
 
-/* CONTROLES */
+/* -------------------- */
+/* SETUP */
+/* -------------------- */
+.setup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.setup-card {
+  width: 100%;
+  padding: 20px;
+
+  border-radius: var(--radius-lg);
+
+  background: var(--panel);
+  backdrop-filter: var(--blur);
+
+  box-shadow: var(--shadow);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setup-card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+
+  color: white;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--primary);
+}
+
+/* -------------------- */
+/* PLAYERS */
+/* -------------------- */
+.players-list {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* -------------------- */
+/* BUTTONS GLOBAL */
+/* -------------------- */
+button {
+  padding: 12px;
+  border-radius: 14px;
+
+  border: none;
+  background: var(--panel);
+
+  color: white;
+  font-size: 16px;
+
+  transition: 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+button:hover {
+  background: var(--panel-strong);
+}
+
+button.primary {
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  font-weight: 600;
+}
+
+/* -------------------- */
+/* GAME AREA */
+/* -------------------- */
+.game {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* -------------------- */
+/* CONTROLS */
+/* -------------------- */
 .controls {
   display: flex;
   gap: 10px;
-  margin-bottom: 10px; /* 🔥 antes era muy grande */
 }
 
 select {
   flex: 1;
-  padding: 12px;
+
+  padding: 10px;
+
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.08);
-  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(255, 255, 255, 0.06);
   color: white;
-  backdrop-filter: blur(10px);
+
+  backdrop-filter: var(--blur);
 }
 
+/* -------------------- */
 /* SWIPE AREA */
+/* -------------------- */
 .swipe-container {
   position: relative;
   flex: 1;
-  min-height: 0;
 
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 
   overflow: visible;
-  z-index: 1;
-
-  padding-bottom: 110px; /* ✅ FIX */
-  padding-top: 20px;
 }
 
-.layer2 {
-  z-index: 1;
-}
-
-.layer3 {
-  z-index: 0;
-}
-
-.badge {
-  z-index: 5;   /* 🔥 siempre encima */
-}
-
-.buttons {
-  z-index: 10;  /* 🔥 encima de todo */
-}
-/* TARJETAS */
+/* -------------------- */
+/* CARD STACK EFFECT */
+/* -------------------- */
 .card {
   position: absolute;
+
   width: 100%;
-  background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-  height: auto;
-  max-height: calc(100% - 140px); /* 🔥 CLAVE */
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 28px;
-  padding: 24px;
+  max-height: calc(100% - 40px);
+
+  border-radius: var(--radius-lg);
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
   box-shadow: var(--shadow);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(20px);
-  overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  animation: pop 0.25s ease;
+
+  padding: 24px;
+
+  text-align: center;
+
+  transition: transform 0.25s cubic-bezier(.2,1,.2,1);
 }
 
-@keyframes pop {
-  from {
-    transform: scale(0.95);
-    opacity: 0.6;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-.card:active {
-  transform: scale(0.98);
-}
-
-/* STACK */
+/* BACK CARDS */
 .layer3 {
-  transform: scale(0.9) translateY(15px);
-  opacity: 0.3;
+  transform: scale(0.9) translateY(18px);
+  opacity: 0.25;
 }
 
 .layer2 {
-  transform: scale(0.95) translateY(8px);
-  opacity: 0.6;
+  transform: scale(0.95) translateY(10px);
+  opacity: 0.5;
 }
 
+/* MAIN CARD */
 .active {
-  z-index: 3;
+  z-index: 5;
   cursor: grab;
 }
 
-/* TEXTO */
 .card p {
+  font-size: 20px;
+  line-height: 1.4;
+
   max-height: 100%;
   overflow-y: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-right: 6px; /* evita corte visual del scroll */
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.4;
 }
 
+/* -------------------- */
 /* BADGES */
+/* -------------------- */
 .badge {
   position: absolute;
-  top: 20px;
+  top: 16px;
+
   padding: 8px 14px;
   border-radius: 14px;
+
   font-weight: bold;
+
   opacity: 0;
   transform: scale(0.8);
+
   transition: all 0.2s ease;
 }
 
 .like {
-  right: 20px;
-  background: #00e676;
+  right: 16px;
+  background: var(--success);
 }
 
 .skip {
-  left: 20px;
-  background: #ff1744;
+  left: 16px;
+  background: var(--danger);
 }
 
-/* BOTONES */
+/* -------------------- */
+/* FOOTER BUTTONS */
+/* -------------------- */
 .buttons {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
-  position: relative;
-  bottom: 10px;
+
   padding: 10px;
+
   border-radius: 20px;
-  background: rgba(20,20,30,0.7);
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+
+  background: rgba(20, 20, 30, 0.7);
+  backdrop-filter: var(--blur);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  box-shadow: var(--shadow);
 }
 
-button {
+.buttons button {
   flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.1);
-  color: white;
   font-size: 18px;
-  backdrop-filter: blur(10px);
-  transition: transform 0.15s ease, background 0.2s;
 }
 
-button:hover {
-  background: rgba(255,255,255,0.2);
-}
-
-button:active {
-  transform: scale(0.9);
-}
-
-button:nth-child(2) {
+.buttons button:nth-child(2) {
   background: linear-gradient(135deg, #ff9800, #ff5722);
-  box-shadow: 0 10px 25px rgba(255, 87, 34, 0.3);
-  transform: scale(1.05);
+}
+
+/* shot button */
+button.danger {
+  background: linear-gradient(135deg, #ff1744, #ff5252);
+}
+
+/* -------------------- */
+/* MOBILE TUNING */
+/* -------------------- */
+@media (max-height: 700px) {
+  .card p {
+    font-size: 18px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
 }
