@@ -1,17 +1,69 @@
 // --------------------
-// STATE
+// STATE (Game Engine)
+// --------------------
+const GameEngine = {
+  state: {
+    players: JSON.parse(localStorage.getItem("players")) || [],
+    scores: JSON.parse(localStorage.getItem("scores")) || {},
+    shots: Number(localStorage.getItem("shots")) || 0,
+    streak: 0,
+    currentIndex: Number(localStorage.getItem("turn")) || 0
+  },
+
+  addPlayer(name) {
+    this.state.players.push(name);
+    this.state.scores[name] = 0;
+    this.save();
+  },
+
+  addShot() {
+    this.state.shots++;
+    this.state.streak = 0;
+    this.save();
+  },
+
+  addPoint(player) {
+    if (!this.state.scores[player]) this.state.scores[player] = 0;
+    this.state.scores[player]++;
+    this.save();
+  },
+
+  nextPlayer() {
+    this.state.currentIndex =
+      (this.state.currentIndex + 1) % this.state.players.length;
+
+    this.save();
+  },
+
+  resetStreak() {
+    this.state.streak = 0;
+    this.save();
+  },
+
+  save() {
+    localStorage.setItem("players", JSON.stringify(this.state.players));
+    localStorage.setItem("scores", JSON.stringify(this.state.scores));
+    localStorage.setItem("shots", this.state.shots);
+    localStorage.setItem("turn", this.state.currentIndex);
+  },
+
+  currentPlayer() {
+    return this.state.players[this.state.currentIndex];
+  }
+};
+
+// --------------------
+// GAME CONFIG
 // --------------------
 let data = {};
 let currentGame = "verdad";
 let currentLevel = "suave";
-let scores = JSON.parse(localStorage.getItem("scores")) || {};
-let players = JSON.parse(localStorage.getItem("players")) || [];
-let shots = Number(localStorage.getItem("shots")) || 0;
-let streak = 0;
-let currentPlayerIndex = Number(localStorage.getItem("turn")) || 0;
 let usedQuestions = [];
+let skipTurnChange = false;
 
+// --------------------
 // DOM
+// --------------------
 const card = document.getElementById("card");
 const questionEl = document.getElementById("question");
 
@@ -22,9 +74,9 @@ init();
 
 function init() {
   renderPlayers();
-  document.getElementById("shots").innerText = "🍻 " + shots;
+  updateHUD();
 
-  if (players.length > 0) {
+  if (GameEngine.state.players.length > 0) {
     document.getElementById("setup").classList.add("hidden");
     document.getElementById("gameUI").classList.remove("hidden");
     startGame();
@@ -36,32 +88,30 @@ function init() {
 // --------------------
 document.getElementById("addPlayer").onclick = () => {
   const input = document.getElementById("playerInput");
-  if (!input.value) return;
+  if (!input.value.trim()) return;
 
-  players.push(input.value);
-  scores[input.value] = 0;
-  localStorage.setItem("scores", JSON.stringify(scores));
-  localStorage.setItem("players", JSON.stringify(players));
+  GameEngine.addPlayer(input.value.trim());
   input.value = "";
+
   renderPlayers();
+  updateHUD();
 };
 
 function renderPlayers() {
-  document.getElementById("playersList").innerText = players.join(", ");
+  document.getElementById("playersList").innerText =
+    GameEngine.state.players.join(", ");
 }
 
 document.getElementById("startGame").onclick = () => {
-  if (players.length === 0) return alert("Agrega jugadores");
+  if (GameEngine.state.players.length === 0) {
+    return alert("Agrega jugadores");
+  }
 
   document.getElementById("setup").classList.add("hidden");
   document.getElementById("gameUI").classList.remove("hidden");
+
   startGame();
 };
-
-async function startGame() {
-  await loadData();
-  updatePlayer();
-}
 
 // --------------------
 // DATA
@@ -74,12 +124,13 @@ async function loadData() {
     showCard();
   } catch (e) {
     questionEl.innerText = "Error cargando preguntas 😢";
-    console.error(e);
   }
 }
 
 function getRandomQuestion() {
   const preguntas = data[currentLevel];
+
+  if (!preguntas?.length) return "Sin preguntas disponibles";
 
   if (usedQuestions.length === preguntas.length) {
     usedQuestions = [];
@@ -94,98 +145,114 @@ function getRandomQuestion() {
   return q;
 }
 
-function addPoint(player) {
-  if (!scores[player]) scores[player] = 0;
-  scores[player] += 1;
-  localStorage.setItem("scores", JSON.stringify(scores));
-}
-
 // --------------------
 // FLOW
 // --------------------
-card.style.opacity = "0";
-setTimeout(() => {
-  nextTurn();
-  animateIn();
-}, 200);
+function startGame() {
+  loadData().then(() => {
+    updateUI();
+    animateIn();
+  });
+}
 
 function nextTurn() {
-  const currentPlayer = players[currentPlayerIndex];
-
-  addPoint(currentPlayer);
-  streak++;
-
-  document.getElementById("streak").innerText = "🔥 " + streak;
-
   if (!skipTurnChange) {
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    GameEngine.nextPlayer();
   }
 
   skipTurnChange = false;
+  GameEngine.state.streak++;
 
-  updatePlayer();
+  updateUI();
   showCard();
 }
 
-function showCard() {
-  let event = tensionEvent() || randomEvent();
+// --------------------
+// ACTION RESOLUTION (CLAVE)
+// --------------------
+function resolveAction(action) {
+  const player = GameEngine.currentPlayer();
 
-  if (event) {
-    questionEl.innerText = event;
-  } else {
-    questionEl.innerText = getRandomQuestion();
+  switch (action) {
+    case "accept":
+      GameEngine.addPoint(player);
+      break;
+
+    case "shot":
+      GameEngine.addShot();
+      break;
+
+    case "skip":
+      GameEngine.resetStreak();
+      break;
   }
+
+  updateHUD();
+}
+
+// --------------------
+// CARD
+// --------------------
+function showCard() {
+  const event = tensionEvent() || randomEvent();
+
+  questionEl.innerText = event || getRandomQuestion();
 
   resetCard();
   updateColor();
 }
-
-let skipTurnChange = false;
 
 function randomEvent() {
   const chance = Math.random();
 
   if (chance < 0.1) {
     skipTurnChange = true;
-    return "🔥 DOBLE TURNO (no cambias)";
+    return "🔥 DOBLE TURNO (no cambia)";
   }
-
   if (chance < 0.2) return "🍻 TODOS BEBEN";
   if (chance < 0.3) return "🎯 ELIGE A ALGUIEN PARA RETO";
   if (chance < 0.4) return "⚡ RESPONDE RÁPIDO O SHOT";
 
   return null;
 }
-function updatePlayer() {
-  const player = players[currentPlayerIndex];
-  document.getElementById("currentPlayer").innerText = "Turno: " + player;
-  document.getElementById("score").innerText = "⭐ " + scores[player];
-}
-
-function updateColor() {
-  if (currentLevel === "suave") {
-    card.style.background = "linear-gradient(135deg, #2e7d32, #66bb6a)";
-  }
-  if (currentLevel === "medio") {
-    card.style.background = "linear-gradient(135deg, #f9a825, #fdd835)";
-  }
-  if (currentLevel === "alto") {
-    card.style.background = "linear-gradient(135deg, #c62828, #ef5350)";
-  }
-}
 
 function tensionEvent() {
-  const chance = Math.random();
-
-  if (chance < 0.1) {
+  if (Math.random() < 0.08) {
     return "👀 EL GRUPO DECIDE: ¿acepta o shot?";
   }
-
   return null;
 }
 
 // --------------------
-// SWIPE FÍSICA
+// UI UPDATE
+// --------------------
+function updateUI() {
+  const player = GameEngine.currentPlayer();
+
+  document.getElementById("currentPlayer").innerText =
+    "Turno: " + player;
+
+  document.getElementById("score").innerText =
+    "⭐ " + (GameEngine.state.scores[player] || 0);
+
+  document.getElementById("shots").innerText =
+    "🍻 " + GameEngine.state.shots;
+
+  document.getElementById("streak").innerText =
+    "🔥 " + GameEngine.state.streak;
+}
+
+function updateHUD() {
+  document.getElementById("shots").innerText =
+    "🍻 " + GameEngine.state.shots;
+
+  const player = GameEngine.currentPlayer();
+  document.getElementById("score").innerText =
+    "⭐ " + (GameEngine.state.scores[player] || 0);
+}
+
+// --------------------
+// SWIPE
 // --------------------
 let startX = 0;
 let currentX = 0;
@@ -200,6 +267,7 @@ card.addEventListener("touchstart", start);
 function start(e) {
   isDragging = true;
   startX = getX(e);
+
   lastX = startX;
   lastTime = Date.now();
 
@@ -227,15 +295,15 @@ function move(e) {
 
 function handleMove(e) {
   currentX = getX(e);
-  let dx = currentX - startX;
+  const dx = currentX - startX;
 
-  let now = Date.now();
+  const now = Date.now();
   velocity = (currentX - lastX) / (now - lastTime);
 
   lastX = currentX;
   lastTime = now;
 
-  let rotate = dx * 0.06;
+  const rotate = dx * 0.06;
   card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
 
   updateBadges(dx);
@@ -246,9 +314,11 @@ function end() {
 
   card.style.transition = "transform 0.4s cubic-bezier(.22,1,.36,1)";
 
-  if (velocity > 0.5 || currentX - startX > 120) {
+  const dx = currentX - startX;
+
+  if (velocity > 0.5 || dx > 120) {
     swipe(1);
-  } else if (velocity < -0.5 || currentX - startX < -120) {
+  } else if (velocity < -0.5 || dx < -120) {
     swipe(-1);
   } else {
     resetCard();
@@ -261,19 +331,11 @@ function end() {
 function swipe(dir) {
   card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  if (dir === -1) {
-    shots++;
-    localStorage.setItem("shots", shots);
-  
-    document.getElementById("shots").innerText = "🍻 " + shots;
-    streak = 0;
-  }
-  
   if (dir === 1) {
-    // aceptación → recompensa visual
+    resolveAction("accept");
     card.style.boxShadow = "0 0 40px rgba(0,255,100,0.6)";
   } else {
-    // rechazo → rojo
+    resolveAction("shot");
     card.style.boxShadow = "0 0 40px rgba(255,0,80,0.6)";
   }
 
@@ -291,15 +353,16 @@ function resetCard() {
 }
 
 // --------------------
-// ANIMACIÓN ENTRADA
+// ANIMATION
 // --------------------
 function animateIn() {
   card.style.transition = "none";
-  card.style.transform = "scale(0.8) translateY(50px)";
+  card.style.transform = "scale(0.85) translateY(40px)";
   card.style.opacity = "0";
 
   setTimeout(() => {
-    card.style.transition = "all 0.4s cubic-bezier(.22,1,.36,1)";
+    card.style.transition =
+      "all 0.4s cubic-bezier(.22,1,.36,1)";
     card.style.transform = "scale(1) translateY(0)";
     card.style.opacity = "1";
   }, 10);
@@ -314,11 +377,9 @@ function updateBadges(dx) {
 
   if (dx > 0) {
     like.style.opacity = Math.min(dx / 100, 1);
-    like.style.transform = "scale(1)";
     skip.style.opacity = 0;
   } else {
     skip.style.opacity = Math.min(Math.abs(dx) / 100, 1);
-    skip.style.transform = "scale(1)";
     like.style.opacity = 0;
   }
 }
@@ -329,12 +390,10 @@ function hideBadges() {
 }
 
 // --------------------
-// VIBRACIÓN
+// UTILS
 // --------------------
 function vibrate() {
-  if (navigator.vibrate) {
-    navigator.vibrate(30);
-  }
+  if (navigator.vibrate) navigator.vibrate(30);
 }
 
 function getX(e) {
@@ -348,14 +407,7 @@ document.getElementById("accept").onclick = () => swipe(1);
 document.getElementById("skip").onclick = () => swipe(-1);
 
 document.getElementById("shot").onclick = () => {
-  shots++;
-  streak = 0;
-
-  localStorage.setItem("shots", shots);
-
-  document.getElementById("shots").innerText = "🍻 " + shots;
-  document.getElementById("streak").innerText = "🔥 0";
-
+  resolveAction("shot");
   nextTurn();
 };
 
@@ -372,7 +424,3 @@ document.getElementById("level").onchange = (e) => {
   usedQuestions = [];
   showCard();
 };
-
-document.getElementById("streak").innerText = "🔥 " + streak;
-
-localStorage.setItem("turn", currentPlayerIndex);
