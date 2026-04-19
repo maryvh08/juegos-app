@@ -70,7 +70,6 @@ const questionEl = document.getElementById("question");
 // --------------------
 // INIT
 // --------------------
-init();
 
 function init() {
   renderPlayers();
@@ -243,12 +242,15 @@ function updateUI() {
 }
 
 function updateHUD() {
-  document.getElementById("shots").innerText =
-    "🍻 " + GameEngine.state.shots;
-
   const player = GameEngine.currentPlayer();
-  document.getElementById("score").innerText =
-    "⭐ " + (GameEngine.state.scores[player] || 0);
+
+  const playerEl = document.getElementById("currentPlayer");
+  const shotsEl = document.getElementById("shots");
+  const streakEl = document.getElementById("streak");
+
+  if (playerEl) playerEl.innerText = "Turno: " + player;
+  if (shotsEl) shotsEl.innerText = "🍻 " + GameEngine.state.shots;
+  if (streakEl) streakEl.innerText = "🔥 " + GameEngine.state.streak;
 }
 
 // --------------------
@@ -424,3 +426,12 @@ document.getElementById("level").onchange = (e) => {
   usedQuestions = [];
   showCard();
 };
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+const el = $("score");
+if (el) el.innerText = "...";
+
+document.addEventListener("DOMContentLoaded", init);
