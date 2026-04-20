@@ -1,6 +1,18 @@
 // --------------------
 // STATE (Game Engine)
 // --------------------
+const gameSelect = document.getElementById("game");
+const levelSelect = document.getElementById("level");
+gameSelect.onchange = async () => {
+  currentGame = gameSelect.value;
+  await loadData();
+  showCard();
+};
+
+levelSelect.onchange = () => {
+  currentLevel = levelSelect.value;
+  showCard();
+};
 const GameEngine = {
   state: {
     players: JSON.parse(localStorage.getItem("players")) || [],
@@ -78,11 +90,13 @@ function init() {
   renderPlayers();
 
   const setup = document.getElementById("setup");
-  const gameSelector = document.getElementById("gameSelector");
+  const gameUI = document.getElementById("gameUI");
 
   if (GameEngine.state.players.length > 0) {
     if (setup) setup.classList.add("hidden");
-    if (gameSelector) gameSelector.classList.remove("hidden");
+    if (gameUI) gameUI.classList.remove("hidden");
+
+    startGame();
   }
 }
 
@@ -110,34 +124,10 @@ document.getElementById("startGame").onclick = () => {
   }
 
   document.getElementById("setup").classList.add("hidden");
-  document.getElementById("gameSelector").classList.remove("hidden");
+  document.getElementById("gameUI").classList.remove("hidden");
+
+  startGame();
 };
-
-// --------------------
-// SELECT GAME
-// --------------------
-document.querySelectorAll(".game-card").forEach(cardEl => {
-  cardEl.onclick = () => {
-    currentGame = cardEl.dataset.game;
-
-    document.getElementById("gameSelector").classList.add("hidden");
-    document.getElementById("levelSelector").classList.remove("hidden");
-  };
-});
-
-// --------------------
-// SELECT LEVEL
-// --------------------
-document.querySelectorAll(".level-card").forEach(cardEl => {
-  cardEl.onclick = () => {
-    currentLevel = cardEl.dataset.level;
-
-    document.getElementById("levelSelector").classList.add("hidden");
-    document.getElementById("gameUI").classList.remove("hidden");
-
-    startGame();
-  };
-});
 
 // --------------------
 // DATA
@@ -159,6 +149,9 @@ async function loadData() {
 // FLOW
 // --------------------
 async function startGame() {
+  currentGame = gameSelect.value;
+  currentLevel = levelSelect.value;
+
   await loadData();
   showCard();
   updateUI();
