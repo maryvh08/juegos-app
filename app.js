@@ -2,9 +2,7 @@
 // STATE (Game Engine)
 // --------------------
 const sounds = {
-  accept: new Audio("sounds/accept.mp3"),
-  reject: new Audio("sounds/reject.mp3"),
-  shot: new Audio("sounds/shot.mp3")
+  shot: new Audio("cheersglass.mp3")
 };
 
 const GameEngine = {
