@@ -71,45 +71,51 @@
     </div>
 
     <!-- SWIPE AREA -->
-    <section class="swipe-container">
-
-      <!-- BACK CARDS (depth effect) -->
-      <div class="card layer3"></div>
-      <div class="card layer2"></div>
-
-      <!-- MAIN CARD -->
-      <div class="card active" id="card">
-
-        <p id="question">
-          Cargando...
-        </p>
-
-        <!-- BADGES -->
-        <div class="badge like" id="likeBadge">✔</div>
-        <div class="badge skip" id="skipBadge">✖</div>
-
+    <section id="gameSelector" class="selector hidden">
+      <h2>Elige el juego</h2>
+    
+      <div class="cards">
+        <div class="select-card verdad" data-game="verdad">😇 Verdad</div>
+        <div class="select-card reto" data-game="reto">🔥 Reto</div>
+        <div class="select-card nunca" data-game="nunca">🍻 Nunca</div>
       </div>
-
     </section>
-
-    <!-- ACTION BUTTONS -->
-    <footer class="buttons">
-
-      <button id="skip" aria-label="Rechazar">
-        ❌ Rechazar
-      </button>
-
-      <button id="shot" aria-label="Tomar shot" class="danger">
-        🍻
-      </button>
-
-      <button id="accept" aria-label="Aceptar">
-        ✅ Aceptar
-      </button>
-
-    </footer>
-
-  </main>
+    
+    <!-- LEVEL SELECT -->
+    <section id="levelSelector" class="selector hidden">
+      <h2>Elige nivel</h2>
+    
+      <div class="cards">
+        <div class="select-card suave" data-level="suave">🟢 Suave</div>
+        <div class="select-card medio" data-level="medio">🟡 Medio</div>
+        <div class="select-card alto" data-level="alto">🔴 Alto</div>
+      </div>
+    </section>
+    
+    <!-- GAME -->
+    <main class="game hidden" id="gameUI">
+    
+      <section class="swipe-container">
+    
+        <div class="card layer3"></div>
+        <div class="card layer2"></div>
+    
+        <div class="card active" id="card">
+          <p id="question">Cargando...</p>
+    
+          <div class="badge like" id="likeBadge">✔</div>
+          <div class="badge skip" id="skipBadge">✖</div>
+        </div>
+    
+      </section>
+    
+      <footer class="buttons">
+        <button id="skip">❌</button>
+        <button id="shot">🍻</button>
+        <button id="accept">✅</button>
+      </footer>
+    
+    </main>}
 
 </div>
 
