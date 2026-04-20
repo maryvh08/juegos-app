@@ -207,13 +207,27 @@ function showCard() {
 function updateUI() {
   const player = GameEngine.currentPlayer();
 
-  document.getElementById("currentPlayer").innerText = "Turno: " + player;
-  document.getElementById("shots").innerText = "🍻 " + GameEngine.state.shots;
-  document.getElementById("streak").innerText = "🔥 " + GameEngine.state.streak;
-  document.getElementById("score").innerText =
-    "⭐ " + (GameEngine.state.scores[player] || 0);
-}
+  const currentPlayerEl = document.getElementById("currentPlayer");
+  const shotsEl = document.getElementById("shots");
+  const streakEl = document.getElementById("streak");
+  const scoreEl = document.getElementById("score");
 
+  if (currentPlayerEl) {
+    currentPlayerEl.innerText = "Turno: " + player;
+  }
+
+  if (shotsEl) {
+    shotsEl.innerText = "🍻 " + GameEngine.state.shots;
+  }
+
+  if (streakEl) {
+    streakEl.innerText = "🔥 " + GameEngine.state.streak;
+  }
+
+  if (scoreEl) {
+    scoreEl.innerText = "⭐ " + (GameEngine.state.scores[player] || 0);
+  }
+}
 // --------------------
 // COLOR
 // --------------------
