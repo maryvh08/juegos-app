@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Party Swipe 🔥</title>
+  <title>🔥 Party Swipe</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -21,101 +20,75 @@
       <div id="currentPlayer">Turno: -</div>
       <div id="shots">🍻 0</div>
       <div id="streak">🔥 0</div>
+      <div id="score">⭐ 0</div>
     </div>
   </header>
 
   <!-- SETUP -->
   <section class="setup" id="setup">
-
     <div class="card setup-card">
 
       <h2>👥 Jugadores</h2>
 
-      <input
-        id="playerInput"
-        type="text"
-        placeholder="Nombre del jugador"
-        autocomplete="off"
-      />
+      <input id="playerInput" type="text" placeholder="Nombre del jugador">
 
-      <button id="addPlayer">Agregar jugador</button>
+      <button id="addPlayer">Agregar</button>
 
       <div id="playersList" class="players-list"></div>
 
       <button id="startGame" class="primary">
-        🚀 Iniciar juego
+        🚀 Empezar
       </button>
 
     </div>
+  </section>
 
+  <!-- SELECT GAME -->
+  <section id="gameSelector" class="selector hidden">
+    <h2>🎴 Elige el juego</h2>
+
+    <div class="cards">
+      <div class="select-card verdad" data-game="verdad">😇 Verdad</div>
+      <div class="select-card reto" data-game="reto">🔥 Reto</div>
+      <div class="select-card nunca" data-game="nunca">🍻 Nunca</div>
+    </div>
+  </section>
+
+  <!-- SELECT LEVEL -->
+  <section id="levelSelector" class="selector hidden">
+    <h2>🎚️ Nivel</h2>
+
+    <div class="cards">
+      <div class="select-card suave" data-level="suave">🟢 Suave</div>
+      <div class="select-card medio" data-level="medio">🟡 Medio</div>
+      <div class="select-card alto" data-level="alto">🔴 Alto</div>
+    </div>
   </section>
 
   <!-- GAME -->
   <main class="game hidden" id="gameUI">
 
-    <!-- CONTROLES -->
-    <div class="controls">
+    <section class="swipe-container">
 
-      <select id="game">
-        <option value="verdad">Verdad</option>
-        <option value="reto">Reto</option>
-        <option value="nunca">Nunca</option>
-      </select>
+      <div class="card layer3"></div>
+      <div class="card layer2"></div>
 
-      <select id="level">
-        <option value="suave">Suave 😇</option>
-        <option value="medio">Medio 😏</option>
-        <option value="alto">Alto 🔥</option>
-      </select>
+      <div class="card active" id="card">
+        <p id="question">Cargando...</p>
 
-    </div>
-
-    <!-- SWIPE AREA -->
-    <section id="gameSelector" class="selector hidden">
-      <h2>Elige el juego</h2>
-    
-      <div class="cards">
-        <div class="select-card verdad" data-game="verdad">😇 Verdad</div>
-        <div class="select-card reto" data-game="reto">🔥 Reto</div>
-        <div class="select-card nunca" data-game="nunca">🍻 Nunca</div>
+        <div class="badge like" id="likeBadge">✔</div>
+        <div class="badge skip" id="skipBadge">✖</div>
       </div>
+
     </section>
-    
-    <!-- LEVEL SELECT -->
-    <section id="levelSelector" class="selector hidden">
-      <h2>Elige nivel</h2>
-    
-      <div class="cards">
-        <div class="select-card suave" data-level="suave">🟢 Suave</div>
-        <div class="select-card medio" data-level="medio">🟡 Medio</div>
-        <div class="select-card alto" data-level="alto">🔴 Alto</div>
-      </div>
-    </section>
-    
-    <!-- GAME -->
-    <main class="game hidden" id="gameUI">
-    
-      <section class="swipe-container">
-    
-        <div class="card layer3"></div>
-        <div class="card layer2"></div>
-    
-        <div class="card active" id="card">
-          <p id="question">Cargando...</p>
-    
-          <div class="badge like" id="likeBadge">✔</div>
-          <div class="badge skip" id="skipBadge">✖</div>
-        </div>
-    
-      </section>
-    
-      <footer class="buttons">
-        <button id="skip">❌</button>
-        <button id="shot">🍻</button>
-        <button id="accept">✅</button>
-      </footer>
-    
-    </main>}
+
+    <footer class="buttons">
+      <button id="skip">❌</button>
+      <button id="shot" class="danger">🍻</button>
+      <button id="accept">✅</button>
+    </footer>
+
+  </main>
 
 </div>
 
