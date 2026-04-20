@@ -76,12 +76,10 @@ document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   renderPlayers();
-  updateUI();
 
   if (GameEngine.state.players.length > 0) {
     document.getElementById("setup").classList.add("hidden");
-    document.getElementById("gameUI").classList.remove("hidden");
-    startGame();
+    document.getElementById("gameSelector").classList.remove("hidden");
   }
 }
 
@@ -96,7 +94,6 @@ document.getElementById("addPlayer").onclick = () => {
   input.value = "";
 
   renderPlayers();
-  updateUI();
 };
 
 function renderPlayers() {
@@ -113,18 +110,24 @@ document.getElementById("startGame").onclick = () => {
   document.getElementById("gameSelector").classList.remove("hidden");
 };
 
-document.querySelectorAll(".game-card").forEach(card => {
-  card.onclick = () => {
-    currentGame = card.dataset.game;
+// --------------------
+// SELECT GAME
+// --------------------
+document.querySelectorAll(".game-card").forEach(cardEl => {
+  cardEl.onclick = () => {
+    currentGame = cardEl.dataset.game;
 
     document.getElementById("gameSelector").classList.add("hidden");
     document.getElementById("levelSelector").classList.remove("hidden");
   };
 });
 
-document.querySelectorAll(".level-card").forEach(card => {
-  card.onclick = () => {
-    currentLevel = card.dataset.level;
+// --------------------
+// SELECT LEVEL
+// --------------------
+document.querySelectorAll(".level-card").forEach(cardEl => {
+  cardEl.onclick = () => {
+    currentLevel = cardEl.dataset.level;
 
     document.getElementById("levelSelector").classList.add("hidden");
     document.getElementById("gameUI").classList.remove("hidden");
@@ -154,6 +157,7 @@ async function loadData() {
 // --------------------
 async function startGame() {
   await loadData();
+  showCard();
   updateUI();
   animateIn();
 }
@@ -166,7 +170,7 @@ function nextTurn() {
   skipTurnChange = false;
   GameEngine.state.streak++;
 
-  showCard();   // 👈 solo cambia pregunta
+  showCard();
   updateUI();
 }
 
@@ -226,9 +230,11 @@ function updateUI() {
   }
 
   if (scoreEl) {
-    scoreEl.innerText = "⭐ " + (GameEngine.state.scores[player] || 0);
+    scoreEl.innerText =
+      "⭐ " + (GameEngine.state.scores[player] || 0);
   }
 }
+
 // --------------------
 // COLOR
 // --------------------
@@ -243,7 +249,7 @@ function updateColor() {
 }
 
 // --------------------
-// SWIPE (FIXED)
+// SWIPE
 // --------------------
 let startX = 0;
 let currentX = 0;
@@ -312,8 +318,11 @@ function swipe(dir) {
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  if (dir === 1) GameEngine.addPoint(GameEngine.currentPlayer());
-  else GameEngine.addShot();
+  if (dir === 1) {
+    GameEngine.addPoint(GameEngine.currentPlayer());
+  } else {
+    GameEngine.addShot();
+  }
 
   vibrate();
 
@@ -351,6 +360,8 @@ function updateBadges(dx) {
   const like = document.getElementById("likeBadge");
   const skip = document.getElementById("skipBadge");
 
+  if (!like || !skip) return;
+
   if (dx > 0) {
     like.style.opacity = Math.min(dx / 100, 1);
     skip.style.opacity = 0;
@@ -361,8 +372,11 @@ function updateBadges(dx) {
 }
 
 function hideBadges() {
-  document.getElementById("likeBadge").style.opacity = 0;
-  document.getElementById("skipBadge").style.opacity = 0;
+  const like = document.getElementById("likeBadge");
+  const skip = document.getElementById("skipBadge");
+
+  if (like) like.style.opacity = 0;
+  if (skip) skip.style.opacity = 0;
 }
 
 // --------------------
