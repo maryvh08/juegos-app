@@ -1,18 +1,6 @@
 // --------------------
 // STATE (Game Engine)
 // --------------------
-const gameSelect = document.getElementById("game");
-const levelSelect = document.getElementById("level");
-gameSelect.onchange = async () => {
-  currentGame = gameSelect.value;
-  await loadData();
-  showCard();
-};
-
-levelSelect.onchange = () => {
-  currentLevel = levelSelect.value;
-  showCard();
-};
 const GameEngine = {
   state: {
     players: JSON.parse(localStorage.getItem("players")) || [],
@@ -88,16 +76,6 @@ document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   renderPlayers();
-
-  const setup = document.getElementById("setup");
-  const gameUI = document.getElementById("gameUI");
-
-  if (GameEngine.state.players.length > 0) {
-    if (setup) setup.classList.add("hidden");
-    if (gameUI) gameUI.classList.remove("hidden");
-
-    startGame();
-  }
 }
 
 // --------------------
@@ -114,20 +92,49 @@ document.getElementById("addPlayer").onclick = () => {
 };
 
 function renderPlayers() {
-  document.getElementById("playersList").innerText =
-    GameEngine.state.players.join(", ");
+  const list = document.getElementById("playersList");
+  if (list) {
+    list.innerText = GameEngine.state.players.join(", ");
+  }
 }
 
+// --------------------
+// START FLOW
+// --------------------
 document.getElementById("startGame").onclick = () => {
   if (!GameEngine.state.players.length) {
     return alert("Agrega jugadores");
   }
 
   document.getElementById("setup").classList.add("hidden");
-  document.getElementById("gameUI").classList.remove("hidden");
-
-  startGame();
+  document.getElementById("gameSelector").classList.remove("hidden");
 };
+
+// --------------------
+// SELECT GAME
+// --------------------
+document.querySelectorAll("[data-game]").forEach(el => {
+  el.onclick = () => {
+    currentGame = el.dataset.game;
+
+    document.getElementById("gameSelector").classList.add("hidden");
+    document.getElementById("levelSelector").classList.remove("hidden");
+  };
+});
+
+// --------------------
+// SELECT LEVEL
+// --------------------
+document.querySelectorAll("[data-level]").forEach(el => {
+  el.onclick = () => {
+    currentLevel = el.dataset.level;
+
+    document.getElementById("levelSelector").classList.add("hidden");
+    document.getElementById("gameUI").classList.remove("hidden");
+
+    startGame();
+  };
+});
 
 // --------------------
 // DATA
@@ -141,17 +148,16 @@ async function loadData() {
     usedQuestions = [];
   } catch (e) {
     console.error(e);
-    questionEl.innerText = "Error cargando preguntas 😢";
+    if (questionEl) {
+      questionEl.innerText = "Error cargando preguntas 😢";
+    }
   }
 }
 
 // --------------------
-// FLOW
+// GAME FLOW
 // --------------------
 async function startGame() {
-  currentGame = gameSelect.value;
-  currentLevel = levelSelect.value;
-
   await loadData();
   showCard();
   updateUI();
@@ -196,7 +202,10 @@ function getRandomQuestion() {
 // --------------------
 function showCard() {
   const question = getRandomQuestion();
-  questionEl.innerText = question;
+
+  if (questionEl) {
+    questionEl.innerText = question;
+  }
 
   resetCard();
   updateColor();
@@ -235,6 +244,8 @@ function updateUI() {
 // COLOR
 // --------------------
 function updateColor() {
+  if (!card) return;
+
   const colors = {
     suave: "linear-gradient(135deg, #2e7d32, #66bb6a)",
     medio: "linear-gradient(135deg, #f9a825, #fdd835)",
@@ -254,8 +265,10 @@ let isDragging = false;
 let lastX = 0;
 let lastTime = 0;
 
-card.addEventListener("mousedown", start);
-card.addEventListener("touchstart", start);
+if (card) {
+  card.addEventListener("mousedown", start);
+  card.addEventListener("touchstart", start);
+}
 
 function start(e) {
   if (!e.target.closest("#card")) return;
@@ -308,7 +321,7 @@ function end() {
 }
 
 // --------------------
-// SWIPE RESULT
+// ACTIONS
 // --------------------
 function swipe(dir) {
   card.style.transform =
@@ -329,21 +342,23 @@ function swipe(dir) {
 }
 
 // --------------------
-// CARD FX
+// FX
 // --------------------
 function resetCard() {
+  if (!card) return;
   card.style.transform = "translateX(0) rotate(0)";
   hideBadges();
 }
 
 function animateIn() {
+  if (!card) return;
+
   card.style.transition = "none";
   card.style.transform = "scale(0.85) translateY(40px)";
   card.style.opacity = "0";
 
   setTimeout(() => {
-    card.style.transition =
-      "all 0.4s cubic-bezier(.22,1,.36,1)";
+    card.style.transition = "all 0.4s cubic-bezier(.22,1,.36,1)";
     card.style.transform = "scale(1)";
     card.style.opacity = "1";
   }, 10);
@@ -389,10 +404,10 @@ function getX(e) {
 // --------------------
 // BUTTONS
 // --------------------
-document.getElementById("accept").onclick = () => swipe(1);
-document.getElementById("skip").onclick = () => swipe(-1);
+document.getElementById("accept")?.addEventListener("click", () => swipe(1));
+document.getElementById("skip")?.addEventListener("click", () => swipe(-1));
 
-document.getElementById("shot").onclick = () => {
+document.getElementById("shot")?.addEventListener("click", () => {
   GameEngine.addShot();
   nextTurn();
-};
+});
