@@ -77,9 +77,12 @@ document.addEventListener("DOMContentLoaded", init);
 function init() {
   renderPlayers();
 
+  const setup = document.getElementById("setup");
+  const gameSelector = document.getElementById("gameSelector");
+
   if (GameEngine.state.players.length > 0) {
-    document.getElementById("setup").classList.add("hidden");
-    document.getElementById("gameSelector").classList.remove("hidden");
+    if (setup) setup.classList.add("hidden");
+    if (gameSelector) gameSelector.classList.remove("hidden");
   }
 }
 
