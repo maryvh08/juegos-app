@@ -58,11 +58,8 @@ const GameEngine = {
 // CONFIG
 // --------------------
 let data = {};
-let currentGame = "verdad";
-const games = ["verdad", "reto", "nunca"];
-let gameIndex = 0;
-
-let currentLevel = "suave";
+let currentGame = null;
+let currentLevel = null;
 let usedQuestions = [];
 let skipTurnChange = false;
 
@@ -113,18 +110,28 @@ document.getElementById("startGame").onclick = () => {
   }
 
   document.getElementById("setup").classList.add("hidden");
-  document.getElementById("gameUI").classList.remove("hidden");
-
-  startGame();
+  document.getElementById("gameSelector").classList.remove("hidden");
 };
 
-// --------------------
-// GAME SWITCH
-// --------------------
-function nextGame() {
-  gameIndex = (gameIndex + 1) % games.length;
-  currentGame = games[gameIndex];
-}
+document.querySelectorAll(".game-card").forEach(card => {
+  card.onclick = () => {
+    currentGame = card.dataset.game;
+
+    document.getElementById("gameSelector").classList.add("hidden");
+    document.getElementById("levelSelector").classList.remove("hidden");
+  };
+});
+
+document.querySelectorAll(".level-card").forEach(card => {
+  card.onclick = () => {
+    currentLevel = card.dataset.level;
+
+    document.getElementById("levelSelector").classList.add("hidden");
+    document.getElementById("gameUI").classList.remove("hidden");
+
+    startGame();
+  };
+});
 
 // --------------------
 // DATA
@@ -151,13 +158,6 @@ async function startGame() {
   animateIn();
 }
 
-async function changeGame() {
-  nextGame();
-  await loadData();
-  showCard();
-  updateUI();
-}
-
 function nextTurn() {
   if (!skipTurnChange) {
     GameEngine.nextPlayer();
@@ -166,7 +166,8 @@ function nextTurn() {
   skipTurnChange = false;
   GameEngine.state.streak++;
 
-  changeGame();
+  showCard();   // 👈 solo cambia pregunta
+  updateUI();
 }
 
 // --------------------
