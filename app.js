@@ -1,6 +1,12 @@
 // --------------------
 // STATE (Game Engine)
 // --------------------
+const sounds = {
+  accept: new Audio("sounds/accept.mp3"),
+  reject: new Audio("sounds/reject.mp3"),
+  shot: new Audio("sounds/shot.mp3")
+};
+
 const GameEngine = {
   state: {
     players: JSON.parse(localStorage.getItem("players")) || [],
@@ -76,6 +82,18 @@ document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   renderPlayers();
+  const savedGame = localStorage.getItem("currentGame");
+  const savedLevel = localStorage.getItem("currentLevel");
+  
+  if (savedGame && savedLevel) {
+    currentGame = savedGame;
+    currentLevel = savedLevel;
+  
+    document.getElementById("setup").classList.add("hidden");
+    document.getElementById("gameUI").classList.remove("hidden");
+  
+    startGame();
+  }
 }
 
 // --------------------
@@ -162,6 +180,8 @@ async function startGame() {
   showCard();
   updateUI();
   animateIn();
+  localStorage.setItem("currentGame", currentGame);
+  localStorage.setItem("currentLevel", currentLevel);
 }
 
 function nextTurn() {
@@ -201,14 +221,40 @@ function getRandomQuestion() {
 // CARD
 // --------------------
 function showCard() {
-  const question = getRandomQuestion();
+  const container = document.querySelector(".swipe-container");
 
-  if (questionEl) {
-    questionEl.innerText = question;
+  // eliminar cartas viejas
+  container.querySelectorAll(".dynamic-card").forEach(c => c.remove());
+
+  // crear 3 cartas (stack)
+  for (let i = 2; i >= 0; i--) {
+    const newCard = document.createElement("div");
+    newCard.className = "card dynamic-card";
+
+    if (i === 0) {
+      newCard.id = "card"; // activa
+      newCard.innerHTML = `
+        <p>${getRandomQuestion()}</p>
+        <div class="badge like" id="likeBadge">✔</div>
+        <div class="badge skip" id="skipBadge">✖</div>
+      `;
+    }
+
+    newCard.style.transform = `scale(${1 - i * 0.05}) translateY(${i * 10}px)`;
+    newCard.style.zIndex = 10 - i;
+
+    container.appendChild(newCard);
   }
 
-  resetCard();
-  updateColor();
+  bindCard(); // 👈 importante
+}
+
+function bindCard() {
+  const newCard = document.getElementById("card");
+  if (!newCard) return;
+
+  newCard.addEventListener("mousedown", start);
+  newCard.addEventListener("touchstart", start);
 }
 
 // --------------------
@@ -294,7 +340,7 @@ function move(e) {
   const dx = currentX - startX;
 
   const now = Date.now();
-  velocity = (currentX - lastX) / (now - lastTime);
+  velocity = 0.8 * velocity + 0.2 * ((currentX - lastX) / (now - lastTime));
 
   lastX = currentX;
   lastTime = now;
@@ -329,8 +375,11 @@ function swipe(dir) {
 
   if (dir === 1) {
     GameEngine.addPoint(GameEngine.currentPlayer());
+    sounds.accept.play();
   } else {
     GameEngine.addShot();
+    sounds.reject.play();
+    sounds.shot.play();
   }
 
   vibrate();
@@ -411,3 +460,8 @@ document.getElementById("shot")?.addEventListener("click", () => {
   GameEngine.addShot();
   nextTurn();
 });
+
+document.getElementById("backMenu").onclick = () => {
+  document.getElementById("gameUI").classList.add("hidden");
+  document.getElementById("gameSelector").classList.remove("hidden");
+};
