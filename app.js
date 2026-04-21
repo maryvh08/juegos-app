@@ -45,6 +45,24 @@ function isPrefieres() {
 // --------------------
 document.addEventListener("DOMContentLoaded", init);
 
+function renderPlayers() {
+  const list = document.getElementById("playersList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  GameEngine.state.players.forEach((name, index) => {
+    const card = document.createElement("div");
+    card.className = "player-card";
+
+    card.innerHTML = `
+      <span>${name}</span>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
 function init() {
   renderPlayers();
 
