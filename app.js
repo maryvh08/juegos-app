@@ -273,10 +273,10 @@ function nextTurn() {
 
   GameEngine.state.streak++;
 
-  // limpiar UI SIEMPRE
-  hideAllGameUIs();
+  document.getElementById("prefSelector")?.classList.add("hidden");
+  document.getElementById("modeSelector")?.classList.add("hidden");
 
-  // flujo correcto
+  // 👉 flujo correcto
   if (currentGame === "que_prefieres") {
     showPrefieres();
     return;
@@ -284,6 +284,7 @@ function nextTurn() {
 
   if (currentGame === "verdad_reto") {
     document.getElementById("modeSelector").classList.remove("hidden");
+    document.querySelector(".swipe-container").classList.add("hidden");
     return;
   }
 
@@ -371,6 +372,8 @@ function showCard() {
 
   container.querySelectorAll(".dynamic-card").forEach(c => c.remove());
 
+  container.classList.remove("hidden"); // 👈 IMPORTANTE
+
   for (let i = 2; i >= 0; i--) {
     const newCard = document.createElement("div");
     newCard.className = "card dynamic-card";
@@ -380,24 +383,7 @@ function showCard() {
 
       const q = getRandomQuestion();
 
-      // 🔥 modo ¿Qué prefieres?
-      if (isPrefieres() && typeof q === "object") {
-
-        const opcion1 = q.opcion1 || "Opción 1";
-        const opcion2 = q.opcion2 || "Opción 2";
-
-        newCard.innerHTML = `
-          <div class="prefieres">
-            <div class="option left">👈 ${opcion2}</div>
-            <div class="divider">VS</div>
-            <div class="option right">${opcion1} 👉</div>
-          </div>
-        `;
-
-      } else {
-        // 🎴 modo normal
-        newCard.innerHTML = `<p>${q}</p>`;
-      }
+      newCard.innerHTML = `<p>${typeof q === "object" ? q.opcion1 || q : q}</p>`;
     }
 
     newCard.style.transform = `scale(${1 - i * 0.05}) translateY(${i * 10}px)`;
@@ -548,20 +534,15 @@ function swipe(dir) {
   const card = getCard();
   if (!card) return;
 
-  // 👉 detectar elección
-  if (isPrefieres()) {
-    const choice = dir === 1 ? "opcion1" : "opcion2";
-    console.log("Elegido:", choice);
-  }
-
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
   vibrate();
 
   setTimeout(() => {
-    nextTurn();
-    animateIn();
+    nextTurn();        // 👈 mantiene flujo
+    showCard();       // 👈 REGENERA carta SIEMPRE
+    animateIn();      // 👈 anima nueva carta
   }, 250);
 }
 
