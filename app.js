@@ -446,3 +446,40 @@ document.getElementById("backHome").onclick = () => {
   currentGame = null;
   currentLevel = null;
 };
+
+document.getElementById("resetAll").onclick = () => {
+
+  const ok = confirm("¿Seguro que quieres borrar TODO?");
+
+  if (!ok) return;
+
+  // 🧹 limpiar localStorage
+  localStorage.removeItem("players");
+  localStorage.removeItem("scores");
+  localStorage.removeItem("shots");
+  localStorage.removeItem("turn");
+  localStorage.removeItem("currentGame");
+  localStorage.removeItem("currentLevel");
+
+  // 🧠 reset estado en memoria
+  GameEngine.state.players = [];
+  GameEngine.state.scores = {};
+  GameEngine.state.shots = 0;
+  GameEngine.state.streak = 0;
+  GameEngine.state.currentIndex = 0;
+
+  currentGame = null;
+  currentLevel = null;
+  usedQuestions = [];
+
+  // 🔄 volver a pantalla inicial
+  document.getElementById("gameUI").classList.add("hidden");
+  document.getElementById("gameSelector").classList.add("hidden");
+  document.getElementById("levelSelector").classList.add("hidden");
+
+  document.getElementById("setup").classList.remove("hidden");
+
+  // 🧼 limpiar UI
+  renderPlayers();
+  updateUI();
+};
