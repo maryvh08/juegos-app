@@ -447,12 +447,21 @@ button:hover {
   flex-direction: column;
   gap: 20px;
   font-size: 18px;
+  align-items: stretch;
 }
 
 .option {
   padding: 16px;
   border-radius: 16px;
   background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 .left {
@@ -467,6 +476,7 @@ button:hover {
   text-align: center;
   font-weight: bold;
   opacity: 0.6;
+  letter-spacing: 2px;
 }
 
 .pref1 {
@@ -479,9 +489,10 @@ button:hover {
 
 /* texto más limpio */
 .mode {
-  padding: 16px;
-  font-size: 16px;
+  padding: 12px;
+  font-size: 15px;
   text-align: center;
+  opacity: 0.8;
 }
 /* =========================
    UTILITIES
