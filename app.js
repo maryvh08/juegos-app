@@ -246,6 +246,23 @@ async function startGame() {
   localStorage.setItem("currentLevel", currentLevel);
 }
 
+function advanceGame() {
+
+  if (currentGame === "que_prefieres") {
+    showPrefieres();
+    return;
+  }
+
+  if (currentGame === "verdad_reto") {
+    document.getElementById("modeSelector").classList.remove("hidden");
+    document.querySelector(".swipe-container").classList.add("hidden");
+    return;
+  }
+
+  showCard();
+  animateIn();
+  updateUI();
+}
 function nextCardFlow() {
 
   hideAllGameUIs();
@@ -274,21 +291,8 @@ function nextTurn() {
   GameEngine.state.streak++;
 
   document.getElementById("prefSelector")?.classList.add("hidden");
-  document.getElementById("modeSelector")?.classList.add("hidden");
 
-  // 👉 flujo correcto
-  if (currentGame === "que_prefieres") {
-    showPrefieres();
-    return;
-  }
-
-  if (currentGame === "verdad_reto") {
-    document.getElementById("modeSelector").classList.remove("hidden");
-    document.querySelector(".swipe-container").classList.add("hidden");
-    return;
-  }
-
-  nextCardFlow();
+  advanceGame(); // 👈 ESTE ES EL CONTROL REAL
 }
 
 function showModeSelectorIfNeeded() {
@@ -537,12 +541,8 @@ function swipe(dir) {
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  vibrate();
-
   setTimeout(() => {
-    nextTurn();        // 👈 mantiene flujo
-    showCard();       // 👈 REGENERA carta SIEMPRE
-    animateIn();      // 👈 anima nueva carta
+    nextTurn();
   }, 250);
 }
 
@@ -676,14 +676,28 @@ document.getElementById("resetAll").onclick = () => {
   updateUI();
 };
 
-document.getElementById("chooseTruth").onclick = () => {
+document.getElementById("chooseTruth").onclick = async () => {
   pendingMode = "verdad";
-  startQuestionRound();
+  await loadModeData();
+
+  document.getElementById("modeSelector").classList.add("hidden");
+  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  showCard();   // 👈 SIN ESTO NO HAY CARTA
+  animateIn();
+  updateUI();
 };
 
-document.getElementById("chooseDare").onclick = () => {
+document.getElementById("chooseDare").onclick = async () => {
   pendingMode = "reto";
-  startQuestionRound();
+  await loadModeData();
+
+  document.getElementById("modeSelector").classList.add("hidden");
+  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  showCard();
+  animateIn();
+  updateUI();
 };
 
 document.getElementById("opt1").onclick = () => {
