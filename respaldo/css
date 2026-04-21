@@ -1,41 +1,38 @@
-/* =========================
-   RESET + BASE
-========================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-
-  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+/* ========================= RESET + BASE ========================= */ * { 
+   margin: 0; 
+   padding: 0; 
+   box-sizing: border-box; 
+   font-family: 'Inter', sans-serif; 
+   transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease; 
 }
 
-body {
-  background:
-    radial-gradient(circle at 20% 10%, #ff6bd622, transparent 40%),
-    radial-gradient(circle at 80% 20%, #4dd0e122, transparent 45%),
-    radial-gradient(circle at 50% 90%, #7c4dff22, transparent 50%),
-    #0b0c10;
-
-  color: #fff;
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+body { 
+   background: radial-gradient(circle at 20% 10%, #ff6bd622, transparent 40%), radial-gradient(circle at 80% 20%, #4dd0e122, transparent 45%), radial-gradient(circle at 50% 90%, #7c4dff22, transparent 50%), #0b0c10; 
+   color: #fff; 
+   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; 
 }
 
-/* =========================
-   APP CONTAINER
-========================= */
-.app {
-  max-width: 430px;
-  margin: auto;
-  min-height: 100vh;
-
+.actions {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  margin-top: 10px;
+}
 
-  padding-bottom: 30px;
+.actions .full {
+  width: 90%;
+  max-width: 320px;
+  border-radius: 18px;
+}
+/* ========================= 
+APP CONTAINER 
+========================= */ 
+.app { 
+   max-width: 430px; 
+   margin: auto; 
+   min-height: 100vh; 
+   display: flex; 
+   flex-direction: column; 
+   padding-bottom: 30px; 
 }
 
 /* =========================
@@ -433,6 +430,511 @@ button:hover {
 
 .dare {
   background: linear-gradient(135deg, #ff6d00, #ffab00);
+}
+
+.que-prefieres { 
+   background: linear-gradient(135deg, #7c4dff, #b388ff); 
+   color: #fff; 
+} 
+
+.que-prefieres:hover { 
+   box-shadow: 0 20px 40px rgba(124,77,255,0.4); 
+}
+
+.swipe-container:not(.qp-mode) .card {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.swipe-container.qp-mode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.swipe-container.qp-mode .card {
+  position: relative;
+  width: 45%;
+  height: 220px;
+  transform: none !important;
+}
+/* =========================
+   UTILITIES
+========================= */
+.hidden {
+  display: none;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+body {
+  background:
+    radial-gradient(circle at 20% 10%, #ff6bd622, transparent 40%),
+    radial-gradient(circle at 80% 20%, #4dd0e122, transparent 45%),
+    radial-gradient(circle at 50% 90%, #7c4dff22, transparent 50%),
+    #0b0c10;
+
+  color: #fff;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* =========================
+   APP CONTAINER
+========================= */
+.app {
+  max-width: 430px;
+  margin: auto;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  padding-bottom: 30px;
+}
+
+/* =========================
+   GLASS SYSTEM
+========================= */
+.glass {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+
+  background: linear-gradient(90deg, #fff, #aaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* =========================
+   HEADER (SOCIAL APP STYLE)
+========================= */
+.header {
+  padding: 18px 16px;
+  text-align: center;
+
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  background: rgba(10,10,15,0.6);
+  backdrop-filter: blur(20px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.hud {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* =========================
+   SETUP
+========================= */
+.setup {
+  padding: 24px;
+}
+
+.setup h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.setup-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setup-block {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+
+  padding: 18px;
+  animation: fadeIn 0.4s ease both;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-row input {
+  flex: 1;
+}
+
+/* =========================
+   INPUTS
+========================= */
+input {
+  width: 100%;
+  padding: 12px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+
+  background: rgba(255,255,255,0.05);
+  color: white;
+
+  outline: none;
+}
+
+input:focus {
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* =========================
+   BUTTONS (SOCIAL STYLE)
+========================= */
+button {
+  padding: 10px 14px;
+
+  border-radius: 16px;
+
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+
+  color: #fff;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.12);
+}
+
+.primary {
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: #000;
+}
+
+.danger {
+  background: linear-gradient(135deg, #d50000, #ff1744);
+}
+
+/* =========================
+   PLAYERS LIST
+========================= */
+.players-list {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* PLAYER CARD */
+.player-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 12px;
+  margin-top: 8px;
+
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.player-name {
+  flex: 1;
+}
+
+.player-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.player-actions button {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border-radius: 10px;
+
+  font-size: 14px;
+}
+
+.player-actions .delete:hover {
+  background: rgba(255,0,0,0.35);
+}
+
+/* =========================
+   SELECTORS
+========================= */
+.selector {
+  text-align: center;
+  padding: 20px;
+}
+
+.cards {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  margin-top: 20px;
+}
+
+/* =========================
+   SELECT CARDS (SOCIAL STYLE)
+========================= */
+.select-card {
+  width: 150px;
+  height: 170px;
+
+  border-radius: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 15px;
+  text-align: center;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(14px);
+
+  cursor: pointer;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.select-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.select-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.15), transparent 60%);
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.select-card:hover::after {
+  opacity: 1;
+}
+
+/* GAME TYPES */
+.verdad {
+  background: linear-gradient(135deg, #00c853, #64dd17);
+  color: #000;
+}
+
+.reto {
+  background: linear-gradient(135deg, #ff6d00, #ffab00);
+  color: #000;
+}
+
+.nunca {
+  background: linear-gradient(135deg, #d50000, #ff1744);
+}
+
+/* LEVELS */
+.suave {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+}
+
+.medio {
+  background: linear-gradient(135deg, #f9a825, #fdd835);
+  color: #000;
+}
+
+.alto {
+  background: linear-gradient(135deg, #c62828, #ef5350);
+}
+
+/* =========================
+   GAME AREA
+========================= */
+.game {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  justify-content: flex-start;
+
+  gap: 8px; /* 👈 menos separación global */
+  padding: 0 16px;
+}
+
+/* =========================
+   SWIPE AREA
+========================= */
+.swipe-container {
+  display: block;
+  position: relative;
+  height: 420px;
+  margin-top: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* =========================
+   CARD (MAIN SWIPE)
+========================= */
+.card {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  border-radius: 28px;
+
+  padding: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+}
+
+/* STACK EFFECT */
+.layer2 {
+  transform: scale(0.95) translateY(12px);
+  opacity: 0.6;
+}
+
+.layer3 {
+  transform: scale(0.9) translateY(22px);
+  opacity: 0.3;
+}
+
+/* =========================
+   MODE SELECTOR
+========================= */
+.mode-selector {
+  padding: 10px 0 20px;
+  margin-top: 8px;
+}
+
+.mode-selector h2 {
+  margin-bottom: 10px;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.mode {
+  width: 160px;
+  height: 130px;
+
+  border-radius: 20px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode:hover {
+  transform: scale(1.05);
+}
+
+.truth {
+  background: linear-gradient(135deg, #4caf50, #81c784);
+}
+
+.dare {
+  background: linear-gradient(135deg, #ff6d00, #ffab00);
+}
+
+.choice {
+  flex: 1;
+  padding: 10px;
+}
+
+.divider {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.choice.left {
+  text-align: left;
+}
+
+.choice.right {
+  text-align: right;
+}
+
+.que-prefieres {
+  background: linear-gradient(135deg, #7c4dff, #b388ff);
+  color: white;
+}
+
+.que-prefieres:hover {
+  box-shadow: 0 20px 40px rgba(124,77,255,0.4);
 }
 
 /* =========================
