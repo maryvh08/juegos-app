@@ -72,6 +72,7 @@ let pendingMode = null; // "verdad" | "reto"
 // DOM
 // --------------------
 const questionEl = document.getElementById("question");
+const needsModeSelector = (game) => game === "verdad_reto";
 
 // 👉 NUEVO: siempre obtener la carta actual
 function getCard() {
@@ -186,6 +187,8 @@ document.querySelectorAll("[data-game]").forEach(el => {
   el.onclick = () => {
     currentGame = el.dataset.game;
 
+    document.getElementById("modeSelector")?.classList.add("hidden");
+
     document.getElementById("gameSelector").classList.add("hidden");
     document.getElementById("levelSelector").classList.remove("hidden");
   };
@@ -229,14 +232,23 @@ async function loadData() {
 async function startGame() {
   await loadData();
 
-  showCard();
+  if (needsModeSelector(currentGame)) {
+    // 🔥 VERDAD O RETO → primero elegir modo
+    document.getElementById("modeSelector").classList.remove("hidden");
+    document.querySelector(".swipe-container").classList.add("hidden");
+  } else {
+    // 🍺 NUNCA → directo al juego
+    document.getElementById("modeSelector")?.classList.add("hidden");
+    document.querySelector(".swipe-container").classList.remove("hidden");
+
+    showCard();
+    animateIn();
+  }
+
   updateUI();
-  animateIn();
 
   localStorage.setItem("currentGame", currentGame);
   localStorage.setItem("currentLevel", currentLevel);
-  document.getElementById("modeSelector").classList.remove("hidden");
-  document.querySelector(".swipe-container").classList.add("hidden");
 }
 
 function nextTurn() {
