@@ -425,24 +425,34 @@ button:hover {
 
 /* botones pequeños */
 .player-actions button {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
 
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0; /* importante */
+
+  border-radius: 10px;
   border: none;
 
   background: rgba(255,255,255,0.08);
   color: white;
 
   cursor: pointer;
+
+  font-size: 14px;
+  line-height: 1;
 }
 
+/* hover */
 .player-actions button:hover {
-  background: rgba(255,255,255,0.18);
-  transform: scale(1.05);
+  transform: scale(1.08);
+  background: rgba(255,255,255,0.15);
 }
 
-/* delete más agresivo */
+/* delete más fuerte */
 .player-actions .delete:hover {
-  background: rgba(255, 0, 0, 0.3);
+  background: rgba(255, 0, 0, 0.35);
 }
