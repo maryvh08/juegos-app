@@ -373,10 +373,8 @@ function swipe(dir) {
 
   if (dir === 1) {
     GameEngine.addPoint(GameEngine.currentPlayer());
-    sounds.accept.play();
   } else {
     GameEngine.addShot();
-    sounds.reject.play();
     sounds.shot.play();
   }
 
