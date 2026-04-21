@@ -440,6 +440,36 @@ button:hover {
 }
 
 /* =========================
+   PREFIERES
+========================= */
+.prefieres {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 18px;
+}
+
+.option {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.divider {
+  text-align: center;
+  font-weight: bold;
+  opacity: 0.6;
+}
+
+/* =========================
    UTILITIES
 ========================= */
 .hidden {
