@@ -964,13 +964,6 @@ button:hover {
   transform: none !important;
 }
 
-.swipe-container:not(.qp-mode) .card {
-  position: absolute;
-  width: 90%;
-  height: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-}
 /* =========================
    UTILITIES
 ========================= */
