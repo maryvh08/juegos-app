@@ -331,7 +331,9 @@ button:hover {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+
+  justify-content: flex-start;
+  gap: 16px;
 }
 
 /* =========================
@@ -387,8 +389,8 @@ button:hover {
    MODE SELECTOR
 ========================= */
 .mode-selector {
-  text-align: center;
-  padding: 20px;
+  margin-top: auto;
+  padding-bottom: 30px;
 }
 
 .mode-buttons {
