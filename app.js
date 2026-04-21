@@ -272,10 +272,6 @@ function updateUI() {
   } else {
     currentPlayerEl.innerText = "Turno: " + player;
   }
-
-  if (shotsEl) shotsEl.innerText = "🍻 " + GameEngine.state.shots;
-  if (streakEl) streakEl.innerText = "🔥 " + GameEngine.state.streak;
-  if (scoreEl) scoreEl.innerText = "⭐ " + (GameEngine.state.scores[player] || 0);
 }
 
 // --------------------
