@@ -110,6 +110,9 @@ async function startMode(mode) {
 function nextTurn() {
   GameEngine.nextPlayer();
 
+  const container = document.querySelector(".swipe-container");
+  container.classList.remove("qp-mode");
+
   if (currentGame === "verdad_reto") {
     showModeSelector();
     return;
