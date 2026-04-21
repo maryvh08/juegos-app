@@ -298,6 +298,15 @@ const GameEngine = {
     localStorage.setItem("players", JSON.stringify(this.state.players));
   }
 };
+
+function addPlayer(name) {
+  if (!name) return;
+
+  GameEngine.state.players.push(name);
+  GameEngine.savePlayers();
+  renderPlayers();
+}
+
 document.getElementById("backHome").onclick = () => { 
   // ocultar todo 
   document.getElementById("gameUI").classList.add("hidden"); 
