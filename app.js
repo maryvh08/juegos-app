@@ -289,7 +289,17 @@ function getRandomQuestion() {
 
   if (!preguntas?.length) return "Sin preguntas disponibles";
 
-  return preguntas[Math.floor(Math.random() * preguntas.length)];
+  const q = preguntas[Math.floor(Math.random() * preguntas.length)];
+
+  // 👉 normalizar salida
+  if (currentGame === "que_prefieres") {
+    return {
+      opcion1: q.opcion1,
+      opcion2: q.opcion2
+    };
+  }
+
+  return q;
 }
 
 async function loadModeData() {
@@ -332,7 +342,27 @@ function showCard() {
 
     if (i === 0) {
       newCard.id = "card";
-      newCard.innerHTML = `<p>${getRandomQuestion()}</p>`;
+
+      const q = getRandomQuestion();
+
+      // 🔥 modo ¿Qué prefieres?
+      if (isPrefieres() && typeof q === "object") {
+
+        const opcion1 = q.opcion1 || "Opción 1";
+        const opcion2 = q.opcion2 || "Opción 2";
+
+        newCard.innerHTML = `
+          <div class="prefieres">
+            <div class="option left">👈 ${opcion2}</div>
+            <div class="divider">VS</div>
+            <div class="option right">${opcion1} 👉</div>
+          </div>
+        `;
+
+      } else {
+        // 🎴 modo normal
+        newCard.innerHTML = `<p>${q}</p>`;
+      }
     }
 
     newCard.style.transform = `scale(${1 - i * 0.05}) translateY(${i * 10}px)`;
@@ -344,7 +374,6 @@ function showCard() {
   bindCard();
   updateColor();
 }
-
 function bindCard() {
   const card = getCard();
   if (!card) return;
@@ -472,6 +501,12 @@ function swipe(dir) {
   const card = getCard();
   if (!card) return;
 
+  // 👉 detectar elección
+  if (isPrefieres()) {
+    const choice = dir === 1 ? "opcion1" : "opcion2";
+    console.log("Elegido:", choice);
+  }
+
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
@@ -528,6 +563,10 @@ function startQuestionRound() {
     animateIn();
     updateUI();
   });
+}
+
+function isPrefieres() {
+  return currentGame === "que_prefieres";
 }
 
 // --------------------
