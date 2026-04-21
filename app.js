@@ -112,6 +112,7 @@ function nextTurn() {
 
   const container = document.querySelector(".swipe-container");
   container.classList.remove("qp-mode");
+  container.innerHTML = ""; // 👈 IMPORTANTE limpiar estado visual
 
   if (currentGame === "verdad_reto") {
     showModeSelector();
@@ -128,37 +129,39 @@ function renderCard() {
   const container = document.querySelector(".swipe-container");
   container.innerHTML = "";
   container.classList.remove("hidden");
+  container.classList.remove("qp-mode"); // limpia estado previo
 
   const q = getRandomQuestion();
 
-  // 🔥 MODO QUÉ PREFIERES
+  // =========================
+  // 🎯 MODO: QUÉ PREFIERES
+  // =========================
   if (currentGame === "que_prefieres") {
-    const container = document.querySelector(".swipe-container");
-    container.innerHTML = "";
-    container.classList.add("qp-mode"); // 🔥 FALTABA ESTO
-  
-    const q = getRandomQuestion();
-  
+    container.classList.add("qp-mode");
+
     const card1 = document.createElement("div");
     const card2 = document.createElement("div");
-  
+
     card1.className = "card choice-card";
     card2.className = "card choice-card";
-  
+
     card1.innerHTML = `<p>${q.opcion1}</p>`;
     card2.innerHTML = `<p>${q.opcion2}</p>`;
-  
-    card1.onclick = () => chooseCard(card1, -1);
-    card2.onclick = () => chooseCard(card2, 1);
-  
+
+    // 👉 swipe lógico
+    card1.onclick = () => chooseCard(card1, -1); // izquierda
+    card2.onclick = () => chooseCard(card2, 1);  // derecha
+
     container.appendChild(card1);
     container.appendChild(card2);
-  
+
     updateUI();
     return;
   }
-  
-  // 🧱 RESTO DE JUEGOS (normal)
+
+  // =========================
+  // 🧱 RESTO DE JUEGOS
+  // =========================
   const card = document.createElement("div");
   card.className = "card";
   card.id = "card";
