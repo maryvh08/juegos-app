@@ -445,6 +445,31 @@ button:hover {
   width: 48%;
   height: 220px;
 }
+
+.choice {
+  flex: 1;
+  padding: 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.divider {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.choice.left {
+  text-align: left;
+}
+
+.choice.right {
+  text-align: right;
+}
 /* =========================
    UTILITIES
 ========================= */
