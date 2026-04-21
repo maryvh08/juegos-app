@@ -443,17 +443,6 @@ function getX(e) {
 // BUTTONS
 // --------------------
 
-document.getElementById("shot").onclick = () => {
-
-  if (currentGame === "verdad_shot" || currentGame === "nunca") {
-    GameEngine.addShot();
-    sounds.shot.currentTime = 0;
-    sounds.shot.play();
-  }
-
-  nextTurn();
-};
-
 document.getElementById("backMenu").onclick = () => {
   document.getElementById("gameUI").classList.add("hidden");
   document.getElementById("gameSelector").classList.remove("hidden");
