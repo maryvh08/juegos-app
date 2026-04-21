@@ -10,6 +10,47 @@ let currentPref = null;
 // --------------------
 // ENGINE (igual)
 // --------------------
+function initApp() {
+
+  // BOTÓN INICIAR
+  const startBtn = document.getElementById("startGame");
+  if (startBtn) {
+    startBtn.onclick = () => {
+      if (!GameEngine.state.players.length) {
+        alert("Agrega jugadores");
+        return;
+      }
+
+      document.getElementById("setup").classList.add("hidden");
+      document.getElementById("gameSelector").classList.remove("hidden");
+    };
+  }
+
+  // BOTONES DE JUEGOS
+  document.querySelectorAll("[data-game]").forEach(btn => {
+    btn.onclick = () => {
+      currentGame = btn.dataset.game;
+
+      document.getElementById("gameSelector").classList.add("hidden");
+      document.getElementById("levelSelector").classList.remove("hidden");
+    };
+  });
+
+  // NIVELES
+  document.querySelectorAll("[data-level]").forEach(btn => {
+    btn.onclick = async () => {
+      currentLevel = btn.dataset.level;
+
+      document.getElementById("levelSelector").classList.add("hidden");
+      document.getElementById("gameUI").classList.remove("hidden");
+
+      await startGame();
+    };
+  });
+
+  console.log("✅ App inicializada correctamente");
+}
+
 const GameEngine = {
   state: {
     players: JSON.parse(localStorage.getItem("players")) || [],
@@ -299,6 +340,10 @@ function bindCard() {
     };
   };
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  initApp();
+});
 
 document.getElementById("backMenu").onclick = () => {
 
