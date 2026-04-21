@@ -1,76 +1,153 @@
-/* RESET */
+/* =========================
+   RESET + BASE
+========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: sans-serif;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
 }
 
 body {
-  background: #111;
+  background: radial-gradient(circle at top, #1b1b1b, #0d0d0d);
   color: #fff;
 }
 
-/* APP */
+/* =========================
+   APP CONTAINER
+========================= */
 .app {
   max-width: 420px;
   margin: auto;
   min-height: 100vh;
+
   display: flex;
   flex-direction: column;
+
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* HEADER */
+/* =========================
+   TYPOGRAPHY
+========================= */
+h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* =========================
+   HEADER
+========================= */
 .header {
   padding: 16px;
   text-align: center;
+
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .hud {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   margin-top: 10px;
   font-size: 14px;
+  opacity: 0.9;
 }
 
-/* SETUP */
+/* =========================
+   SETUP
+========================= */
 .setup {
   padding: 20px;
 }
 
 .setup-card {
-  padding: 20px;
-  border-radius: 16px;
-  background: #222;
+  padding: 22px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
   text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
+
   margin: 10px 0;
-  border-radius: 10px;
-  border: none;
+
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+
+  background: rgba(255,255,255,0.05);
+  color: white;
+
+  outline: none;
 }
 
+input:focus {
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* =========================
+   BUTTONS
+========================= */
 button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  margin: 5px;
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+
   cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
 }
 
 .primary {
-  background: #4caf50;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: #000;
+  font-weight: 700;
+}
+
+.danger {
+  background: linear-gradient(135deg, #d50000, #ff1744);
   color: #fff;
 }
 
+/* =========================
+   PLAYERS
+========================= */
 .players-list {
   margin: 10px 0;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
-/* SELECTORS */
+/* =========================
+   SELECTORS
+========================= */
 .selector {
   text-align: center;
   padding: 20px;
@@ -84,33 +161,67 @@ button {
   margin-top: 20px;
 }
 
+/* =========================
+   SELECT CARDS
+========================= */
 .select-card {
   width: 140px;
   height: 160px;
+
   border-radius: 20px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.3s;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: 0.25s ease;
 }
 
 .select-card:hover {
-  transform: scale(1.08);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
 }
 
 /* GAME TYPES */
-.verdad { background: linear-gradient(135deg,#4caf50,#81c784); }
-.reto { background: linear-gradient(135deg,#ff9800,#ffb74d); }
-.nunca { background: linear-gradient(135deg,#f44336,#e57373); }
+.verdad {
+  background: linear-gradient(135deg, #00c853, #64dd17);
+  color: #000;
+}
+
+.reto {
+  background: linear-gradient(135deg, #ff6d00, #ffab00);
+  color: #000;
+}
+
+.nunca {
+  background: linear-gradient(135deg, #d50000, #ff1744);
+}
 
 /* LEVELS */
-.suave { background: linear-gradient(135deg,#2e7d32,#66bb6a); }
-.medio { background: linear-gradient(135deg,#f9a825,#fdd835); }
-.alto { background: linear-gradient(135deg,#c62828,#ef5350); }
+.suave {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+}
 
-/* GAME */
+.medio {
+  background: linear-gradient(135deg, #f9a825, #fdd835);
+  color: #000;
+}
+
+.alto {
+  background: linear-gradient(135deg, #c62828, #ef5350);
+}
+
+/* =========================
+   GAME AREA
+========================= */
 .game {
   flex: 1;
   display: flex;
@@ -118,29 +229,46 @@ button {
   justify-content: space-between;
 }
 
-/* SWIPE */
+/* =========================
+   SWIPE CONTAINER
+========================= */
 .swipe-container {
   position: relative;
   height: 400px;
   margin-top: 20px;
 }
 
+/* =========================
+   CARD (MAIN)
+========================= */
 .card {
   position: absolute;
   width: 90%;
   height: 100%;
   left: 5%;
-  border-radius: 20px;
-  background: #333;
+
+  border-radius: 24px;
+
+  padding: 24px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   text-align: center;
-  padding: 20px;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 600;
+
+  background: linear-gradient(145deg, #2a2a2a, #1c1c1c);
+
+  border: 1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
-/* DEPTH */
+/* STACK EFFECT */
 .layer2 {
   transform: scale(0.95) translateY(10px);
   opacity: 0.6;
@@ -151,11 +279,9 @@ button {
   opacity: 0.3;
 }
 
-.active {
-  z-index: 10;
-}
-
-/* BADGES */
+/* =========================
+   BADGES (SWIPE FEEDBACK)
+========================= */
 .badge {
   position: absolute;
   top: 20px;
@@ -173,24 +299,18 @@ button {
   color: #f44336;
 }
 
-/* BUTTONS */
-.buttons {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px;
+/* =========================
+   NAV BUTTONS
+========================= */
+.back {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
-.buttons button {
-  font-size: 20px;
-  padding: 15px;
-}
-
-.danger {
-  background: #f44336;
-  color: white;
-}
-
-/* HIDDEN */
+/* =========================
+   UTILITIES
+========================= */
 .hidden {
   display: none;
 }
