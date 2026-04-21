@@ -342,11 +342,15 @@ button:hover {
    SWIPE AREA
 ========================= */
 .swipe-container {
+  display: block;
   position: relative;
   height: 420px;
   margin-top: 20px;
-}
 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 /* =========================
    CARD (MAIN SWIPE)
 ========================= */
@@ -435,11 +439,6 @@ button:hover {
   background: linear-gradient(135deg, #ff6d00, #ffab00);
 }
 
-.swipe-container {
-  display: flex;
-  gap: 12px;
-}
-
 .swipe-container .card {
   position: relative;
   width: 48%;
@@ -449,13 +448,6 @@ button:hover {
 .choice {
   flex: 1;
   padding: 10px;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
 }
 
 .divider {
