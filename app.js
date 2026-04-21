@@ -277,7 +277,7 @@ document.getElementById("backHome").onclick = () => {
   currentLevel = null; 
 };
 
-document.getElementById("addPlayerBtn").onclick = () => {
+document.getElementById("addPlayer").onclick = () => {
   const input = document.getElementById("playerInput");
 
   addPlayer(input.value);
