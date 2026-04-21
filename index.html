@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -13,69 +14,88 @@
 <div class="app">
 
   <!-- HEADER -->
+
   <header class="header">
     <h1>🔥 Party Swipe</h1>
 
-    <div class="hud">
-      <div id="currentPlayer">Turno: -</div>
-    </div>
+```
+<div class="hud">
+  <div id="currentPlayer">Turno: -</div>
+  <div id="shots">🍻 0</div>
+  <div id="streak">🔥 0</div>
+  <div id="score">⭐ 0</div>
+</div>
+```
+
   </header>
 
   <!-- SETUP -->
+
   <section class="setup" id="setup">
     <div class="card setup-card">
 
-      <h2>👥 Jugadores</h2>
+```
+  <h2>👥 Jugadores</h2>
 
-      <input id="playerInput" type="text" placeholder="Nombre del jugador">
+  <input id="playerInput" type="text" placeholder="Nombre del jugador">
 
-      <button id="addPlayer">Agregar</button>
+  <button id="addPlayer">Agregar</button>
 
-      <div id="playersList" class="players-list"></div>
+  <div id="playersList" class="players-list"></div>
 
-      <button id="startGame" class="primary">
-        🚀 Empezar
-      </button>
+  <button id="startGame" class="primary">
+    🚀 Empezar
+  </button>
 
-    </div>
+</div>
+```
+
   </section>
 
   <!-- SELECT GAME -->
+
   <section id="gameSelector" class="selector hidden">
     <h2>🎴 Elige el juego</h2>
 
-    <div class="cards">
-      <div class="select-card verdad" data-game="verdad_shot">Verdad o Shot</div>
-      <div class="select-card reto" data-game="verdad_reto">Verdad o Reto</div>
-      <div class="select-card nunca" data-game="nunca">Yo nunca nunca</div>
-    </div>
+```
+<div class="cards">
+  <div class="select-card verdad" data-game="verdad_shot">Verdad o Shot</div>
+  <div class="select-card reto" data-game="verdad_reto">Verdad o Reto</div>
+  <div class="select-card nunca" data-game="nunca">Yo nunca nunca</div>
+</div>
+```
+
   </section>
 
   <!-- SELECT LEVEL -->
+
   <section id="levelSelector" class="selector hidden">
     <h2>🎚️ Nivel</h2>
 
-    <div class="cards">
-      <div class="select-card suave" data-level="suave">🟢 Suave</div>
-      <div class="select-card medio" data-level="medio">🟡 Medio</div>
-      <div class="select-card alto" data-level="alto">🔴 Alto</div>
-    </div>
+```
+<div class="cards">
+  <div class="select-card suave" data-level="suave">🟢 Suave</div>
+  <div class="select-card medio" data-level="medio">🟡 Medio</div>
+  <div class="select-card alto" data-level="alto">🔴 Alto</div>
+</div>
+```
+
   </section>
 
   <!-- GAME -->
+
   <main class="game hidden" id="gameUI">
 
-    <section class="swipe-container">
-      <button id="backMenu" class="back">⬅ Volver</button>
+```
+<section class="swipe-container">
+  
+  <button id="backMenu" class="back">⬅ Volver</button>
 
-      <div class="card layer3"></div>
-      <div class="card layer2"></div>
+  <!-- Las cartas se generan dinámicamente -->
+  <!-- NO dejar carta fija aquí -->
 
-      <div class="card active" id="card">
-        <p id="question">Cargando...</p>
-      </div>
-
-    </section>
+</section>
+```
 
   </main>
 
