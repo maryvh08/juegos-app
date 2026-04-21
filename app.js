@@ -47,6 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("backMenu").onclick = () => {
+    currentGame = null; // 🔥 IMPORTANTE
+    pendingMode = null;
+  
+    const container = document.querySelector(".swipe-container");
+    container.classList.remove("qp-mode");
+    container.innerHTML = "";
+  
     document.getElementById("gameUI").classList.add("hidden");
     document.getElementById("gameSelector").classList.remove("hidden");
   };
@@ -77,6 +84,11 @@ function getRandomQuestion() {
 async function startGame() {
   await loadData();
 
+  // 🔥 RESET IMPORTANTE
+  const container = document.querySelector(".swipe-container");
+  container.classList.remove("qp-mode");
+  container.innerHTML = "";
+
   if (currentGame === "verdad_reto") {
     showModeSelector();
     return;
@@ -99,7 +111,12 @@ async function startMode(mode) {
   await loadData(mode === "verdad" ? "verdad_shot" : "verdad_reto");
 
   document.getElementById("modeSelector").classList.add("hidden");
-  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  const container = document.querySelector(".swipe-container");
+  container.classList.remove("qp-mode");
+  container.innerHTML = "";
+
+  container.classList.remove("hidden");
 
   renderCard();
 }
