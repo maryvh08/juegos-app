@@ -81,10 +81,22 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("chooseTruth").onclick = () => startMode("verdad");
   document.getElementById("chooseDare").onclick = () => startMode("reto");
 
-  document.getElementById("opt1").onclick = () => nextTurn();
-  document.getElementById("opt2").onclick = () => nextTurn();
+  document.getElementById("opt1").onclick = () => handlePrefChoice(1);
+  document.getElementById("opt2").onclick = () => handlePrefChoice(2);
 });
 
+function handlePrefChoice(choice) {
+  console.log("Elegido:", choice === 1 ? currentPref.opcion1 : currentPref.opcion2);
+
+  // siguiente jugador
+  GameEngine.nextPlayer();
+
+  // ocultar UI
+  document.getElementById("prefSelector").classList.add("hidden");
+
+  // MUY IMPORTANTE: volver a mostrar nueva pregunta
+  renderPrefieres();
+}
 // =====================
 // DATA
 // =====================
@@ -188,11 +200,11 @@ function renderCard() {
 function renderPrefieres() {
   document.querySelector(".swipe-container").classList.add("hidden");
 
-  const q = getRandomQuestion();
-  currentPref = q;
-
   const pref = document.getElementById("prefSelector");
   pref.classList.remove("hidden");
+
+  const q = getRandomQuestion();
+  currentPref = q;
 
   document.getElementById("opt1").innerText = q.opcion1;
   document.getElementById("opt2").innerText = q.opcion2;
