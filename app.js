@@ -248,8 +248,11 @@ async function startGame() {
 
 function nextCardFlow() {
 
+  hideAllSelectors();
+
   if (currentGame === "verdad_reto") {
-    showModeSelectorIfNeeded();
+    document.getElementById("modeSelector").classList.remove("hidden");
+    document.querySelector(".swipe-container").classList.add("hidden");
     return;
   }
 
@@ -258,7 +261,6 @@ function nextCardFlow() {
     return;
   }
 
-  // otros juegos
   showCard();
   animateIn();
   updateUI();
@@ -334,6 +336,12 @@ async function loadModeData() {
     console.error(e);
     questionEl.innerText = "Error cargando preguntas 😢";
   }
+}
+
+function hideAllSelectors() {
+  document.getElementById("modeSelector")?.classList.add("hidden");
+  document.getElementById("prefSelector")?.classList.add("hidden");
+  document.querySelector(".swipe-container").classList.remove("hidden");
 }
 
 // --------------------
@@ -414,6 +422,9 @@ function updateUI() {
 function updateColor() {
   const card = getCard();
   if (!card) return;
+
+  // 🚫 NO aplicar en qué prefieres
+  if (currentGame === "que_prefieres") return;
 
   const colors = {
     suave: "linear-gradient(135deg, #2e7d32, #66bb6a)",
@@ -578,19 +589,16 @@ function isPrefieres() {
 }
 
 function showPrefieres() {
+  hideAllSelectors();
+
   const q = getRandomQuestion();
 
-  currentPref = q;
-
-  document.getElementById("modeSelector")?.classList.add("hidden");
-  document.querySelector(".swipe-container").classList.add("hidden");
-
-  const pref = document.getElementById("prefSelector");
-  pref.classList.remove("hidden");
+  document.getElementById("prefSelector").classList.remove("hidden");
 
   document.getElementById("opt1").innerText = q.opcion1;
   document.getElementById("opt2").innerText = q.opcion2;
 }
+
 // --------------------
 // BUTTONS
 // --------------------
