@@ -289,6 +289,14 @@ function updateUI() {
 // --------------------
 // COLOR
 // --------------------
+function updateControls() { 
+  const shotBtn = document.getElementById("shot"); 
+  if (!shotBtn) return; 
+  if (currentGame === "verdad_reto") { 
+    shotBtn.style.display = "none"; } 
+  else { shotBtn.style.display = "block"; } 
+}
+
 function updateColor() {
   if (!card) return;
 
