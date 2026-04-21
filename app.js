@@ -86,17 +86,35 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function handlePrefChoice(choice) {
-  console.log("Elegido:", choice === 1 ? currentPref.opcion1 : currentPref.opcion2);
 
-  // siguiente jugador
+  if (!currentPref) return;
+
+  console.log(
+    "Elegido:",
+    choice === 1 ? currentPref.opcion1 : currentPref.opcion2
+  );
+
+  // cambiar jugador
   GameEngine.nextPlayer();
 
-  // ocultar UI
-  document.getElementById("prefSelector").classList.add("hidden");
-
-  // MUY IMPORTANTE: volver a mostrar nueva pregunta
-  renderPrefieres();
+  // siguiente pregunta
+  showNextPref();
 }
+
+function showNextPref() {
+  const pref = document.getElementById("prefSelector");
+  const swipe = document.querySelector(".swipe-container");
+
+  swipe.classList.add("hidden");
+  pref.classList.remove("hidden");
+
+  const q = getRandomQuestion();
+  currentPref = q;
+
+  document.getElementById("opt1").innerText = q.opcion1;
+  document.getElementById("opt2").innerText = q.opcion2;
+}
+
 // =====================
 // DATA
 // =====================
@@ -155,7 +173,7 @@ function nextTurn() {
   }
 
   if (currentGame === "que_prefieres") {
-    renderPrefieres();
+    showNextPref();
     return;
   }
 
