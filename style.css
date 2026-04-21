@@ -475,6 +475,11 @@ button:hover {
   background: linear-gradient(135deg, #7c4dff, #b388ff);
   color: #fff;
 }
+
+.que-prefieres:hover {
+  box-shadow: 0 20px 40px rgba(124,77,255,0.4);
+}
+
 /* =========================
    UTILITIES
 ========================= */
