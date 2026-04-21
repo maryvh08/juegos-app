@@ -11,17 +11,12 @@
 }
 
 body {
-  background:
-    radial-gradient(circle at 20% 10%, #ff6bd622, transparent 40%),
-    radial-gradient(circle at 80% 20%, #4dd0e122, transparent 45%),
-    radial-gradient(circle at 50% 90%, #7c4dff22, transparent 50%),
-    #0b0c10;
-
+  background: #0b0c10;
   color: #fff;
+  font-family: 'Inter', sans-serif;
 
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .actions {
@@ -39,14 +34,17 @@ body {
    APP CONTAINER
 ========================= */
 .app {
+  width: 100%;
   max-width: 430px;
-  margin: auto;
   min-height: 100vh;
+
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
 
   display: flex;
   flex-direction: column;
 
-  padding-bottom: 30px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 
 /* =========================
