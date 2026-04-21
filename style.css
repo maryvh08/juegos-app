@@ -469,6 +469,20 @@ button:hover {
   opacity: 0.6;
 }
 
+.pref1 {
+  background: linear-gradient(135deg, #7c4dff, #b388ff);
+}
+
+.pref2 {
+  background: linear-gradient(135deg, #00bcd4, #4dd0e1);
+}
+
+/* texto más limpio */
+.mode {
+  padding: 16px;
+  font-size: 16px;
+  text-align: center;
+}
 /* =========================
    UTILITIES
 ========================= */
