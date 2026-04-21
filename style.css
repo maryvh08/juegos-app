@@ -1,22 +1,15 @@
-}/* =========================
-   RESET + BASE
-========================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-
-  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+/* ========================= RESET + BASE ========================= */ * { 
+   margin: 0; 
+   padding: 0; 
+   box-sizing: border-box; 
+   font-family: 'Inter', sans-serif; 
+   transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease; 
 }
 
-body {
-  background: #0b0c10;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-
-  display: flex;
-  justify-content: center;
+body { 
+   background: radial-gradient(circle at 20% 10%, #ff6bd622, transparent 40%), radial-gradient(circle at 80% 20%, #4dd0e122, transparent 45%), radial-gradient(circle at 50% 90%, #7c4dff22, transparent 50%), #0b0c10; 
+   color: #fff; 
+   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; 
 }
 
 .actions {
