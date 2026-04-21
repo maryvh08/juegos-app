@@ -128,28 +128,45 @@ function renderCard() {
 
   const q = getRandomQuestion();
 
-  // 🔥 QUÉ PREFIERES (NUEVO)
+  // 🔥 MODO QUÉ PREFIERES
   if (currentGame === "que_prefieres") {
-
-    const card = document.createElement("div");
-    card.className = "card";
-    card.id = "card";
-
-    card.innerHTML = `
-      <div class="choice left">${q.opcion1}</div>
-      <div class="divider">VS</div>
-      <div class="choice right">${q.opcion2}</div>
-    `;
-
-    container.appendChild(card);
-
-    bindChoiceSwipe(); // 👈 importante
+    const container = document.querySelector(".swipe-container");
+    container.innerHTML = "";
+  
+    const q = getRandomQuestion();
+  
+    const card1 = document.createElement("div");
+    const card2 = document.createElement("div");
+  
+    card1.className = "card choice-card";
+    card2.className = "card choice-card";
+  
+    card1.innerHTML = `<p>${q.opcion1}</p>`;
+    card2.innerHTML = `<p>${q.opcion2}</p>`;
+  
+    // 👉 click = elegir
+    card1.onclick = () => chooseCard(card1, -1);
+    card2.onclick = () => chooseCard(card2, 1);
+  
+    container.appendChild(card1);
+    container.appendChild(card2);
+  
     updateUI();
-    animateIn();
     return;
   }
 
-  // resto normal...
+  // 🧱 RESTO DE JUEGOS (normal)
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = "card";
+
+  card.innerHTML = `<p>${q.texto || q}</p>`;
+
+  container.appendChild(card);
+
+  bindCard();
+  animateIn();
+  updateUI();
 }
 
 // =====================
@@ -335,6 +352,21 @@ function choose(option) {
   setTimeout(() => nextTurn(), 250);
 }
 
+function chooseCard(card, dir) {
+  const all = document.querySelectorAll(".choice-card");
+
+  all.forEach(c => {
+    if (c === card) {
+      c.style.transform = `translateX(${dir * 800}px) scale(1.05)`;
+      c.style.opacity = 1;
+    } else {
+      c.style.transform = `scale(0.8)`;
+      c.style.opacity = 0;
+    }
+  });
+
+  setTimeout(() => nextTurn(), 250);
+}
 // =====================
 // BOTONES
 // =====================
