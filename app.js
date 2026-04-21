@@ -232,15 +232,9 @@ async function loadData() {
 async function startGame() {
   await loadData();
 
-  if (needsModeSelector(currentGame)) {
-    // 🔥 VERDAD O RETO → primero elegir modo
-    document.getElementById("modeSelector").classList.remove("hidden");
-    document.querySelector(".swipe-container").classList.add("hidden");
-  } else {
-    // 🍺 NUNCA → directo al juego
-    document.getElementById("modeSelector")?.classList.add("hidden");
-    document.querySelector(".swipe-container").classList.remove("hidden");
+  showModeSelectorIfNeeded();
 
+  if (currentGame !== "verdad_reto") {
     showCard();
     animateIn();
   }
@@ -258,14 +252,25 @@ function nextTurn() {
 
   GameEngine.state.streak++;
 
-  pendingMode = null; // 🔥 reset
+  pendingMode = null;
 
-  document.getElementById("modeSelector").classList.remove("hidden");
-  document.querySelector(".swipe-container").classList.add("hidden");
+  showModeSelectorIfNeeded();
 
   updateUI();
 }
 
+function showModeSelectorIfNeeded() {
+  const mode = document.getElementById("modeSelector");
+  const swipe = document.querySelector(".swipe-container");
+
+  if (currentGame === "verdad_reto") {
+    mode.classList.remove("hidden");
+    swipe.classList.add("hidden");
+  } else {
+    mode?.classList.add("hidden");
+    swipe.classList.remove("hidden");
+  }
+}
 // --------------------
 // QUESTIONS
 // --------------------
@@ -505,7 +510,6 @@ function startQuestionRound() {
 
   loadModeData().then(() => {
     showCard();
-    updateUI();
     animateIn();
   });
 }
