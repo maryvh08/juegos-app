@@ -247,6 +247,7 @@ function showCard() {
   }
 
   bindCard(); // 👈 importante
+  updateColor();
 }
 
 function bindCard() {
@@ -283,6 +284,12 @@ function updateUI() {
   if (scoreEl) {
     scoreEl.innerText =
       "⭐ " + (GameEngine.state.scores[player] || 0);
+  }
+  
+  if (currentGame === "nunca") {
+    currentPlayerEl.innerText = "Todos juegan 🍻";
+  } else {
+    currentPlayerEl.innerText = "Turno: " + player;
   }
 }
 
@@ -442,6 +449,17 @@ function getX(e) {
 // --------------------
 // BUTTONS
 // --------------------
+
+document.getElementById("shot").onclick = () => {
+  if (currentGame === "verdad_shot" || currentGame === "nunca") {
+    GameEngine.addShot();
+
+    sounds.shot.currentTime = 0;
+    sounds.shot.play();
+  }
+
+  nextTurn();
+};
 
 document.getElementById("backMenu").onclick = () => {
   document.getElementById("gameUI").classList.add("hidden");
