@@ -43,10 +43,6 @@
         <button id="startGame" class="primary full">
           🚀 Empezar juego
         </button>
-
-        <button id="resetAll" class="danger full">
-          🧹 Reiniciar todo
-        </button>
       </div>
   
     </div>
@@ -76,6 +72,9 @@
         Yo nunca nunca
       </div>
 
+      <div class="select-card que-prefieres" data-game="que_prefieres">
+        ¿Qué prefieres?
+      </div>
     </div>
   </section>
 
