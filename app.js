@@ -94,21 +94,27 @@ function handlePrefChoice(choice) {
     choice === 1 ? currentPref.opcion1 : currentPref.opcion2
   );
 
-  // cambiar jugador
   GameEngine.nextPlayer();
 
-  // siguiente pregunta
+  // 🔥 CRÍTICO: limpiar estado visual antes de siguiente
+  document.getElementById("prefSelector").classList.add("hidden");
+
+  // 🔥 siguiente pregunta
   showNextPref();
 }
 
 function showNextPref() {
-  const pref = document.getElementById("prefSelector");
-  const swipe = document.querySelector(".swipe-container");
 
-  swipe.classList.add("hidden");
+  // UI limpia SIEMPRE
+  document.querySelector(".swipe-container").classList.add("hidden");
+
+  const pref = document.getElementById("prefSelector");
   pref.classList.remove("hidden");
 
   const q = getRandomQuestion();
+
+  if (!q) return;
+
   currentPref = q;
 
   document.getElementById("opt1").innerText = q.opcion1;
@@ -210,22 +216,6 @@ function renderCard() {
   bindCard();
   animateIn();
   updateUI();
-}
-
-// =====================
-// PREFIERES
-// =====================
-function renderPrefieres() {
-  document.querySelector(".swipe-container").classList.add("hidden");
-
-  const pref = document.getElementById("prefSelector");
-  pref.classList.remove("hidden");
-
-  const q = getRandomQuestion();
-  currentPref = q;
-
-  document.getElementById("opt1").innerText = q.opcion1;
-  document.getElementById("opt2").innerText = q.opcion2;
 }
 
 // =====================
