@@ -29,6 +29,12 @@ const GameEngine = {
   }
 };
 
+function resetGameUI() {
+  document.querySelector(".swipe-container").innerHTML = "";
+  document.getElementById("modeSelector")?.classList.add("hidden");
+  document.getElementById("prefSelector")?.classList.add("hidden");
+}
+
 // --------------------
 // HELPERS
 // --------------------
