@@ -25,37 +25,28 @@
   
     <div class="setup-wrapper">
   
-      <!-- BLOQUE: agregar jugador -->
       <div class="setup-block">
-  
         <h2>👥 Jugadores</h2>
-  
+
         <div class="input-row">
           <input id="playerInput" type="text" placeholder="Nombre del jugador" />
           <button id="addPlayer">➕</button>
         </div>
-  
       </div>
   
-      <!-- BLOQUE: lista -->
       <div class="setup-block">
-  
         <h3>Lista actual</h3>
         <div id="playersList" class="players-list"></div>
-  
       </div>
   
-      <!-- BLOQUE: acciones -->
       <div class="setup-block actions">
-  
         <button id="startGame" class="primary full">
           🚀 Empezar juego
         </button>
-  
+
         <button id="resetAll" class="danger full">
           🧹 Reiniciar todo
         </button>
-  
       </div>
   
     </div>
@@ -113,49 +104,41 @@
   </section>
 
   <!-- =========================
-       GAME UI
+       GAME UI (CORRECTO)
   ========================== -->
   <main class="game hidden" id="gameUI">
 
-    <!-- HEADER -->
+    <!-- HEADER ÚNICO -->
     <header class="header">
 
-      <div class="hud">
-        <div id="currentPlayer">Turno: -</div>
-      </div>
-
-    </header>
-
-    <main class="game hidden" id="gameUI">
-
-    <header class="header">
-  
       <div class="top-bar">
         <button id="backMenu" class="back">⬅ Juegos</button>
         <h1>🍷 Party Swipe</h1>
       </div>
-  
+
       <div class="hud">
         <div id="currentPlayer">Turno: -</div>
       </div>
-  
+
     </header>
-  
+
     <!-- SWIPE AREA -->
     <section class="swipe-container">
+      <!-- cards dinámicas aquí -->
     </section>
-  
+
     <!-- MODE SELECTOR -->
     <section id="modeSelector" class="mode-selector hidden">
+
       <h2>Elige una opción</h2>
-  
+
       <div class="mode-buttons">
         <button id="chooseTruth" class="mode truth">🤍 Verdad</button>
         <button id="chooseDare" class="mode dare">🔥 Reto</button>
       </div>
-  
+
     </section>
-  
+
   </main>
 
 </div>
