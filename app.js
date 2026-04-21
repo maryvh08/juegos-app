@@ -7,29 +7,6 @@ let currentLevel = null;
 let pendingMode = null;
 
 // =====================
-// ENGINE
-// =====================
-const GameEngine = {
-  state: {
-    players: JSON.parse(localStorage.getItem("players")) || [],
-    currentIndex: Number(localStorage.getItem("turn")) || 0
-  },
-
-  nextPlayer() {
-    if (!this.state.players.length) return;
-
-    this.state.currentIndex =
-      (this.state.currentIndex + 1) % this.state.players.length;
-
-    localStorage.setItem("turn", this.state.currentIndex);
-  },
-
-  currentPlayer() {
-    return this.state.players[this.state.currentIndex];
-  }
-};
-
-// =====================
 // HELPERS
 // =====================
 function getCard() {
@@ -263,6 +240,44 @@ function addPlayer(name) {
   renderPlayers();
 }
 
+// =====================
+// ENGINE
+// =====================
+const GameEngine = {
+  state: {
+    players: JSON.parse(localStorage.getItem("players")) || [],
+    currentIndex: Number(localStorage.getItem("turn")) || 0
+  },
+
+  nextPlayer() {
+    if (!this.state.players.length) return;
+
+    this.state.currentIndex =
+      (this.state.currentIndex + 1) % this.state.players.length;
+
+    localStorage.setItem("turn", this.state.currentIndex);
+  },
+
+  currentPlayer() {
+    return this.state.players[this.state.currentIndex];
+  },
+
+  // ✅ ESTA FUNCIÓN FALTABA
+  savePlayers() {
+    localStorage.setItem("players", JSON.stringify(this.state.players));
+  },
+
+  // (opcional pero ya lo usas)
+  removePlayer(index) {
+    this.state.players.splice(index, 1);
+    this.savePlayers();
+  },
+
+  editPlayer(index, newName) {
+    this.state.players[index] = newName;
+    this.savePlayers();
+  }
+};
 document.getElementById("backHome").onclick = () => { 
   // ocultar todo 
   document.getElementById("gameUI").classList.add("hidden"); 
