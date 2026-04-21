@@ -1,0 +1,368 @@
+{
+  "suave": [
+    {
+      "opcion1": "Playa todo el año",
+      "opcion2": "Montaña todo el año"
+    },
+    {
+      "opcion1": "Dormir todo el día",
+      "opcion2": "No dormir nunca"
+    },
+    {
+      "opcion1": "Solo pizza siempre",
+      "opcion2": "Solo hamburguesa siempre"
+    },
+    {
+      "opcion1": "Ser invisible",
+      "opcion2": "Leer mentes"
+    },
+    {
+      "opcion1": "Volar como pájaro",
+      "opcion2": "Nadar como pez"
+    },
+    {
+      "opcion1": "Verano eterno",
+      "opcion2": "Invierno eterno"
+    },
+    {
+      "opcion1": "Solo perros",
+      "opcion2": "Solo gatos"
+    },
+    {
+      "opcion1": "Café toda la vida",
+      "opcion2": "Té toda la vida"
+    },
+    {
+      "opcion1": "Vivir 100 años aburrido",
+      "opcion2": "Vivir 50 años feliz"
+    },
+    {
+      "opcion1": "Siempre verano",
+      "opcion2": "Siempre Navidad"
+    },
+    {
+      "opcion1": "Oler siempre a perfume",
+      "opcion2": "Oler siempre a comida"
+    },
+    {
+      "opcion1": "Hablar con animales",
+      "opcion2": "Hablar todos los idiomas"
+    },
+    {
+      "opcion1": "Comer solo helado",
+      "opcion2": "Comer solo chocolate"
+    },
+    {
+      "opcion1": "Ser rico sin amigos",
+      "opcion2": "Ser pobre con amigos"
+    },
+    {
+      "opcion1": "Viajar al pasado",
+      "opcion2": "Viajar al futuro"
+    },
+    {
+      "opcion1": "Cielo nublado siempre",
+      "opcion2": "Sol quemante siempre"
+    },
+    {
+      "opcion1": "Solo acción en cine",
+      "opcion2": "Solo comedias"
+    },
+    {
+      "opcion1": "Correr súper rápido",
+      "opcion2": "Saltar súper alto"
+    },
+    {
+      "opcion1": "Dulces todo el día",
+      "opcion2": "Frutas todo el día"
+    },
+    {
+      "opcion1": "Vivir en agua",
+      "opcion2": "Vivir en aire"
+    },
+    {
+      "opcion1": "Mañanas temprano",
+      "opcion2": "Noches hasta tarde"
+    },
+    {
+      "opcion1": "Lluvia constante",
+      "opcion2": "Viento constante"
+    },
+    {
+      "opcion1": "Solo música pop",
+      "opcion2": "Solo rock"
+    },
+    {
+      "opcion1": "Ojos de gato",
+      "opcion2": "Orejas de conejo"
+    },
+    {
+      "opcion1": "Comer solo verde",
+      "opcion2": "Comer solo rojo"
+    },
+    {
+      "opcion1": "Hablar lento siempre",
+      "opcion2": "Hablar rápido siempre"
+    },
+    {
+      "opcion1": "Ser gigante",
+      "opcion2": "Ser diminuto"
+    },
+    {
+      "opcion1": "Siempre calor",
+      "opcion2": "Siempre frío"
+    },
+    {
+      "opcion1": "Solo azul en mundo",
+      "opcion2": "Solo verde en mundo"
+    },
+    {
+      "opcion1": "Caminar en nubes",
+      "opcion2": "Correr en arcoíris"
+    }
+  ],
+  "medio": [
+    {
+      "opcion1": "Perder olfato",
+      "opcion2": "Perder gusto"
+    },
+    {
+      "opcion1": "Olvidar tu primer beso",
+      "opcion2": "Olvidar tu primer amor"
+    },
+    {
+      "opcion1": "Que te vean llorar",
+      "opcion2": "Que te vean bailar mal"
+    },
+    {
+      "opcion1": "Ser soltero forever",
+      "opcion2": "Casarte con quien no amas"
+    },
+    {
+      "opcion1": "No más alcohol",
+      "opcion2": "No más café"
+    },
+    {
+      "opcion1": "Perder teléfono",
+      "opcion2": "Perder billetera"
+    },
+    {
+      "opcion1": "Trabajar de noche",
+      "opcion2": "Trabajar fines de semana"
+    },
+    {
+      "opcion1": "Oler mal siempre",
+      "opcion2": "Sudar mucho siempre"
+    },
+    {
+      "opcion1": "Hablar con acento ridículo",
+      "opcion2": "Tartamudear siempre"
+    },
+    {
+      "opcion1": "No más sexo 1 año",
+      "opcion2": "No más dulces 1 año"
+    },
+    {
+      "opcion1": "Que ex vea tu casa sucia",
+      "opcion2": "Que jefe vea tu ropa interior"
+    },
+    {
+      "opcion1": "Cantar mal en público",
+      "opcion2": "Bailar desnudo privado"
+    },
+    {
+      "opcion1": "Perder voz 1 mes",
+      "opcion2": "Perder vista 1 semana"
+    },
+    {
+      "opcion1": "Come solo insectos",
+      "opcion2": "Bebe solo leche agria"
+    },
+    {
+      "opcion1": "Tu crush te rechaza",
+      "opcion2": "Tu amigo te traiciona"
+    },
+    {
+      "opcion1": "Siempre solo en fiesta",
+      "opcion2": "Siempre rodeado de extraños"
+    },
+    {
+      "opcion1": "No más Netflix",
+      "opcion2": "No más redes sociales"
+    },
+    {
+      "opcion1": "Dientes amarillos",
+      "opcion2": "Culo caído"
+    },
+    {
+      "opcion1": "Que te pillen masturbando",
+      "opcion2": "Que te pillen robando"
+    },
+    {
+      "opcion1": "Vivir sin música",
+      "opcion2": "Vivir sin colores"
+    },
+    {
+      "opcion1": "Sexo solo 1 vez al mes",
+      "opcion2": "Comida solo 1 vez al día"
+    },
+    {
+      "opcion1": "Pesadilla cada noche",
+      "opcion2": "Insomnio cada noche"
+    },
+    {
+      "opcion1": "Todos tus secretos públicos",
+      "opcion2": "Todas tus fotos embarazosas públicas"
+    },
+    {
+      "opcion1": "Amigos falsos ricos",
+      "opcion2": "Familia falsa pobre"
+    },
+    {
+      "opcion1": "Siempre tarde a todo",
+      "opcion2": "Siempre temprano a todo"
+    },
+    {
+      "opcion1": "Oler a ajo siempre",
+      "opcion2": "Oler a sudor siempre"
+    },
+    {
+      "opcion1": "No más besos románticos",
+      "opcion2": "No más abrazos calientes"
+    },
+    {
+      "opcion1": "Vivir en sótano",
+      "opcion2": "Vivir en ático sin vista"
+    },
+    {
+      "opcion1": "Perro que muerde",
+      "opcion2": "Gato que orina todo"
+    },
+    {
+      "opcion1": "Sexo sin preliminares",
+      "opcion2": "Sexo sin posturas"
+    }
+  ],
+  "alto": [
+    {
+      "opcion1": "Sexo solo misionero",
+      "opcion2": "Sexo solo doggy style"
+    },
+    {
+      "opcion1": "Infidelidad física",
+      "opcion2": "Infidelidad emocional"
+    },
+    {
+      "opcion1": "Ser pillado follando",
+      "opcion2": "Ser pillado esnifando"
+    },
+    {
+      "opcion1": "STD curable",
+      "opcion2": "Embarazo no deseado"
+    },
+    {
+      "opcion1": "Sexo sin condón",
+      "opcion2": "Sexo sin placer"
+    },
+    {
+      "opcion1": "Trío con desconocidos",
+      "opcion2": "Trío con amigos"
+    },
+    {
+      "opcion1": "Orgía con 5 personas",
+      "opcion2": "Sexo público en fiesta"
+    },
+    {
+      "opcion1": "Sexo anal doloroso",
+      "opcion2": "Sexo oral asqueroso"
+    },
+    {
+      "opcion1": "Fetichismo pies sucios",
+      "opcion2": "Fetichismo ropa usada"
+    },
+    {
+      "opcion1": "Ser dominante sumiso",
+      "opcion2": "Ser sumiso dominante"
+    },
+    {
+      "opcion1": "Sexo menstrual",
+      "opcion2": "Sexo con diarrea"
+    },
+    {
+      "opcion1": "Grabarte masturbando",
+      "opcion2": "Que te graben follando"
+    },
+    {
+      "opcion1": "Pagar por sexo",
+      "opcion2": "Cobrar por sexo"
+    },
+    {
+      "opcion1": "Sexo con ex",
+      "opcion2": "Sexo con jefe"
+    },
+    {
+      "opcion1": "BDSM extremo dolor",
+      "opcion2": "BDSM extremo humillación"
+    },
+    {
+      "opcion1": "Sexo drogado",
+      "opcion2": "Sexo alcoholizado extremo"
+    },
+    {
+      "opcion1": "Cornudo observado",
+      "opcion2": "Cornudo activo"
+    },
+    {
+      "opcion1": "Golden shower recibir",
+      "opcion2": "Golden shower dar"
+    },
+    {
+      "opcion1": "Sexo familiar prohibido",
+      "opcion2": "Sexo animal prohibido"
+    },
+    {
+      "opcion1": "Aborto forzado",
+      "opcion2": "Parto forzado"
+    },
+    {
+      "opcion1": "Sexo grabado y vendido",
+      "opcion2": "Sexo filmado y viral"
+    },
+    {
+      "opcion1": "Violación fingida",
+      "opcion2": "Estupro fingido"
+    },
+    {
+      "opcion1": "Sexo con menor consentido",
+      "opcion2": "Sexo con mayor forzado"
+    },
+    {
+      "opcion1": "Fetichismo cadáveres",
+      "opcion2": "Fetichismo niños"
+    },
+    {
+      "opcion1": "Ser esclavo sexual",
+      "opcion2": "Tener esclavo sexual"
+    },
+    {
+      "opcion1": "Sexo público arrestado",
+      "opcion2": "Sexo drogas arrestado"
+    },
+    {
+      "opcion1": "STD incurable",
+      "opcion2": "Impotencia permanente"
+    },
+    {
+      "opcion1": "Gangbang recibir",
+      "opcion2": "Gangbang dar"
+    },
+    {
+      "opcion1": "Sexo con violencia",
+      "opcion2": "Sexo con sangre"
+    },
+    {
+      "opcion1": "Prostitución familiar",
+      "opcion2": "Prostitución pública"
+    }
+  ]
+}
