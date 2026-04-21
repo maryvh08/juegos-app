@@ -498,6 +498,35 @@ button:hover {
 .pref-selector {
   background: transparent !important;
 }
+
+.pref-selector {
+  text-align: center;
+  padding: 20px;
+}
+
+.prefieres {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.pref1, .pref2 {
+  width: 150px;
+  height: 160px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+
+  font-weight: 600;
+  padding: 12px;
+}
 /* =========================
    UTILITIES
 ========================= */
