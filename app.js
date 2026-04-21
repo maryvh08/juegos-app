@@ -409,13 +409,15 @@ function showCard() {
   bindCard();
   updateColor();
 }
+
 function bindCard() {
   const card = getCard();
   if (!card) return;
 
-  if (currentGame === "verdad_reto" || currentGame === "que_prefieres") {
-    return; // 🚫 desactiva swipe
-  }
+  if (
+    currentGame === "verdad_reto" ||
+    currentGame === "que_prefieres"
+  ) return;
 
   card.addEventListener("mousedown", start);
   card.addEventListener("touchstart", start);
@@ -446,7 +448,11 @@ function updateColor() {
   const card = getCard();
   if (!card) return;
 
-  if (currentGame === "que_prefieres") return;
+  // 🚫 NUNCA aplicar en otros modos
+  if (
+    currentGame === "que_prefieres" ||
+    currentGame === "verdad_reto"
+  ) return;
 
   const colors = {
     suave: "linear-gradient(135deg, #2e7d32, #66bb6a)",
@@ -611,7 +617,6 @@ function isPrefieres() {
 }
 
 function showPrefieres() {
-
   hideAllGameUIs();
 
   const q = getRandomQuestion();
@@ -619,10 +624,15 @@ function showPrefieres() {
   const pref = document.getElementById("prefSelector");
   pref.classList.remove("hidden");
 
-  document.getElementById("opt1").innerText = q.opcion1;
-  document.getElementById("opt2").innerText = q.opcion2;
-}
+  const opt1 = document.getElementById("opt1");
+  const opt2 = document.getElementById("opt2");
 
+  opt1.innerText = q.opcion1;
+  opt2.innerText = q.opcion2;
+
+  // 👇 importante: guardamos la pregunta actual
+  currentPref = q;
+}
 // --------------------
 // BUTTONS
 // --------------------
