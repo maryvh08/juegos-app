@@ -183,11 +183,11 @@ async function startGame() {
 }
 
 function nextTurn() {
-  if (!skipTurnChange) {
+
+  if (currentGame !== "nunca") {
     GameEngine.nextPlayer();
   }
 
-  skipTurnChange = false;
   GameEngine.state.streak++;
 
   showCard();
@@ -284,6 +284,17 @@ function updateUI() {
   }
 }
 
+function updateControls() {
+  const shotBtn = document.getElementById("shot");
+
+  if (!shotBtn) return;
+
+  if (currentGame === "verdad_reto") {
+    shotBtn.style.display = "none";
+  } else {
+    shotBtn.style.display = "block";
+  }
+}
 // --------------------
 // COLOR
 // --------------------
@@ -371,12 +382,7 @@ function swipe(dir) {
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
-  if (dir === 1) {
-    GameEngine.addPoint(GameEngine.currentPlayer());
-  } else {
-    GameEngine.addShot();
-    sounds.shot.play();
-  }
+  handleGameAction();
 
   vibrate();
 
@@ -386,6 +392,25 @@ function swipe(dir) {
   }, 250);
 }
 
+function handleGameAction() {
+  const player = GameEngine.currentPlayer();
+
+  switch (currentGame) {
+
+    case "verdad_shot":
+      // aquí decides si quieres sumar punto o no
+      break;
+
+    case "verdad_reto":
+      // solo sigue el turno
+      break;
+
+    case "nunca":
+      // normalmente todos toman si aplica
+      GameEngine.addShot();
+      break;
+  }
+}
 // --------------------
 // FX
 // --------------------
@@ -452,12 +477,21 @@ function getX(e) {
 document.getElementById("accept")?.addEventListener("click", () => swipe(1));
 document.getElementById("skip")?.addEventListener("click", () => swipe(-1));
 
-document.getElementById("shot")?.addEventListener("click", () => {
-  GameEngine.addShot();
+document.getElementById("shot").onclick = () => {
+  if (currentGame === "verdad_shot" || currentGame === "nunca") {
+    GameEngine.addShot();
+  }
+
   nextTurn();
-});
+};
+
+document.getElementById("next").onclick = () => {
+  nextTurn();
+};
 
 document.getElementById("backMenu").onclick = () => {
   document.getElementById("gameUI").classList.add("hidden");
   document.getElementById("gameSelector").classList.remove("hidden");
 };
+
+updateControls();
