@@ -47,6 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("backMenu").onclick = () => {
+    currentGame = null; // 🔥 IMPORTANTE
+    pendingMode = null;
+  
+    const container = document.querySelector(".swipe-container");
+    container.classList.remove("qp-mode");
+    container.innerHTML = "";
+  
     document.getElementById("gameUI").classList.add("hidden");
     document.getElementById("gameSelector").classList.remove("hidden");
   };
@@ -66,7 +73,7 @@ async function loadData(file = currentGame) {
 function getRandomQuestion() {
   const list = data[currentLevel];
 
-  if (!list || !list.length) return { texto: "Sin preguntas" };
+  if (!list || !list.length) return { opcion1: "Sin datos", opcion2: "Sin datos" };
 
   return list[Math.floor(Math.random() * list.length)];
 }
@@ -76,6 +83,11 @@ function getRandomQuestion() {
 // =====================
 async function startGame() {
   await loadData();
+
+  // 🔥 RESET IMPORTANTE
+  const container = document.querySelector(".swipe-container");
+  container.classList.remove("qp-mode");
+  container.innerHTML = "";
 
   if (currentGame === "verdad_reto") {
     showModeSelector();
@@ -99,7 +111,12 @@ async function startMode(mode) {
   await loadData(mode === "verdad" ? "verdad_shot" : "verdad_reto");
 
   document.getElementById("modeSelector").classList.add("hidden");
-  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  const container = document.querySelector(".swipe-container");
+  container.classList.remove("qp-mode");
+  container.innerHTML = "";
+
+  container.classList.remove("hidden");
 
   renderCard();
 }
@@ -109,6 +126,10 @@ async function startMode(mode) {
 // =====================
 function nextTurn() {
   GameEngine.nextPlayer();
+
+  const container = document.querySelector(".swipe-container");
+  container.classList.remove("qp-mode");
+  container.innerHTML = ""; // 👈 IMPORTANTE limpiar estado visual
 
   if (currentGame === "verdad_reto") {
     showModeSelector();
@@ -124,11 +145,40 @@ function nextTurn() {
 function renderCard() {
   const container = document.querySelector(".swipe-container");
   container.innerHTML = "";
-
   container.classList.remove("hidden");
+  container.classList.remove("qp-mode"); // limpia estado previo
 
   const q = getRandomQuestion();
 
+  // =========================
+  // 🎯 MODO: QUÉ PREFIERES
+  // =========================
+  if (currentGame === "que_prefieres") {
+    container.classList.add("qp-mode");
+
+    const card1 = document.createElement("div");
+    const card2 = document.createElement("div");
+
+    card1.className = "card choice-card";
+    card2.className = "card choice-card";
+
+    card1.innerHTML = `<p>${q.opcion1}</p>`;
+    card2.innerHTML = `<p>${q.opcion2}</p>`;
+
+    // 👉 swipe lógico
+    card1.onclick = () => chooseCard(card1, -1); // izquierda
+    card2.onclick = () => chooseCard(card2, 1);  // derecha
+
+    container.appendChild(card1);
+    container.appendChild(card2);
+
+    updateUI();
+    return;
+  }
+
+  // =========================
+  // 🧱 RESTO DE JUEGOS
+  // =========================
   const card = document.createElement("div");
   card.className = "card";
   card.id = "card";
@@ -153,12 +203,36 @@ function bindCard() {
 
   card.onmousedown = (e) => startX = e.clientX;
 
+  card.onmousemove = (e) => {
+    if (!startX) return;
+
+    const diff = e.clientX - startX;
+
+    card.style.transform = `translateX(${diff}px) rotate(${diff / 20}deg)`;
+
+    if (diff > 50) {
+      card.style.background = "rgba(0,255,100,0.15)";
+    } else if (diff < -50) {
+      card.style.background = "rgba(255,80,80,0.15)";
+    } else {
+      card.style.background = "";
+    }
+  };
+
+  card.onmouseleave = () => {
+    startX = 0;
+    card.style.transform = "";
+    card.style.background = "";
+  };
+
   card.onmouseup = (e) => {
     const diff = e.clientX - startX;
 
     if (diff > 80) swipe(1);
     else if (diff < -80) swipe(-1);
     else nextTurn();
+
+    startX = 0;
   };
 }
 
@@ -206,13 +280,12 @@ function renderPlayers() {
     div.className = "player-card";
 
     div.innerHTML = `
-      <span>${name}</span>
-      <div>
+      <span class="player-name">${name}</span>
+      <div class="player-actions">
         <button class="edit">✏️</button>
         <button class="delete">❌</button>
       </div>
     `;
-
     // ELIMINAR
     div.querySelector(".delete").onclick = () => {
       GameEngine.removePlayer(index);
@@ -278,6 +351,72 @@ const GameEngine = {
     this.savePlayers();
   }
 };
+
+// =====================
+// PREFIERES
+// =====================
+function swipeChoice(choice) {
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach((card, index) => {
+    const dir = (index === 0 ? -1 : 1);
+    card.style.transform = `translateX(${dir * 800}px)`;
+  });
+
+  setTimeout(() => nextTurn(), 200);
+}
+
+function bindChoiceSwipe() {
+  const card = getCard();
+  if (!card) return;
+
+  let startX = 0;
+
+  card.onmousedown = (e) => startX = e.clientX;
+
+  card.onmouseup = (e) => {
+    const diff = e.clientX - startX;
+
+    if (diff > 80) {
+      choose(2); // 👉 derecha
+    } else if (diff < -80) {
+      choose(1); // 👉 izquierda
+    } else {
+      nextTurn();
+    }
+  };
+}
+
+function choose(option) {
+  const card = getCard();
+  if (!card) return;
+
+  const dir = option === 1 ? -1 : 1;
+
+  card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 10}deg)`;
+  card.style.opacity = 0;
+
+  setTimeout(() => nextTurn(), 250);
+}
+
+function chooseCard(card, dir) {
+  const all = document.querySelectorAll(".choice-card");
+
+  all.forEach(c => {
+    if (c === card) {
+      c.style.transform = `translateX(${dir * 800}px) scale(1.05)`;
+      c.style.opacity = 1;
+    } else {
+      c.style.transform = `scale(0.8)`;
+      c.style.opacity = 0;
+    }
+  });
+
+  setTimeout(() => nextTurn(), 250);
+}
+// =====================
+// BOTONES
+// =====================
 document.getElementById("backHome").onclick = () => { 
   // ocultar todo 
   document.getElementById("gameUI").classList.add("hidden"); 
