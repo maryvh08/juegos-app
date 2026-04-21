@@ -176,8 +176,6 @@ async function loadData() {
 async function startGame() {
   await loadData();
 
-  updateControls(); // 👈 aquí sí tiene sentido
-
   showCard();
   updateUI();
   animateIn();
@@ -305,18 +303,6 @@ function updateUI() {
 // --------------------
 // COLOR
 // --------------------
-function updateControls() {
-  const shotBtn = document.getElementById("shot");
-  if (!shotBtn) return;
-
-  // SOLO en verdad o shot
-  if (currentGame === "verdad_shot") {
-    shotBtn.style.display = "block";
-  } else {
-    shotBtn.style.display = "none";
-  }
-}
-
 function updateColor() {
   if (!card) return;
 
@@ -470,21 +456,7 @@ function getX(e) {
 // --------------------
 // BUTTONS
 // --------------------
-
-document.getElementById("shot").onclick = () => {
-  if (currentGame === "verdad_shot" || currentGame === "nunca") {
-    GameEngine.addShot();
-
-    sounds.shot.currentTime = 0;
-    sounds.shot.play();
-  }
-
-  nextTurn();
-};
-
 document.getElementById("backMenu").onclick = () => {
   document.getElementById("gameUI").classList.add("hidden");
   document.getElementById("gameSelector").classList.remove("hidden");
 };
-
-updateControls();
