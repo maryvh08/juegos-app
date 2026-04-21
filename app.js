@@ -67,6 +67,7 @@ let currentLevel = null;
 let usedQuestions = [];
 let skipTurnChange = false;
 let pendingMode = null; // "verdad" | "reto"
+let currentPref = null;
 
 // --------------------
 // DOM
@@ -246,12 +247,18 @@ async function startGame() {
 }
 
 function nextCardFlow() {
+
   if (currentGame === "verdad_reto") {
     showModeSelectorIfNeeded();
     return;
   }
 
-  // 🍺 nunca o juegos directos
+  if (currentGame === "que_prefieres") {
+    showPrefieres();
+    return;
+  }
+
+  // otros juegos
   showCard();
   animateIn();
   updateUI();
@@ -264,7 +271,8 @@ function nextTurn() {
 
   GameEngine.state.streak++;
 
-  pendingMode = null;
+  // ocultar selects
+  document.getElementById("prefSelector")?.classList.add("hidden");
 
   nextCardFlow();
 }
@@ -569,6 +577,20 @@ function isPrefieres() {
   return currentGame === "que_prefieres";
 }
 
+function showPrefieres() {
+  const q = getRandomQuestion();
+
+  currentPref = q;
+
+  document.getElementById("modeSelector")?.classList.add("hidden");
+  document.querySelector(".swipe-container").classList.add("hidden");
+
+  const pref = document.getElementById("prefSelector");
+  pref.classList.remove("hidden");
+
+  document.getElementById("opt1").innerText = q.opcion1;
+  document.getElementById("opt2").innerText = q.opcion2;
+}
 // --------------------
 // BUTTONS
 // --------------------
@@ -639,4 +661,14 @@ document.getElementById("chooseTruth").onclick = () => {
 document.getElementById("chooseDare").onclick = () => {
   pendingMode = "reto";
   startQuestionRound();
+};
+
+document.getElementById("opt1").onclick = () => {
+  console.log("Eligió:", currentPref.opcion1);
+  nextTurn();
+};
+
+document.getElementById("opt2").onclick = () => {
+  console.log("Eligió:", currentPref.opcion2);
+  nextTurn();
 };
