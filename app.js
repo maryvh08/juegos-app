@@ -294,11 +294,16 @@ function getRandomQuestion() {
 
 async function loadModeData() {
   try {
-    let file = currentGame;
+    let file;
 
-    // 🔥 si es verdad o reto, usamos sub-selección
-    if (currentGame === "verdad_reto_system") {
-      file = pendingMode === "verdad" ? "verdad_shot" : "verdad_reto";
+    if (pendingMode === "verdad") {
+      file = "verdad_shot";
+    } 
+    else if (pendingMode === "reto") {
+      file = "verdad_reto";
+    } 
+    else {
+      throw new Error("Modo no definido");
     }
 
     const res = await fetch(`data/${file}.json`);
