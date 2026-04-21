@@ -322,3 +322,71 @@ button:hover {
 .hidden {
   display: none;
 }
+
+/* =========================
+   SETUP LAYOUT MODERNO
+========================= */
+
+.setup {
+  padding: 24px;
+}
+
+.setup h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.setup-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* bloques tipo "cards" */
+.setup-block {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+
+  padding: 16px;
+}
+
+/* input + botón en fila */
+.input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-row input {
+  flex: 1;
+}
+
+/* botón pequeño de añadir */
+#addPlayer {
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* lista más limpia */
+.players-list {
+  margin-top: 10px;
+  min-height: 20px;
+  font-size: 14px;
+  opacity: 0.9;
+  word-break: break-word;
+}
+
+/* acciones separadas */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* botones full width */
+.full {
+  width: 100%;
+}
