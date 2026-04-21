@@ -333,7 +333,9 @@ button:hover {
   flex-direction: column;
 
   justify-content: flex-start;
-  gap: 16px;
+
+  gap: 8px; /* 👈 menos separación global */
+  padding: 0 16px;
 }
 
 /* =========================
@@ -389,20 +391,24 @@ button:hover {
    MODE SELECTOR
 ========================= */
 .mode-selector {
-  margin-top: auto;
-  padding-bottom: 30px;
+  padding: 10px 0 20px;
+  margin-top: 8px;
+}
+
+.mode-selector h2 {
+  margin-bottom: 10px;
 }
 
 .mode-buttons {
   display: flex;
-  gap: 16px;
+  gap: 10px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 12px;
 }
 
 .mode {
-  width: 140px;
-  height: 120px;
+  width: 160px;
+  height: 130px;
 
   border-radius: 20px;
 
