@@ -435,14 +435,23 @@ button:hover {
   background: linear-gradient(135deg, #ff6d00, #ffab00);
 }
 
-.prefieres {
-  background: linear-gradient(135deg, #7c4dff, #b388ff);
-}
-
 /* =========================
    PREFIERES
 ========================= */
 .prefieres {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 18px;
+   background: linear-gradient(135deg, #7c4dff, #b388ff);
+}
+
+/* GAME TYPE CARD */
+.select-card.prefieres {
+  background: linear-gradient(135deg, #7c4dff, #b388ff);
+}
+
+.prefieres-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -453,6 +462,14 @@ button:hover {
   padding: 16px;
   border-radius: 16px;
   background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 .left {
@@ -467,6 +484,7 @@ button:hover {
   text-align: center;
   font-weight: bold;
   opacity: 0.6;
+  letter-spacing: 2px;
 }
 
 .pref1 {
@@ -477,12 +495,6 @@ button:hover {
   background: linear-gradient(135deg, #00bcd4, #4dd0e1);
 }
 
-/* texto más limpio */
-.mode {
-  padding: 16px;
-  font-size: 16px;
-  text-align: center;
-}
 /* =========================
    UTILITIES
 ========================= */
