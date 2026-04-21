@@ -256,8 +256,17 @@ function bindCard() {
 
   newCard.addEventListener("mousedown", start);
   newCard.addEventListener("touchstart", start);
+
+  // 👇 NUEVO: tap simple = siguiente carta
+  newCard.addEventListener("click", handleCardTap);
 }
 
+function handleCardTap() {
+  if (moved) return; // fue swipe, no tap
+
+  nextTurn();
+  animateIn();
+}
 // --------------------
 // UI
 // --------------------
@@ -296,12 +305,16 @@ function updateUI() {
 // --------------------
 // COLOR
 // --------------------
-function updateControls() { 
-  const shotBtn = document.getElementById("shot"); 
-  if (!shotBtn) return; 
-  if (currentGame === "verdad_reto") { 
-    shotBtn.style.display = "none"; } 
-  else { shotBtn.style.display = "block"; } 
+function updateControls() {
+  const shotBtn = document.getElementById("shot");
+  if (!shotBtn) return;
+
+  // SOLO en verdad o shot
+  if (currentGame === "verdad_shot") {
+    shotBtn.style.display = "block";
+  } else {
+    shotBtn.style.display = "none";
+  }
 }
 
 function updateColor() {
