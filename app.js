@@ -206,13 +206,12 @@ function renderPlayers() {
     div.className = "player-card";
 
     div.innerHTML = `
-      <span>${name}</span>
-      <div>
+      <span class="player-name">${name}</span>
+      <div class="player-actions">
         <button class="edit">✏️</button>
         <button class="delete">❌</button>
       </div>
     `;
-
     // ELIMINAR
     div.querySelector(".delete").onclick = () => {
       GameEngine.removePlayer(index);
