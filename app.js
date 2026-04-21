@@ -433,3 +433,20 @@ document.getElementById("backMenu").onclick = () => {
   document.getElementById("gameUI").classList.add("hidden");
   document.getElementById("gameSelector").classList.remove("hidden");
 };
+
+document.getElementById("backHome").onclick = () => {
+  // ocultar todo
+  document.getElementById("gameUI").classList.add("hidden");
+  document.getElementById("gameSelector").classList.add("hidden");
+  document.getElementById("levelSelector").classList.add("hidden");
+
+  // mostrar setup (pantalla inicial)
+  document.getElementById("setup").classList.remove("hidden");
+
+  // limpiar estado de partida actual (pero NO jugadores)
+  localStorage.removeItem("currentGame");
+  localStorage.removeItem("currentLevel");
+
+  currentGame = null;
+  currentLevel = null;
+};
