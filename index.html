@@ -22,22 +22,44 @@
   <section class="setup" id="setup">
 
     <h1>🔥 Party Swipe</h1>
-
-    <div class="card setup-card">
-
-      <h2>👥 Jugadores</h2>
-
-      <input id="playerInput" type="text" placeholder="Nombre del jugador" />
-
-      <button id="addPlayer">Agregar</button>
-
-      <div id="playersList" class="players-list"></div>
-
-      <button id="resetAll" class="danger">🧹 Reiniciar todo</button>
-
-      <button id="startGame" class="primary">🚀 Empezar</button>
-
+  
+    <div class="setup-wrapper">
+  
+      <!-- BLOQUE: agregar jugador -->
+      <div class="setup-block">
+  
+        <h2>👥 Jugadores</h2>
+  
+        <div class="input-row">
+          <input id="playerInput" type="text" placeholder="Nombre del jugador" />
+          <button id="addPlayer">➕</button>
+        </div>
+  
+      </div>
+  
+      <!-- BLOQUE: lista -->
+      <div class="setup-block">
+  
+        <h3>Lista actual</h3>
+        <div id="playersList" class="players-list"></div>
+  
+      </div>
+  
+      <!-- BLOQUE: acciones -->
+      <div class="setup-block actions">
+  
+        <button id="startGame" class="primary full">
+          🚀 Empezar juego
+        </button>
+  
+        <button id="resetAll" class="danger full">
+          🧹 Reiniciar todo
+        </button>
+  
+      </div>
+  
     </div>
+  
   </section>
 
   <!-- =========================
