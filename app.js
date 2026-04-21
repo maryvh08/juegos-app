@@ -17,6 +17,7 @@ const GameEngine = {
 
   nextPlayer() {
     if (!this.state.players.length) return;
+
     this.state.currentIndex =
       (this.state.currentIndex + 1) % this.state.players.length;
 
@@ -87,6 +88,9 @@ async function loadData(file = currentGame) {
 
 function getRandomQuestion() {
   const list = data[currentLevel];
+
+  if (!list || !list.length) return { texto: "Sin preguntas" };
+
   return list[Math.floor(Math.random() * list.length)];
 }
 
@@ -124,7 +128,7 @@ async function startMode(mode) {
 }
 
 // =====================
-// MAIN FLOW (IMPORTANTE)
+// MAIN FLOW
 // =====================
 function nextTurn() {
   GameEngine.nextPlayer();
@@ -144,11 +148,15 @@ function renderCard() {
   const container = document.querySelector(".swipe-container");
   container.innerHTML = "";
 
+  container.classList.remove("hidden");
+
   const q = getRandomQuestion();
 
   const card = document.createElement("div");
   card.className = "card";
   card.id = "card";
+
+  card.innerHTML = `<p>${q.texto || q}</p>`;
 
   container.appendChild(card);
 
@@ -158,7 +166,7 @@ function renderCard() {
 }
 
 // =====================
-// SWIPE / CLICK
+// SWIPE
 // =====================
 function bindCard() {
   const card = getCard();
@@ -167,6 +175,7 @@ function bindCard() {
   let startX = 0;
 
   card.onmousedown = (e) => startX = e.clientX;
+
   card.onmouseup = (e) => {
     const diff = e.clientX - startX;
 
@@ -208,7 +217,7 @@ function animateIn() {
 }
 
 // =====================
-// PLAYERS (simple)
+// PLAYERS
 // =====================
 function renderPlayers() {
   const list = document.getElementById("playersList");
