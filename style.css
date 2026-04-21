@@ -456,3 +456,50 @@ button:hover {
 .player-actions .delete:hover {
   background: rgba(255, 0, 0, 0.35);
 }
+
+/* =========================
+   MODE SELECTOR
+========================= */
+
+.mode-selector {
+  text-align: center;
+  padding: 20px;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.mode {
+  width: 140px;
+  height: 120px;
+
+  border-radius: 20px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.2s ease;
+}
+
+.mode:hover {
+  transform: scale(1.05);
+}
+
+.truth {
+  background: linear-gradient(135deg, #4caf50, #81c784);
+}
+
+.dare {
+  background: linear-gradient(135deg, #ff6d00, #ffab00);
+}
