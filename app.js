@@ -8,12 +8,38 @@ let pendingMode = null;
 let currentPref = null;
 
 // --------------------
-// ENGINE (igual)
+// ENGINE
 // --------------------
-function initApp() {
+const GameEngine = {
+  state: {
+    players: JSON.parse(localStorage.getItem("players")) || [],
+    currentIndex: Number(localStorage.getItem("turn")) || 0
+  },
 
-  // BOTÓN INICIAR
+  nextPlayer() {
+    if (!this.state.players.length) return;
+
+    this.state.currentIndex =
+      (this.state.currentIndex + 1) % this.state.players.length;
+
+    localStorage.setItem("turn", this.state.currentIndex);
+  },
+
+  currentPlayer() {
+    return this.state.players[this.state.currentIndex];
+  }
+};
+
+// --------------------
+// INIT
+// --------------------
+document.addEventListener("DOMContentLoaded", initApp);
+
+function initApp() {
+  renderPlayers();
+
   const startBtn = document.getElementById("startGame");
+
   if (startBtn) {
     startBtn.onclick = () => {
       if (!GameEngine.state.players.length) {
@@ -26,7 +52,6 @@ function initApp() {
     };
   }
 
-  // BOTONES DE JUEGOS
   document.querySelectorAll("[data-game]").forEach(btn => {
     btn.onclick = () => {
       currentGame = btn.dataset.game;
@@ -36,7 +61,6 @@ function initApp() {
     };
   });
 
-  // NIVELES
   document.querySelectorAll("[data-level]").forEach(btn => {
     btn.onclick = async () => {
       currentLevel = btn.dataset.level;
@@ -47,84 +71,23 @@ function initApp() {
       await startGame();
     };
   });
-
-  console.log("✅ App inicializada correctamente");
-}
-
-const GameEngine = {
-  state: {
-    players: JSON.parse(localStorage.getItem("players")) || [],
-    currentIndex: Number(localStorage.getItem("turn")) || 0
-  },
-
-  nextPlayer() {
-    if (!this.state.players.length) return;
-    this.state.currentIndex =
-      (this.state.currentIndex + 1) % this.state.players.length;
-
-    localStorage.setItem("turn", this.state.currentIndex);
-  },
-
-  currentPlayer() {
-    return this.state.players[this.state.currentIndex];
-  }
-};
-
-function resetGameUI() {
-  document.querySelector(".swipe-container").innerHTML = "";
-  document.getElementById("modeSelector")?.classList.add("hidden");
-  document.getElementById("prefSelector")?.classList.add("hidden");
 }
 
 // --------------------
-// HELPERS
+// PLAYERS
 // --------------------
-function getCard() {
-  return document.getElementById("card");
-}
-
-function isPrefieres() {
-  return currentGame === "que_prefieres";
-}
-
-// --------------------
-// INIT
-// --------------------
-document.addEventListener("DOMContentLoaded", init);
-
 function renderPlayers() {
   const list = document.getElementById("playersList");
   if (!list) return;
 
   list.innerHTML = "";
 
-  GameEngine.state.players.forEach((name, index) => {
-    const card = document.createElement("div");
-    card.className = "player-card";
-
-    card.innerHTML = `
-      <span>${name}</span>
-    `;
-
-    list.appendChild(card);
+  GameEngine.state.players.forEach(name => {
+    const div = document.createElement("div");
+    div.className = "player-card";
+    div.innerText = name;
+    list.appendChild(div);
   });
-}
-
-function init() {
-  renderPlayers();
-
-  const savedGame = localStorage.getItem("currentGame");
-  const savedLevel = localStorage.getItem("currentLevel");
-
-  if (savedGame && savedLevel) {
-    currentGame = savedGame;
-    currentLevel = savedLevel;
-
-    document.getElementById("setup").classList.add("hidden");
-    document.getElementById("gameUI").classList.remove("hidden");
-
-    startGame();
-  }
 }
 
 // --------------------
@@ -157,7 +120,7 @@ async function startGame() {
 }
 
 // --------------------
-// MODE SELECTOR (VERDAD/RETO)
+// MODE SELECTOR
 // --------------------
 function showModeSelector() {
   document.getElementById("modeSelector").classList.remove("hidden");
@@ -185,8 +148,8 @@ async function startMode(mode) {
 function showPrefieres() {
   document.querySelector(".swipe-container").classList.add("hidden");
 
-  const pref = document.getElementById("prefSelector");
-  pref.classList.remove("hidden");
+  const box = document.getElementById("prefSelector");
+  box.classList.remove("hidden");
 
   const q = getRandomQuestion();
   currentPref = q;
@@ -199,7 +162,9 @@ function showPrefieres() {
 // QUESTIONS
 // --------------------
 function getRandomQuestion() {
-  const list = data[currentLevel];
+  const list = data[currentLevel] || [];
+  if (!list.length) return { texto: "Sin preguntas" };
+
   return list[Math.floor(Math.random() * list.length)];
 }
 
@@ -208,17 +173,17 @@ function getRandomQuestion() {
 // --------------------
 function showCard() {
   const container = document.querySelector(".swipe-container");
-  container.innerHTML = "";
 
+  container.innerHTML = "";
   container.classList.remove("hidden");
 
   const q = getRandomQuestion();
 
   const card = document.createElement("div");
-  card.className = "card dynamic-card";
+  card.className = "card";
   card.id = "card";
 
-  if (isPrefieres()) {
+  if (currentGame === "que_prefieres") {
     card.innerHTML = `
       <div class="prefieres">
         <div class="option left">👈 ${q.opcion2}</div>
@@ -232,17 +197,61 @@ function showCard() {
 
   container.appendChild(card);
 
-  bindCard();
+  enableSwipe();
 }
 
 // --------------------
-// FLOW NEXT
+// SWIPE (FUNCIONAL)
+// --------------------
+function enableSwipe() {
+  const card = getCard();
+  if (!card) return;
+
+  let startX = 0;
+
+  const start = (e) => {
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+  };
+
+  const end = (e) => {
+    const endX = e.changedTouches
+      ? e.changedTouches[0].clientX
+      : e.clientX;
+
+    const diff = endX - startX;
+
+    if (diff > 80) swipe(1);
+    else if (diff < -80) swipe(-1);
+  };
+
+  card.onmousedown = start;
+  card.onmouseup = end;
+
+  card.ontouchstart = start;
+  card.ontouchend = end;
+}
+
+// --------------------
+// SWIPE ACTION
+// --------------------
+function swipe(dir) {
+  const card = getCard();
+  if (!card) return;
+
+  card.style.transition = "0.25s ease";
+  card.style.transform =
+    `translateX(${dir * 500}px) rotate(${dir * 20}deg)`;
+
+  setTimeout(() => {
+    nextTurn();
+  }, 200);
+}
+
+// --------------------
+// NEXT TURN
 // --------------------
 function nextTurn() {
-
-  if (currentGame !== "nunca") {
-    GameEngine.nextPlayer();
-  }
+  GameEngine.nextPlayer();
 
   if (currentGame === "que_prefieres") {
     showPrefieres();
@@ -258,44 +267,6 @@ function nextTurn() {
   animateIn();
   updateUI();
 }
-
-// --------------------
-// SWIPE SIMPLIFICADO
-// --------------------
-function swipe(dir) {
-  const card = getCard();
-  if (!card) return;
-
-  card.style.transform = `translateX(${dir * 800}px)`;
-
-  setTimeout(() => {
-    nextTurn();
-  }, 200);
-}
-
-// --------------------
-// CLICK PREF
-// --------------------
-document.getElementById("opt1").onclick = () => {
-  console.log("Opción 1:", currentPref.opcion1);
-  nextTurn();
-};
-
-document.getElementById("opt2").onclick = () => {
-  console.log("Opción 2:", currentPref.opcion2);
-  nextTurn();
-};
-
-// --------------------
-// MODE BUTTONS
-// --------------------
-document.getElementById("chooseTruth").onclick = () => {
-  startMode("verdad");
-};
-
-document.getElementById("chooseDare").onclick = () => {
-  startMode("reto");
-};
 
 // --------------------
 // UI
@@ -320,56 +291,28 @@ function animateIn() {
 }
 
 // --------------------
-// SWIPE BIND (IMPORTANTE)
+// HELPERS
 // --------------------
-function bindCard() {
-  const card = getCard();
-  if (!card) return;
-
-  // 🚫 SOLO bloquear en modos especiales
-  if (currentGame === "que_prefieres") return;
-
-  let startX = 0;
-
-  const start = (e) => {
-    startX = e.clientX || e.touches?.[0].clientX;
-    document.onmouseup = end;
-    document.ontouchend = end;
-  };
-
-  const end = (e) => {
-    const endX = e.clientX || e.changedTouches?.[0].clientX;
-    const diff = endX - startX;
-
-    if (diff > 80) swipe(1);
-    else if (diff < -80) swipe(-1);
-
-    document.onmouseup = null;
-    document.ontouchend = null;
-  };
-
-  card.onmousedown = start;
-  card.ontouchstart = start;
+function getCard() {
+  return document.getElementById("card");
 }
-document.addEventListener("DOMContentLoaded", () => {
-  initApp();
-});
 
+// --------------------
+// BUTTONS
+// --------------------
+document.getElementById("chooseTruth").onclick = () => startMode("verdad");
+document.getElementById("chooseDare").onclick = () => startMode("reto");
+
+document.getElementById("opt1").onclick = () => nextTurn();
+document.getElementById("opt2").onclick = () => nextTurn();
+
+// BACK
 document.getElementById("backMenu").onclick = () => {
-
-  // 🧼 ocultar juego
   document.getElementById("gameUI").classList.add("hidden");
-  document.getElementById("modeSelector")?.classList.add("hidden");
-  document.getElementById("prefSelector")?.classList.add("hidden");
-
-  // 🧼 limpiar cartas
-  const container = document.querySelector(".swipe-container");
-  if (container) container.innerHTML = "";
-
-  // 🎮 volver a selector
   document.getElementById("gameSelector").classList.remove("hidden");
 
-  // ⚠️ importante: reset parcial de estado de juego
+  document.querySelector(".swipe-container").innerHTML = "";
+
   currentGame = null;
   currentLevel = null;
   pendingMode = null;
