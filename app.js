@@ -66,7 +66,7 @@ async function loadData(file = currentGame) {
 function getRandomQuestion() {
   const list = data[currentLevel];
 
-  if (!list || !list.length) return { texto: "Sin preguntas" };
+  if (!list || !list.length) return { opcion1: "Sin datos", opcion2: "Sin datos" };
 
   return list[Math.floor(Math.random() * list.length)];
 }
@@ -124,11 +124,34 @@ function nextTurn() {
 function renderCard() {
   const container = document.querySelector(".swipe-container");
   container.innerHTML = "";
-
   container.classList.remove("hidden");
 
   const q = getRandomQuestion();
 
+  // 🔥 MODO QUÉ PREFIERES
+  if (currentGame === "que_prefieres") {
+
+    const card1 = document.createElement("div");
+    const card2 = document.createElement("div");
+
+    card1.className = "card";
+    card2.className = "card";
+
+    card1.innerHTML = `<p>${q.opcion1}</p>`;
+    card2.innerHTML = `<p>${q.opcion2}</p>`;
+
+    // CLICK = elegir opción
+    card1.onclick = () => swipeChoice(1);
+    card2.onclick = () => swipeChoice(2);
+
+    container.appendChild(card1);
+    container.appendChild(card2);
+
+    updateUI();
+    return;
+  }
+
+  // 🧱 RESTO DE JUEGOS (normal)
   const card = document.createElement("div");
   card.className = "card";
   card.id = "card";
@@ -141,7 +164,6 @@ function renderCard() {
   animateIn();
   updateUI();
 }
-
 // =====================
 // SWIPE
 // =====================
@@ -277,6 +299,21 @@ const GameEngine = {
     this.savePlayers();
   }
 };
+
+// =====================
+// PREFIERES
+// =====================
+function swipeChoice(choice) {
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach((card, index) => {
+    const dir = (index === 0 ? -1 : 1);
+    card.style.transform = `translateX(${dir * 800}px)`;
+  });
+
+  setTimeout(() => nextTurn(), 200);
+}
+
 document.getElementById("backHome").onclick = () => { 
   // ocultar todo 
   document.getElementById("gameUI").classList.add("hidden"); 
