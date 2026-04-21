@@ -470,6 +470,11 @@ button:hover {
 .choice.right {
   text-align: right;
 }
+
+.que-prefieres {
+  background: linear-gradient(135deg, #7c4dff, #b388ff);
+  color: #fff;
+}
 /* =========================
    UTILITIES
 ========================= */
