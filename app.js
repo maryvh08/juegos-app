@@ -256,9 +256,9 @@ function renderPlayers() {
 }
 
 function addPlayer(name) {
-  if (!name) return;
+  if (!name || !name.trim()) return;
 
-  GameEngine.state.players.push(name);
+  GameEngine.state.players.push(name.trim());
   GameEngine.savePlayers();
   renderPlayers();
 }
@@ -275,4 +275,12 @@ document.getElementById("backHome").onclick = () => {
   localStorage.removeItem("currentLevel"); 
   currentGame = null; 
   currentLevel = null; 
+};
+
+document.getElementById("addPlayerBtn").onclick = () => {
+  const input = document.getElementById("playerInput");
+
+  addPlayer(input.value);
+
+  input.value = "";
 };
