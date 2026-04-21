@@ -394,25 +394,7 @@ function swipe(dir) {
   }, 250);
 }
 
-function handleGameAction() {
-  const player = GameEngine.currentPlayer();
 
-  switch (currentGame) {
-
-    case "verdad_shot":
-      // aquí decides si quieres sumar punto o no
-      break;
-
-    case "verdad_reto":
-      // solo sigue el turno
-      break;
-
-    case "nunca":
-      // normalmente todos toman si aplica
-      GameEngine.addShot();
-      break;
-  }
-}
 // --------------------
 // FX
 // --------------------
