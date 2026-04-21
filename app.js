@@ -273,8 +273,19 @@ function nextTurn() {
 
   GameEngine.state.streak++;
 
-  // ocultar selects
-  document.getElementById("prefSelector")?.classList.add("hidden");
+  // limpiar UI SIEMPRE
+  hideAllGameUIs();
+
+  // flujo correcto
+  if (currentGame === "que_prefieres") {
+    showPrefieres();
+    return;
+  }
+
+  if (currentGame === "verdad_reto") {
+    document.getElementById("modeSelector").classList.remove("hidden");
+    return;
+  }
 
   nextCardFlow();
 }
@@ -347,7 +358,9 @@ function hideAllSelectors() {
 function hideAllGameUIs() {
   document.getElementById("modeSelector")?.classList.add("hidden");
   document.getElementById("prefSelector")?.classList.add("hidden");
-  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  const swipe = document.querySelector(".swipe-container");
+  if (swipe) swipe.classList.add("hidden");
 }
 
 // --------------------
@@ -400,6 +413,10 @@ function bindCard() {
   const card = getCard();
   if (!card) return;
 
+  if (currentGame === "verdad_reto" || currentGame === "que_prefieres") {
+    return; // 🚫 desactiva swipe
+  }
+
   card.addEventListener("mousedown", start);
   card.addEventListener("touchstart", start);
 }
@@ -429,7 +446,6 @@ function updateColor() {
   const card = getCard();
   if (!card) return;
 
-  // 🚫 NO aplicar en qué prefieres
   if (currentGame === "que_prefieres") return;
 
   const colors = {
