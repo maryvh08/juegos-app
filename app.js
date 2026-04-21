@@ -135,6 +135,7 @@ function renderCard() {
   if (currentGame === "que_prefieres") {
     const container = document.querySelector(".swipe-container");
     container.innerHTML = "";
+    container.classList.add("qp-mode"); // 🔥 FALTABA ESTO
   
     const q = getRandomQuestion();
   
@@ -147,7 +148,6 @@ function renderCard() {
     card1.innerHTML = `<p>${q.opcion1}</p>`;
     card2.innerHTML = `<p>${q.opcion2}</p>`;
   
-    // 👉 click = elegir
     card1.onclick = () => chooseCard(card1, -1);
     card2.onclick = () => chooseCard(card2, 1);
   
@@ -157,7 +157,7 @@ function renderCard() {
     updateUI();
     return;
   }
-
+  
   // 🧱 RESTO DE JUEGOS (normal)
   const card = document.createElement("div");
   card.className = "card";
