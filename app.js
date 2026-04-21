@@ -245,6 +245,18 @@ async function startGame() {
   localStorage.setItem("currentLevel", currentLevel);
 }
 
+function nextCardFlow() {
+  if (currentGame === "verdad_reto") {
+    showModeSelectorIfNeeded();
+    return;
+  }
+
+  // 🍺 nunca o juegos directos
+  showCard();
+  animateIn();
+  updateUI();
+}
+
 function nextTurn() {
   if (currentGame !== "nunca") {
     GameEngine.nextPlayer();
@@ -254,9 +266,7 @@ function nextTurn() {
 
   pendingMode = null;
 
-  showModeSelectorIfNeeded();
-
-  updateUI();
+  nextCardFlow();
 }
 
 function showModeSelectorIfNeeded() {
@@ -511,6 +521,7 @@ function startQuestionRound() {
   loadModeData().then(() => {
     showCard();
     animateIn();
+    updateUI();
   });
 }
 
