@@ -30,21 +30,16 @@ body {
   max-width: 320px;
   border-radius: 18px;
 }
-/* =========================
-   APP CONTAINER
-========================= */
-.app {
-  width: 100%;
-  max-width: 450px;
-  min-height: 100vh;
-
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(20px);
-
-  display: flex;
-  flex-direction: column;
-
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+/* ========================= 
+APP CONTAINER 
+========================= */ 
+.app { 
+   max-width: 430px; 
+   margin: auto; 
+   min-height: 100vh; 
+   display: flex; 
+   flex-direction: column; 
+   padding-bottom: 30px; 
 }
 
 /* =========================
