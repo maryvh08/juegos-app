@@ -344,16 +344,22 @@ if (card) {
   card.addEventListener("touchstart", start);
 }
 
+let moved = false;
+
 function start(e) {
   if (!e.target.closest("#card")) return;
 
   isDragging = true;
+  moved = false;
+
   startX = getX(e);
+  currentX = startX;
 
   lastX = startX;
   lastTime = Date.now();
 
-  card.style.transition = "none";
+  const card = getCard();
+  if (card) card.style.transition = "none";
 
   document.addEventListener("mousemove", move);
   document.addEventListener("touchmove", move, { passive: false });
@@ -367,26 +373,46 @@ function move(e) {
   currentX = getX(e);
   const dx = currentX - startX;
 
+  if (Math.abs(dx) > 10) moved = true;
+
   const now = Date.now();
   velocity = 0.8 * velocity + 0.2 * ((currentX - lastX) / (now - lastTime));
 
   lastX = currentX;
   lastTime = now;
 
+  const card = getCard();
+  if (!card) return;
+
   const rotate = dx * 0.06;
   card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
 }
 
 function end() {
+  if (!isDragging) return;
   isDragging = false;
 
   const dx = currentX - startX;
+  const card = getCard();
+  if (!card) return;
 
-  card.style.transition = "transform 0.4s cubic-bezier(.22,1,.36,1)";
+  card.style.transition = "transform 0.3s ease";
 
-  if (velocity > 0.5 || dx > 120) swipe(1);
-  else if (velocity < -0.5 || dx < -120) swipe(-1);
-  else resetCard();
+  // 👉 TAP REAL (sin mover)
+  if (!moved) {
+    nextTurn();
+    animateIn();
+  }
+  // 👉 SWIPE
+  else if (velocity > 0.5 || dx > 120) {
+    swipe(1);
+  }
+  else if (velocity < -0.5 || dx < -120) {
+    swipe(-1);
+  }
+  else {
+    resetCard();
+  }
 
   document.removeEventListener("mousemove", move);
   document.removeEventListener("touchmove", move);
