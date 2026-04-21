@@ -1,88 +1,118 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>🔥 Party Swipe</title>
 
-  <link rel="stylesheet" href="style.css">
+  <!-- Font moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
 <div class="app">
 
-  <!-- SETUP -->
-  <h1>🔥 Party Swipe</h1>
-  
+  <!-- =========================
+       SETUP
+  ========================== -->
   <section class="setup" id="setup">
+
+    <h1>🔥 Party Swipe</h1>
+
     <div class="card setup-card">
-      
-  <h2>👥 Jugadores</h2>
 
-  <input id="playerInput" type="text" placeholder="Nombre del jugador">
+      <h2>👥 Jugadores</h2>
 
-  <button id="addPlayer">Agregar</button>
+      <input id="playerInput" type="text" placeholder="Nombre del jugador" />
 
-  <div id="playersList" class="players-list"></div>
+      <button id="addPlayer">Agregar</button>
 
-  <button id="resetAll" class="danger">
-    🧹 Reiniciar todo
-  </button>
-      
-  <button id="startGame" class="primary">
-    🚀 Empezar
-  </button>
+      <div id="playersList" class="players-list"></div>
 
-</div>
+      <button id="resetAll" class="danger">🧹 Reiniciar todo</button>
 
+      <button id="startGame" class="primary">🚀 Empezar</button>
+
+    </div>
   </section>
 
-  <!-- SELECT GAME -->
-
+  <!-- =========================
+       SELECT GAME
+  ========================== -->
   <section id="gameSelector" class="selector hidden">
+
+    <button id="backHome" class="back">🏠 Inicio</button>
+
     <h2>🎴 Elige el juego</h2>
 
-<button id="backHome" class="back home">🏠 Inicio</button>
+    <div class="cards">
 
-<div class="cards">
-  <div class="select-card verdad" data-game="verdad_shot">Verdad o Shot</div>
-  <div class="select-card reto" data-game="verdad_reto">Verdad o Reto</div>
-  <div class="select-card nunca" data-game="nunca">Yo nunca nunca</div>
-</div>
+      <div class="select-card verdad" data-game="verdad_shot">
+        Verdad o Shot
+      </div>
 
+      <div class="select-card reto" data-game="verdad_reto">
+        Verdad o Reto
+      </div>
+
+      <div class="select-card nunca" data-game="nunca">
+        Yo nunca nunca
+      </div>
+
+    </div>
   </section>
 
-  <!-- SELECT LEVEL -->
-
+  <!-- =========================
+       SELECT LEVEL
+  ========================== -->
   <section id="levelSelector" class="selector hidden">
+
     <h2>🎚️ Nivel</h2>
 
-<div class="cards">
-  <div class="select-card suave" data-level="suave">🟢 Suave</div>
-  <div class="select-card medio" data-level="medio">🟡 Medio</div>
-  <div class="select-card alto" data-level="alto">🔴 Alto</div>
-</div>
+    <div class="cards">
 
+      <div class="select-card suave" data-level="suave">
+        🟢 Suave
+      </div>
+
+      <div class="select-card medio" data-level="medio">
+        🟡 Medio
+      </div>
+
+      <div class="select-card alto" data-level="alto">
+        🔴 Alto
+      </div>
+
+    </div>
   </section>
 
-  <!-- GAME -->
-
+  <!-- =========================
+       GAME UI
+  ========================== -->
   <main class="game hidden" id="gameUI">
 
-<!-- ✅ HEADER SOLO EN EL JUEGO -->
-<header class="header">
-  <h1>🔥 Party Swipe</h1>
+    <!-- HEADER -->
+    <header class="header">
 
-  <div class="hud">
-    <div id="currentPlayer">Turno: -</div>
-  </div>
-</header>
+      <h1>🔥 Party Swipe</h1>
 
-<section class="swipe-container">
-  <button id="backMenu" class="back">⬅ Juegos</button>
-</section>
+      <div class="hud">
+        <div id="currentPlayer">Turno: -</div>
+      </div>
+
+    </header>
+
+    <!-- SWIPE AREA -->
+    <section class="swipe-container">
+
+      <button id="backMenu" class="back">⬅ Juegos</button>
+
+      <!-- cards dinámicas aquí -->
+    </section>
 
   </main>
 
