@@ -293,3 +293,24 @@ function bindCard() {
     };
   };
 }
+
+document.getElementById("backMenu").onclick = () => {
+
+  // 🧼 ocultar juego
+  document.getElementById("gameUI").classList.add("hidden");
+  document.getElementById("modeSelector")?.classList.add("hidden");
+  document.getElementById("prefSelector")?.classList.add("hidden");
+
+  // 🧼 limpiar cartas
+  const container = document.querySelector(".swipe-container");
+  if (container) container.innerHTML = "";
+
+  // 🎮 volver a selector
+  document.getElementById("gameSelector").classList.remove("hidden");
+
+  // ⚠️ importante: reset parcial de estado de juego
+  currentGame = null;
+  currentLevel = null;
+  pendingMode = null;
+  currentPref = null;
+};
