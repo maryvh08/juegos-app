@@ -13,22 +13,12 @@
 
 <div class="app">
 
-  <!-- HEADER -->
-
-  <header class="header">
-    <h1>🔥 Party Swipe</h1>
-
-  <div class="hud">
-    <div id="currentPlayer">Turno: -</div>
-  </div>
-
-  </header>
-
   <!-- SETUP -->
 
   <section class="setup" id="setup">
     <div class="card setup-card">
 
+```
   <h2>👥 Jugadores</h2>
 
   <input id="playerInput" type="text" placeholder="Nombre del jugador">
@@ -42,6 +32,7 @@
   </button>
 
 </div>
+```
 
   </section>
 
@@ -49,13 +40,16 @@
 
   <section id="gameSelector" class="selector hidden">
     <h2>🎴 Elige el juego</h2>
-    <button id="backHome" class="back home">🏠 Inicio</button>
 
-    <div class="cards">
-      <div class="select-card verdad" data-game="verdad_shot">Verdad o Shot</div>
-      <div class="select-card reto" data-game="verdad_reto">Verdad o Reto</div>
-      <div class="select-card nunca" data-game="nunca">Yo nunca nunca</div>
-    </div>
+```
+<button id="backHome" class="back home">🏠 Inicio</button>
+
+<div class="cards">
+  <div class="select-card verdad" data-game="verdad_shot">Verdad o Shot</div>
+  <div class="select-card reto" data-game="verdad_reto">Verdad o Reto</div>
+  <div class="select-card nunca" data-game="nunca">Yo nunca nunca</div>
+</div>
+```
 
   </section>
 
@@ -64,11 +58,13 @@
   <section id="levelSelector" class="selector hidden">
     <h2>🎚️ Nivel</h2>
 
+```
 <div class="cards">
   <div class="select-card suave" data-level="suave">🟢 Suave</div>
   <div class="select-card medio" data-level="medio">🟡 Medio</div>
   <div class="select-card alto" data-level="alto">🔴 Alto</div>
 </div>
+```
 
   </section>
 
@@ -76,17 +72,33 @@
 
   <main class="game hidden" id="gameUI">
 
-<section class="swipe-container">
-  
-  <button id="backMenu" class="back">⬅ Juegos</button>
+```
+<!-- ✅ HEADER SOLO EN EL JUEGO -->
+<header class="header">
+  <h1>🔥 Party Swipe</h1>
 
+  <div class="hud">
+    <div id="currentPlayer">Turno: -</div>
+    <div id="shots">🍻 0</div>
+    <div id="streak">🔥 0</div>
+    <div id="score">⭐ 0</div>
+  </div>
+</header>
+
+<section class="swipe-container">
+  <button id="backMenu" class="back">⬅ Juegos</button>
 </section>
+```
 
   </main>
 
 </div>
 
 <script src="app.js"></script>
+
+</body>
+</html>
+
 
 </body>
 </html>
