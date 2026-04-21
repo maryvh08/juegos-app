@@ -114,11 +114,58 @@ document.getElementById("addPlayer").onclick = () => {
 
 function renderPlayers() {
   const list = document.getElementById("playersList");
-  if (list) {
-    list.innerText = GameEngine.state.players.join(", ");
-  }
-}
+  if (!list) return;
 
+  list.innerHTML = "";
+
+  GameEngine.state.players.forEach((name, index) => {
+    const card = document.createElement("div");
+    card.className = "player-card";
+
+    card.innerHTML = `
+      <span class="player-name">${name}</span>
+
+      <div class="player-actions">
+        <button class="edit">✏️</button>
+        <button class="delete">❌</button>
+      </div>
+    `;
+
+    // ❌ eliminar jugador
+    card.querySelector(".delete").onclick = () => {
+      GameEngine.state.players.splice(index, 1);
+      delete GameEngine.state.scores[name];
+
+      // ajustar turno si es necesario
+      if (GameEngine.state.currentIndex >= GameEngine.state.players.length) {
+        GameEngine.state.currentIndex = 0;
+      }
+
+      GameEngine.save();
+      renderPlayers();
+    };
+
+    // ✏️ editar jugador
+    card.querySelector(".edit").onclick = () => {
+      const newName = prompt("Nuevo nombre:", name);
+
+      if (!newName || !newName.trim()) return;
+
+      const clean = newName.trim();
+
+      // actualizar scores
+      GameEngine.state.scores[clean] = GameEngine.state.scores[name] || 0;
+      delete GameEngine.state.scores[name];
+
+      GameEngine.state.players[index] = clean;
+
+      GameEngine.save();
+      renderPlayers();
+    };
+
+    list.appendChild(card);
+  });
+}
 // --------------------
 // START FLOW
 // --------------------
