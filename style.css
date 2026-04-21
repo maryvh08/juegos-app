@@ -390,3 +390,59 @@ button:hover {
 .full {
   width: 100%;
 }
+
+/* =========================
+   PLAYER CARDS
+========================= */
+
+.player-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 12px;
+  margin-top: 8px;
+
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  font-size: 14px;
+}
+
+.player-name {
+  flex: 1;
+  text-align: left;
+  word-break: break-word;
+}
+
+/* acciones */
+.player-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* botones pequeños */
+.player-actions button {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+  border: none;
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+
+  cursor: pointer;
+}
+
+.player-actions button:hover {
+  background: rgba(255,255,255,0.18);
+  transform: scale(1.05);
+}
+
+/* delete más agresivo */
+.player-actions .delete:hover {
+  background: rgba(255, 0, 0, 0.3);
+}
