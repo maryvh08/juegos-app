@@ -1,15 +1,15 @@
-// --------------------
+// =====================
 // STATE
-// --------------------
+// =====================
 let data = {};
 let currentGame = null;
 let currentLevel = null;
 let pendingMode = null;
 let currentPref = null;
 
-// --------------------
+// =====================
 // ENGINE
-// --------------------
+// =====================
 const GameEngine = {
   state: {
     players: JSON.parse(localStorage.getItem("players")) || [],
@@ -18,7 +18,6 @@ const GameEngine = {
 
   nextPlayer() {
     if (!this.state.players.length) return;
-
     this.state.currentIndex =
       (this.state.currentIndex + 1) % this.state.players.length;
 
@@ -30,27 +29,29 @@ const GameEngine = {
   }
 };
 
-// --------------------
-// INIT
-// --------------------
-document.addEventListener("DOMContentLoaded", initApp);
+// =====================
+// HELPERS
+// =====================
+function getCard() {
+  return document.getElementById("card");
+}
 
-function initApp() {
+function isPrefieres() {
+  return currentGame === "que_prefieres";
+}
+
+// =====================
+// INIT
+// =====================
+document.addEventListener("DOMContentLoaded", () => {
   renderPlayers();
 
-  const startBtn = document.getElementById("startGame");
+  document.getElementById("startGame").onclick = () => {
+    if (!GameEngine.state.players.length) return alert("Agrega jugadores");
 
-  if (startBtn) {
-    startBtn.onclick = () => {
-      if (!GameEngine.state.players.length) {
-        alert("Agrega jugadores");
-        return;
-      }
-
-      document.getElementById("setup").classList.add("hidden");
-      document.getElementById("gameSelector").classList.remove("hidden");
-    };
-  }
+    document.getElementById("setup").classList.add("hidden");
+    document.getElementById("gameSelector").classList.remove("hidden");
+  };
 
   document.querySelectorAll("[data-game]").forEach(btn => {
     btn.onclick = () => {
@@ -71,36 +72,35 @@ function initApp() {
       await startGame();
     };
   });
-}
 
-// --------------------
-// PLAYERS
-// --------------------
-function renderPlayers() {
-  const list = document.getElementById("playersList");
-  if (!list) return;
+  document.getElementById("backMenu").onclick = () => {
+    document.getElementById("gameUI").classList.add("hidden");
+    document.getElementById("gameSelector").classList.remove("hidden");
+  };
 
-  list.innerHTML = "";
+  document.getElementById("chooseTruth").onclick = () => startMode("verdad");
+  document.getElementById("chooseDare").onclick = () => startMode("reto");
 
-  GameEngine.state.players.forEach(name => {
-    const div = document.createElement("div");
-    div.className = "player-card";
-    div.innerText = name;
-    list.appendChild(div);
-  });
-}
+  document.getElementById("opt1").onclick = () => nextTurn();
+  document.getElementById("opt2").onclick = () => nextTurn();
+});
 
-// --------------------
-// LOAD DATA
-// --------------------
+// =====================
+// DATA
+// =====================
 async function loadData(file = currentGame) {
   const res = await fetch(`data/${file}.json`);
   data = await res.json();
 }
 
-// --------------------
+function getRandomQuestion() {
+  const list = data[currentLevel];
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+// =====================
 // START GAME
-// --------------------
+// =====================
 async function startGame() {
   await loadData();
 
@@ -109,19 +109,12 @@ async function startGame() {
     return;
   }
 
-  if (currentGame === "que_prefieres") {
-    showPrefieres();
-    return;
-  }
-
-  showCard();
-  animateIn();
-  updateUI();
+  renderCard();
 }
 
-// --------------------
+// =====================
 // MODE SELECTOR
-// --------------------
+// =====================
 function showModeSelector() {
   document.getElementById("modeSelector").classList.remove("hidden");
   document.querySelector(".swipe-container").classList.add("hidden");
@@ -130,52 +123,39 @@ function showModeSelector() {
 async function startMode(mode) {
   pendingMode = mode;
 
-  const file = mode === "verdad" ? "verdad_shot" : "verdad_reto";
-
-  await loadData(file);
+  await loadData(mode === "verdad" ? "verdad_shot" : "verdad_reto");
 
   document.getElementById("modeSelector").classList.add("hidden");
   document.querySelector(".swipe-container").classList.remove("hidden");
 
-  showCard();
-  animateIn();
-  updateUI();
+  renderCard();
 }
 
-// --------------------
-// QUE PREFIERES
-// --------------------
-function showPrefieres() {
-  document.querySelector(".swipe-container").classList.add("hidden");
+// =====================
+// MAIN FLOW (IMPORTANTE)
+// =====================
+function nextTurn() {
+  GameEngine.nextPlayer();
 
-  const box = document.getElementById("prefSelector");
-  box.classList.remove("hidden");
+  if (currentGame === "verdad_reto") {
+    showModeSelector();
+    return;
+  }
 
-  const q = getRandomQuestion();
-  currentPref = q;
+  if (currentGame === "que_prefieres") {
+    renderPrefieres();
+    return;
+  }
 
-  document.getElementById("opt1").innerText = q.opcion1;
-  document.getElementById("opt2").innerText = q.opcion2;
+  renderCard();
 }
 
-// --------------------
-// QUESTIONS
-// --------------------
-function getRandomQuestion() {
-  const list = data[currentLevel] || [];
-  if (!list.length) return { texto: "Sin preguntas" };
-
-  return list[Math.floor(Math.random() * list.length)];
-}
-
-// --------------------
-// CARD
-// --------------------
-function showCard() {
+// =====================
+// CARD RENDER
+// =====================
+function renderCard() {
   const container = document.querySelector(".swipe-container");
-
   container.innerHTML = "";
-  container.classList.remove("hidden");
 
   const q = getRandomQuestion();
 
@@ -183,7 +163,7 @@ function showCard() {
   card.className = "card";
   card.id = "card";
 
-  if (currentGame === "que_prefieres") {
+  if (isPrefieres()) {
     card.innerHTML = `
       <div class="prefieres">
         <div class="option left">👈 ${q.opcion2}</div>
@@ -197,80 +177,60 @@ function showCard() {
 
   container.appendChild(card);
 
-  enableSwipe();
-}
-
-// --------------------
-// SWIPE (FUNCIONAL)
-// --------------------
-function enableSwipe() {
-  const card = getCard();
-  if (!card) return;
-
-  let startX = 0;
-
-  const start = (e) => {
-    startX = e.touches ? e.touches[0].clientX : e.clientX;
-  };
-
-  const end = (e) => {
-    const endX = e.changedTouches
-      ? e.changedTouches[0].clientX
-      : e.clientX;
-
-    const diff = endX - startX;
-
-    if (diff > 80) swipe(1);
-    else if (diff < -80) swipe(-1);
-  };
-
-  card.onmousedown = start;
-  card.onmouseup = end;
-
-  card.ontouchstart = start;
-  card.ontouchend = end;
-}
-
-// --------------------
-// SWIPE ACTION
-// --------------------
-function swipe(dir) {
-  const card = getCard();
-  if (!card) return;
-
-  card.style.transition = "0.25s ease";
-  card.style.transform =
-    `translateX(${dir * 500}px) rotate(${dir * 20}deg)`;
-
-  setTimeout(() => {
-    nextTurn();
-  }, 200);
-}
-
-// --------------------
-// NEXT TURN
-// --------------------
-function nextTurn() {
-  GameEngine.nextPlayer();
-
-  if (currentGame === "que_prefieres") {
-    showPrefieres();
-    return;
-  }
-
-  if (currentGame === "verdad_reto") {
-    showModeSelector();
-    return;
-  }
-
-  showCard();
+  bindCard();
   animateIn();
   updateUI();
 }
 
-// --------------------
+// =====================
+// PREFIERES
+// =====================
+function renderPrefieres() {
+  document.querySelector(".swipe-container").classList.add("hidden");
+
+  const q = getRandomQuestion();
+  currentPref = q;
+
+  const pref = document.getElementById("prefSelector");
+  pref.classList.remove("hidden");
+
+  document.getElementById("opt1").innerText = q.opcion1;
+  document.getElementById("opt2").innerText = q.opcion2;
+}
+
+// =====================
+// SWIPE / CLICK
+// =====================
+function bindCard() {
+  const card = getCard();
+  if (!card) return;
+
+  if (currentGame === "que_prefieres") return;
+
+  let startX = 0;
+
+  card.onmousedown = (e) => startX = e.clientX;
+  card.onmouseup = (e) => {
+    const diff = e.clientX - startX;
+
+    if (diff > 80) swipe(1);
+    else if (diff < -80) swipe(-1);
+    else nextTurn();
+  };
+}
+
+function swipe(dir) {
+  const card = getCard();
+  if (!card) return;
+
+  card.style.transform = `translateX(${dir * 800}px)`;
+
+  setTimeout(() => nextTurn(), 200);
+}
+
+// =====================
 // UI
-// --------------------
+// =====================
 function updateUI() {
   document.getElementById("currentPlayer").innerText =
     "Turno: " + GameEngine.currentPlayer();
@@ -290,31 +250,18 @@ function animateIn() {
   }, 50);
 }
 
-// --------------------
-// HELPERS
-// --------------------
-function getCard() {
-  return document.getElementById("card");
+// =====================
+// PLAYERS (simple)
+// =====================
+function renderPlayers() {
+  const list = document.getElementById("playersList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  GameEngine.state.players.forEach(p => {
+    const div = document.createElement("div");
+    div.innerText = p;
+    list.appendChild(div);
+  });
 }
-
-// --------------------
-// BUTTONS
-// --------------------
-document.getElementById("chooseTruth").onclick = () => startMode("verdad");
-document.getElementById("chooseDare").onclick = () => startMode("reto");
-
-document.getElementById("opt1").onclick = () => nextTurn();
-document.getElementById("opt2").onclick = () => nextTurn();
-
-// BACK
-document.getElementById("backMenu").onclick = () => {
-  document.getElementById("gameUI").classList.add("hidden");
-  document.getElementById("gameSelector").classList.remove("hidden");
-
-  document.querySelector(".swipe-container").innerHTML = "";
-
-  currentGame = null;
-  currentLevel = null;
-  pendingMode = null;
-  currentPref = null;
-};
