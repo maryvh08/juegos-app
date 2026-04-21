@@ -66,6 +66,7 @@ let currentGame = null;
 let currentLevel = null;
 let usedQuestions = [];
 let skipTurnChange = false;
+let pendingMode = null; // "verdad" | "reto"
 
 // --------------------
 // DOM
@@ -234,6 +235,8 @@ async function startGame() {
 
   localStorage.setItem("currentGame", currentGame);
   localStorage.setItem("currentLevel", currentLevel);
+  document.getElementById("modeSelector").classList.remove("hidden");
+  document.querySelector(".swipe-container").classList.add("hidden");
 }
 
 function nextTurn() {
@@ -243,7 +246,11 @@ function nextTurn() {
 
   GameEngine.state.streak++;
 
-  showCard();
+  pendingMode = null; // 🔥 reset
+
+  document.getElementById("modeSelector").classList.remove("hidden");
+  document.querySelector(".swipe-container").classList.add("hidden");
+
   updateUI();
 }
 
@@ -255,17 +262,28 @@ function getRandomQuestion() {
 
   if (!preguntas?.length) return "Sin preguntas disponibles";
 
-  if (usedQuestions.length === preguntas.length) {
+  return preguntas[Math.floor(Math.random() * preguntas.length)];
+}
+
+async function loadModeData() {
+  try {
+    let file = currentGame;
+
+    // 🔥 si es verdad o reto, usamos sub-selección
+    if (currentGame === "verdad_reto_system") {
+      file = pendingMode === "verdad" ? "verdad_shot" : "verdad_reto";
+    }
+
+    const res = await fetch(`data/${file}.json`);
+    if (!res.ok) throw new Error("Error cargando JSON");
+
+    data = await res.json();
     usedQuestions = [];
+
+  } catch (e) {
+    console.error(e);
+    questionEl.innerText = "Error cargando preguntas 😢";
   }
-
-  let q;
-  do {
-    q = preguntas[Math.floor(Math.random() * preguntas.length)];
-  } while (usedQuestions.includes(q));
-
-  usedQuestions.push(q);
-  return q;
 }
 
 // --------------------
@@ -469,6 +487,17 @@ function getX(e) {
   return e.touches ? e.touches[0].clientX : e.clientX;
 }
 
+function startQuestionRound() {
+  document.getElementById("modeSelector").classList.add("hidden");
+  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  loadModeData().then(() => {
+    showCard();
+    updateUI();
+    animateIn();
+  });
+}
+
 // --------------------
 // BUTTONS
 // --------------------
@@ -529,4 +558,14 @@ document.getElementById("resetAll").onclick = () => {
   // 🧼 limpiar UI
   renderPlayers();
   updateUI();
+};
+
+document.getElementById("chooseTruth").onclick = () => {
+  pendingMode = "verdad";
+  startQuestionRound();
+};
+
+document.getElementById("chooseDare").onclick = () => {
+  pendingMode = "reto";
+  startQuestionRound();
 };
