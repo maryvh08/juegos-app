@@ -183,12 +183,36 @@ function bindCard() {
 
   card.onmousedown = (e) => startX = e.clientX;
 
+  card.onmousemove = (e) => {
+    if (!startX) return;
+
+    const diff = e.clientX - startX;
+
+    card.style.transform = `translateX(${diff}px) rotate(${diff / 20}deg)`;
+
+    if (diff > 50) {
+      card.style.background = "rgba(0,255,100,0.15)";
+    } else if (diff < -50) {
+      card.style.background = "rgba(255,80,80,0.15)";
+    } else {
+      card.style.background = "";
+    }
+  };
+
+  card.onmouseleave = () => {
+    startX = 0;
+    card.style.transform = "";
+    card.style.background = "";
+  };
+
   card.onmouseup = (e) => {
     const diff = e.clientX - startX;
 
     if (diff > 80) swipe(1);
     else if (diff < -80) swipe(-1);
     else nextTurn();
+
+    startX = 0;
   };
 }
 
@@ -393,25 +417,4 @@ document.getElementById("addPlayer").onclick = () => {
   addPlayer(input.value);
 
   input.value = "";
-};
-
-card.onmousemove = (e) => {
-  if (!startX) return;
-
-  const diff = e.clientX - startX;
-
-  card.style.transform = `translateX(${diff}px) rotate(${diff / 20}deg)`;
-
-  if (diff > 50) {
-    card.style.background = "rgba(0,255,100,0.15)";
-  } else if (diff < -50) {
-    card.style.background = "rgba(255,80,80,0.15)";
-  } else {
-    card.style.background = "";
-  }
-};
-
-card.onmouseleave = () => {
-  card.style.transform = "";
-  card.style.background = "";
 };
