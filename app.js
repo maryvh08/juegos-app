@@ -70,8 +70,12 @@ let skipTurnChange = false;
 // --------------------
 // DOM
 // --------------------
-const card = document.getElementById("card");
 const questionEl = document.getElementById("question");
+
+// 👉 NUEVO: siempre obtener la carta actual
+function getCard() {
+  return document.getElementById("card");
+}
 
 // --------------------
 // INIT
@@ -80,16 +84,17 @@ document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   renderPlayers();
+
   const savedGame = localStorage.getItem("currentGame");
   const savedLevel = localStorage.getItem("currentLevel");
-  
+
   if (savedGame && savedLevel) {
     currentGame = savedGame;
     currentLevel = savedLevel;
-  
+
     document.getElementById("setup").classList.add("hidden");
     document.getElementById("gameUI").classList.remove("hidden");
-  
+
     startGame();
   }
 }
@@ -185,7 +190,6 @@ async function startGame() {
 }
 
 function nextTurn() {
-
   if (currentGame !== "nunca") {
     GameEngine.nextPlayer();
   }
@@ -223,19 +227,15 @@ function getRandomQuestion() {
 function showCard() {
   const container = document.querySelector(".swipe-container");
 
-  // eliminar cartas viejas
   container.querySelectorAll(".dynamic-card").forEach(c => c.remove());
 
-  // crear 3 cartas (stack)
   for (let i = 2; i >= 0; i--) {
     const newCard = document.createElement("div");
     newCard.className = "card dynamic-card";
 
     if (i === 0) {
-      newCard.id = "card"; // activa
-      newCard.innerHTML = `
-        <p>${getRandomQuestion()}</p>
-      `;
+      newCard.id = "card";
+      newCard.innerHTML = `<p>${getRandomQuestion()}</p>`;
     }
 
     newCard.style.transform = `scale(${1 - i * 0.05}) translateY(${i * 10}px)`;
@@ -244,27 +244,18 @@ function showCard() {
     container.appendChild(newCard);
   }
 
-  bindCard(); // 👈 importante
+  bindCard();
   updateColor();
 }
 
 function bindCard() {
-  const newCard = document.getElementById("card");
-  if (!newCard) return;
+  const card = getCard();
+  if (!card) return;
 
-  newCard.addEventListener("mousedown", start);
-  newCard.addEventListener("touchstart", start);
-
-  // 👇 NUEVO: tap simple = siguiente carta
-  newCard.addEventListener("click", handleCardTap);
+  card.addEventListener("mousedown", start);
+  card.addEventListener("touchstart", start);
 }
 
-function handleCardTap() {
-  if (moved) return; // fue swipe, no tap
-
-  nextTurn();
-  animateIn();
-}
 // --------------------
 // UI
 // --------------------
@@ -276,34 +267,22 @@ function updateUI() {
   const streakEl = document.getElementById("streak");
   const scoreEl = document.getElementById("score");
 
-  if (currentPlayerEl) {
-    currentPlayerEl.innerText = "Turno: " + player;
-  }
-
-  if (shotsEl) {
-    shotsEl.innerText = "🍻 " + GameEngine.state.shots;
-  }
-
-  if (streakEl) {
-    streakEl.innerText = "🔥 " + GameEngine.state.streak;
-  }
-
-  if (scoreEl) {
-    scoreEl.innerText =
-      "⭐ " + (GameEngine.state.scores[player] || 0);
-  }
-  
   if (currentGame === "nunca") {
     currentPlayerEl.innerText = "Todos juegan 🍻";
   } else {
     currentPlayerEl.innerText = "Turno: " + player;
   }
+
+  if (shotsEl) shotsEl.innerText = "🍻 " + GameEngine.state.shots;
+  if (streakEl) streakEl.innerText = "🔥 " + GameEngine.state.streak;
+  if (scoreEl) scoreEl.innerText = "⭐ " + (GameEngine.state.scores[player] || 0);
 }
 
 // --------------------
 // COLOR
 // --------------------
 function updateColor() {
+  const card = getCard();
   if (!card) return;
 
   const colors = {
@@ -324,12 +303,6 @@ let velocity = 0;
 let isDragging = false;
 let lastX = 0;
 let lastTime = 0;
-
-if (card) {
-  card.addEventListener("mousedown", start);
-  card.addEventListener("touchstart", start);
-}
-
 let moved = false;
 
 function start(e) {
@@ -384,19 +357,14 @@ function end() {
 
   card.style.transition = "transform 0.3s ease";
 
-  // 👉 TAP REAL (sin mover)
   if (!moved) {
     nextTurn();
     animateIn();
-  }
-  // 👉 SWIPE
-  else if (velocity > 0.5 || dx > 120) {
+  } else if (velocity > 0.5 || dx > 120) {
     swipe(1);
-  }
-  else if (velocity < -0.5 || dx < -120) {
+  } else if (velocity < -0.5 || dx < -120) {
     swipe(-1);
-  }
-  else {
+  } else {
     resetCard();
   }
 
@@ -408,6 +376,9 @@ function end() {
 // ACTIONS
 // --------------------
 function swipe(dir) {
+  const card = getCard();
+  if (!card) return;
+
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
 
@@ -419,16 +390,18 @@ function swipe(dir) {
   }, 250);
 }
 
-
 // --------------------
 // FX
 // --------------------
 function resetCard() {
+  const card = getCard();
   if (!card) return;
+
   card.style.transform = "translateX(0) rotate(0)";
 }
 
 function animateIn() {
+  const card = getCard();
   if (!card) return;
 
   card.style.transition = "none";
