@@ -4,6 +4,7 @@
 let data = {};
 let currentGame = null;
 let currentLevel = null;
+let pendingMode = null;
 
 // =====================
 // ENGINE
@@ -11,69 +12,43 @@ let currentLevel = null;
 const GameEngine = {
   state: {
     players: JSON.parse(localStorage.getItem("players")) || [],
-    currentIndex: 0
-  },
-
-  addPlayer(name) {
-    this.state.players.push(name);
-    this.save();
-  },
-
-  removePlayer(index) {
-    this.state.players.splice(index, 1);
-    this.save();
-  },
-
-  editPlayer(index, newName) {
-    this.state.players[index] = newName;
-    this.save();
+    currentIndex: Number(localStorage.getItem("turn")) || 0
   },
 
   nextPlayer() {
     if (!this.state.players.length) return;
+
     this.state.currentIndex =
       (this.state.currentIndex + 1) % this.state.players.length;
+
+    localStorage.setItem("turn", this.state.currentIndex);
   },
 
   currentPlayer() {
     return this.state.players[this.state.currentIndex];
-  },
-
-  save() {
-    localStorage.setItem("players", JSON.stringify(this.state.players));
   }
 };
+
+// =====================
+// HELPERS
+// =====================
+function getCard() {
+  return document.getElementById("card");
+}
 
 // =====================
 // INIT
 // =====================
 document.addEventListener("DOMContentLoaded", () => {
-
   renderPlayers();
 
-  // AGREGAR JUGADOR
-  document.getElementById("addPlayer").onclick = () => {
-    const input = document.getElementById("playerInput");
-    if (!input.value.trim()) return;
-
-    GameEngine.addPlayer(input.value.trim());
-    input.value = "";
-
-    renderPlayers();
-  };
-
-  // INICIAR
   document.getElementById("startGame").onclick = () => {
-    if (!GameEngine.state.players.length) {
-      alert("Agrega jugadores");
-      return;
-    }
+    if (!GameEngine.state.players.length) return alert("Agrega jugadores");
 
     document.getElementById("setup").classList.add("hidden");
     document.getElementById("gameSelector").classList.remove("hidden");
   };
 
-  // JUEGOS
   document.querySelectorAll("[data-game]").forEach(btn => {
     btn.onclick = () => {
       currentGame = btn.dataset.game;
@@ -83,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  // NIVELES
   document.querySelectorAll("[data-level]").forEach(btn => {
     btn.onclick = async () => {
       currentLevel = btn.dataset.level;
@@ -95,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  // VOLVER
   document.getElementById("backMenu").onclick = () => {
     document.getElementById("gameUI").classList.add("hidden");
     document.getElementById("gameSelector").classList.remove("hidden");
@@ -106,7 +79,145 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =====================
-// PLAYERS UI
+// DATA
+// =====================
+async function loadData(file = currentGame) {
+  const res = await fetch(`data/${file}.json`);
+  data = await res.json();
+}
+
+function getRandomQuestion() {
+  const list = data[currentLevel];
+
+  if (!list || !list.length) return { texto: "Sin preguntas" };
+
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+// =====================
+// START GAME
+// =====================
+async function startGame() {
+  await loadData();
+
+  if (currentGame === "verdad_reto") {
+    showModeSelector();
+    return;
+  }
+
+  renderCard();
+}
+
+// =====================
+// MODE SELECTOR
+// =====================
+function showModeSelector() {
+  document.getElementById("modeSelector").classList.remove("hidden");
+  document.querySelector(".swipe-container").classList.add("hidden");
+}
+
+async function startMode(mode) {
+  pendingMode = mode;
+
+  await loadData(mode === "verdad" ? "verdad_shot" : "verdad_reto");
+
+  document.getElementById("modeSelector").classList.add("hidden");
+  document.querySelector(".swipe-container").classList.remove("hidden");
+
+  renderCard();
+}
+
+// =====================
+// MAIN FLOW
+// =====================
+function nextTurn() {
+  GameEngine.nextPlayer();
+
+  if (currentGame === "verdad_reto") {
+    showModeSelector();
+    return;
+  }
+
+  renderCard();
+}
+
+// =====================
+// CARD RENDER
+// =====================
+function renderCard() {
+  const container = document.querySelector(".swipe-container");
+  container.innerHTML = "";
+
+  container.classList.remove("hidden");
+
+  const q = getRandomQuestion();
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = "card";
+
+  card.innerHTML = `<p>${q.texto || q}</p>`;
+
+  container.appendChild(card);
+
+  bindCard();
+  animateIn();
+  updateUI();
+}
+
+// =====================
+// SWIPE
+// =====================
+function bindCard() {
+  const card = getCard();
+  if (!card) return;
+
+  let startX = 0;
+
+  card.onmousedown = (e) => startX = e.clientX;
+
+  card.onmouseup = (e) => {
+    const diff = e.clientX - startX;
+
+    if (diff > 80) swipe(1);
+    else if (diff < -80) swipe(-1);
+    else nextTurn();
+  };
+}
+
+function swipe(dir) {
+  const card = getCard();
+  if (!card) return;
+
+  card.style.transform = `translateX(${dir * 800}px)`;
+
+  setTimeout(() => nextTurn(), 200);
+}
+
+// =====================
+// UI
+// =====================
+function updateUI() {
+  document.getElementById("currentPlayer").innerText =
+    "Turno: " + GameEngine.currentPlayer();
+}
+
+function animateIn() {
+  const card = getCard();
+  if (!card) return;
+
+  card.style.opacity = 0;
+  card.style.transform = "scale(0.9)";
+
+  setTimeout(() => {
+    card.style.transition = "0.3s";
+    card.style.opacity = 1;
+    card.style.transform = "scale(1)";
+  }, 50);
+}
+
+// =====================
+// PLAYERS
 // =====================
 function renderPlayers() {
   const list = document.getElementById("playersList");
@@ -142,81 +253,6 @@ function renderPlayers() {
 
     list.appendChild(div);
   });
-}
-
-// =====================
-// DATA
-// =====================
-async function loadData(file = currentGame) {
-  const res = await fetch(`data/${file}.json`);
-  data = await res.json();
-}
-
-function getRandomQuestion() {
-  const list = data[currentLevel];
-  return list[Math.floor(Math.random() * list.length)];
-}
-
-// =====================
-// GAME
-// =====================
-async function startGame() {
-  await loadData();
-
-  if (currentGame === "verdad_reto") {
-    document.getElementById("modeSelector").classList.remove("hidden");
-    return;
-  }
-
-  renderCard();
-}
-
-async function startMode(mode) {
-  await loadData(mode === "verdad" ? "verdad_shot" : "verdad_reto");
-
-  document.getElementById("modeSelector").classList.add("hidden");
-
-  renderCard();
-}
-
-function nextTurn() {
-  GameEngine.nextPlayer();
-
-  if (currentGame === "verdad_reto") {
-    document.getElementById("modeSelector").classList.remove("hidden");
-    return;
-  }
-
-  renderCard();
-}
-
-// =====================
-// CARD
-// =====================
-function renderCard() {
-  const container = document.querySelector(".swipe-container");
-  container.innerHTML = "";
-
-  const q = getRandomQuestion();
-
-  const card = document.createElement("div");
-  card.className = "card";
-  card.id = "card";
-
-  card.innerHTML = `<p>${q.texto || q}</p>`;
-
-  container.appendChild(card);
-
-  card.onclick = nextTurn; // 👈 CLAVE: CLICK SIMPLE
-  updateUI();
-}
-
-// =====================
-// UI
-// =====================
-function updateUI() {
-  document.getElementById("currentPlayer").innerText =
-    "Turno: " + GameEngine.currentPlayer();
 }
 
 document.getElementById("backHome").onclick = () => { 
