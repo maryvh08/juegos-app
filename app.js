@@ -248,7 +248,7 @@ async function startGame() {
 
 function nextCardFlow() {
 
-  hideAllSelectors();
+  hideAllGameUIs();
 
   if (currentGame === "verdad_reto") {
     document.getElementById("modeSelector").classList.remove("hidden");
@@ -339,6 +339,12 @@ async function loadModeData() {
 }
 
 function hideAllSelectors() {
+  document.getElementById("modeSelector")?.classList.add("hidden");
+  document.getElementById("prefSelector")?.classList.add("hidden");
+  document.querySelector(".swipe-container").classList.remove("hidden");
+}
+
+function hideAllGameUIs() {
   document.getElementById("modeSelector")?.classList.add("hidden");
   document.getElementById("prefSelector")?.classList.add("hidden");
   document.querySelector(".swipe-container").classList.remove("hidden");
@@ -589,11 +595,13 @@ function isPrefieres() {
 }
 
 function showPrefieres() {
-  hideAllSelectors();
+
+  hideAllGameUIs();
 
   const q = getRandomQuestion();
 
-  document.getElementById("prefSelector").classList.remove("hidden");
+  const pref = document.getElementById("prefSelector");
+  pref.classList.remove("hidden");
 
   document.getElementById("opt1").innerText = q.opcion1;
   document.getElementById("opt2").innerText = q.opcion2;
