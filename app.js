@@ -128,42 +128,30 @@ function renderCard() {
 
   const q = getRandomQuestion();
 
-  // 🔥 MODO QUÉ PREFIERES
+  // 🔥 QUÉ PREFIERES (NUEVO)
   if (currentGame === "que_prefieres") {
 
-    const card1 = document.createElement("div");
-    const card2 = document.createElement("div");
+    const card = document.createElement("div");
+    card.className = "card";
+    card.id = "card";
 
-    card1.className = "card";
-    card2.className = "card";
+    card.innerHTML = `
+      <div class="choice left">${q.opcion1}</div>
+      <div class="divider">VS</div>
+      <div class="choice right">${q.opcion2}</div>
+    `;
 
-    card1.innerHTML = `<p>${q.opcion1}</p>`;
-    card2.innerHTML = `<p>${q.opcion2}</p>`;
+    container.appendChild(card);
 
-    // CLICK = elegir opción
-    card1.onclick = () => swipeChoice(1);
-    card2.onclick = () => swipeChoice(2);
-
-    container.appendChild(card1);
-    container.appendChild(card2);
-
+    bindChoiceSwipe(); // 👈 importante
     updateUI();
+    animateIn();
     return;
   }
 
-  // 🧱 RESTO DE JUEGOS (normal)
-  const card = document.createElement("div");
-  card.className = "card";
-  card.id = "card";
-
-  card.innerHTML = `<p>${q.texto || q}</p>`;
-
-  container.appendChild(card);
-
-  bindCard();
-  animateIn();
-  updateUI();
+  // resto normal...
 }
+
 // =====================
 // SWIPE
 // =====================
@@ -314,6 +302,42 @@ function swipeChoice(choice) {
   setTimeout(() => nextTurn(), 200);
 }
 
+function bindChoiceSwipe() {
+  const card = getCard();
+  if (!card) return;
+
+  let startX = 0;
+
+  card.onmousedown = (e) => startX = e.clientX;
+
+  card.onmouseup = (e) => {
+    const diff = e.clientX - startX;
+
+    if (diff > 80) {
+      choose(2); // 👉 derecha
+    } else if (diff < -80) {
+      choose(1); // 👉 izquierda
+    } else {
+      nextTurn();
+    }
+  };
+}
+
+function choose(option) {
+  const card = getCard();
+  if (!card) return;
+
+  const dir = option === 1 ? -1 : 1;
+
+  card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 10}deg)`;
+  card.style.opacity = 0;
+
+  setTimeout(() => nextTurn(), 250);
+}
+
+// =====================
+// BOTONES
+// =====================
 document.getElementById("backHome").onclick = () => { 
   // ocultar todo 
   document.getElementById("gameUI").classList.add("hidden"); 
@@ -334,4 +358,25 @@ document.getElementById("addPlayer").onclick = () => {
   addPlayer(input.value);
 
   input.value = "";
+};
+
+card.onmousemove = (e) => {
+  if (!startX) return;
+
+  const diff = e.clientX - startX;
+
+  card.style.transform = `translateX(${diff}px) rotate(${diff / 20}deg)`;
+
+  if (diff > 50) {
+    card.style.background = "rgba(0,255,100,0.15)";
+  } else if (diff < -50) {
+    card.style.background = "rgba(255,80,80,0.15)";
+  } else {
+    card.style.background = "";
+  }
+};
+
+card.onmouseleave = () => {
+  card.style.transform = "";
+  card.style.background = "";
 };
