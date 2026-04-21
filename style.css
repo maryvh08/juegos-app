@@ -472,6 +472,23 @@ button:hover {
   box-shadow: 0 20px 40px rgba(124,77,255,0.4);
 }
 
+.swipe-container.qp-mode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.swipe-container.qp-mode .card {
+  position: relative;
+  width: 45%;
+  height: 220px;
+  margin: 0;
+  transform: none !important;
+  left: auto;
+  opacity: 1;
+}
+
 /* =========================
    UTILITIES
 ========================= */
