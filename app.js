@@ -239,7 +239,10 @@ function showCard() {
 // FLOW NEXT
 // --------------------
 function nextTurn() {
-  GameEngine.nextPlayer();
+
+  if (currentGame !== "nunca") {
+    GameEngine.nextPlayer();
+  }
 
   if (currentGame === "que_prefieres") {
     showPrefieres();
@@ -323,24 +326,31 @@ function bindCard() {
   const card = getCard();
   if (!card) return;
 
-  if (currentGame === "verdad_reto" || currentGame === "que_prefieres") return;
+  // 🚫 SOLO bloquear en modos especiales
+  if (currentGame === "que_prefieres") return;
 
   let startX = 0;
 
-  card.onmousedown = (e) => {
-    startX = e.clientX;
-
-    document.onmouseup = (ev) => {
-      const diff = ev.clientX - startX;
-
-      if (diff > 80) swipe(1);
-      else if (diff < -80) swipe(-1);
-
-      document.onmouseup = null;
-    };
+  const start = (e) => {
+    startX = e.clientX || e.touches?.[0].clientX;
+    document.onmouseup = end;
+    document.ontouchend = end;
   };
-}
 
+  const end = (e) => {
+    const endX = e.clientX || e.changedTouches?.[0].clientX;
+    const diff = endX - startX;
+
+    if (diff > 80) swipe(1);
+    else if (diff < -80) swipe(-1);
+
+    document.onmouseup = null;
+    document.ontouchend = null;
+  };
+
+  card.onmousedown = start;
+  card.ontouchstart = start;
+}
 document.addEventListener("DOMContentLoaded", () => {
   initApp();
 });
