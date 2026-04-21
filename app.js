@@ -175,9 +175,13 @@ async function loadData() {
 // --------------------
 async function startGame() {
   await loadData();
+
+  updateControls(); // 👈 aquí sí tiene sentido
+
   showCard();
   updateUI();
   animateIn();
+
   localStorage.setItem("currentGame", currentGame);
   localStorage.setItem("currentLevel", currentLevel);
 }
@@ -233,8 +237,6 @@ function showCard() {
       newCard.id = "card"; // activa
       newCard.innerHTML = `
         <p>${getRandomQuestion()}</p>
-        <div class="badge like" id="likeBadge">✔</div>
-        <div class="badge skip" id="skipBadge">✖</div>
       `;
     }
 
@@ -284,17 +286,6 @@ function updateUI() {
   }
 }
 
-function updateControls() {
-  const shotBtn = document.getElementById("shot");
-
-  if (!shotBtn) return;
-
-  if (currentGame === "verdad_reto") {
-    shotBtn.style.display = "none";
-  } else {
-    shotBtn.style.display = "block";
-  }
-}
 // --------------------
 // COLOR
 // --------------------
@@ -356,8 +347,6 @@ function move(e) {
 
   const rotate = dx * 0.06;
   card.style.transform = `translateX(${dx}px) rotate(${rotate}deg)`;
-
-  updateBadges(dx);
 }
 
 function end() {
@@ -381,8 +370,6 @@ function end() {
 function swipe(dir) {
   card.style.transform =
     `translateX(${dir * 800}px) rotate(${dir * 40}deg)`;
-
-  handleGameAction();
 
   vibrate();
 
@@ -417,7 +404,6 @@ function handleGameAction() {
 function resetCard() {
   if (!card) return;
   card.style.transform = "translateX(0) rotate(0)";
-  hideBadges();
 }
 
 function animateIn() {
@@ -435,32 +421,6 @@ function animateIn() {
 }
 
 // --------------------
-// BADGES
-// --------------------
-function updateBadges(dx) {
-  const like = document.getElementById("likeBadge");
-  const skip = document.getElementById("skipBadge");
-
-  if (!like || !skip) return;
-
-  if (dx > 0) {
-    like.style.opacity = Math.min(dx / 100, 1);
-    skip.style.opacity = 0;
-  } else {
-    skip.style.opacity = Math.min(Math.abs(dx) / 100, 1);
-    like.style.opacity = 0;
-  }
-}
-
-function hideBadges() {
-  const like = document.getElementById("likeBadge");
-  const skip = document.getElementById("skipBadge");
-
-  if (like) like.style.opacity = 0;
-  if (skip) skip.style.opacity = 0;
-}
-
-// --------------------
 // UTILS
 // --------------------
 function vibrate() {
@@ -474,18 +434,15 @@ function getX(e) {
 // --------------------
 // BUTTONS
 // --------------------
-document.getElementById("accept")?.addEventListener("click", () => swipe(1));
-document.getElementById("skip")?.addEventListener("click", () => swipe(-1));
 
 document.getElementById("shot").onclick = () => {
+
   if (currentGame === "verdad_shot" || currentGame === "nunca") {
     GameEngine.addShot();
+    sounds.shot.currentTime = 0;
+    sounds.shot.play();
   }
 
-  nextTurn();
-};
-
-document.getElementById("next").onclick = () => {
   nextTurn();
 };
 
