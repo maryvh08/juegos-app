@@ -35,7 +35,7 @@ body {
 ========================= */
 .app {
   width: 100%;
-  max-width: 430px;
+  max-width: 450px;
   min-height: 100vh;
 
   background: rgba(255,255,255,0.03);
