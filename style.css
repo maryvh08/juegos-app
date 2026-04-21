@@ -435,6 +435,16 @@ button:hover {
   background: linear-gradient(135deg, #ff6d00, #ffab00);
 }
 
+.swipe-container {
+  display: flex;
+  gap: 12px;
+}
+
+.swipe-container .card {
+  position: relative;
+  width: 48%;
+  height: 220px;
+}
 /* =========================
    UTILITIES
 ========================= */
