@@ -339,9 +339,18 @@ button:hover {
    SWIPE AREA
 ========================= */
 .swipe-container {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 420px;
   margin-top: 20px;
+}
+
+.swipe-container .card {
+  width: 90%;
+  height: 100%;
+  position: relative; /* quitar absolute */
+  transform: none;    /* quitar translate */
 }
 
 /* =========================
