@@ -142,6 +142,7 @@ function nextTurn() {
 // =====================
 // CARD RENDER
 // =====================
+ 
 function renderCard() {
   const container = document.querySelector(".swipe-container");
   container.innerHTML = "";
@@ -172,6 +173,35 @@ function renderCard() {
     container.appendChild(card1);
     container.appendChild(card2);
 
+    updateUI();
+    return;
+  }
+
+  // =========================
+  // 🤔 QUIÉN ES MÁS PROBABLE
+  // =========================
+  if (currentGame === "quien_es_mas_probable") {
+
+    const card = document.createElement("div");
+    card.className = "card probable-card";
+    card.id = "card";
+
+    card.innerHTML = `
+      <div class="probable-content">
+        <div class="emoji">🤔</div>
+
+        <h2>¿Quién es más probable que...?</h2>
+
+        <p class="question">${q.texto}</p>
+
+        <small>👇 Todos señalen al mismo tiempo</small>
+      </div>
+    `;
+
+    container.appendChild(card);
+
+    bindCard();
+    animateIn();
     updateUI();
     return;
   }
