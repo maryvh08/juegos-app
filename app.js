@@ -136,6 +136,29 @@ document.addEventListener("DOMContentLoaded", () => {
       input.focus();
     };
   }
+  const backToGamesBtn = $("backToGames");
+
+  if (backToGamesBtn) {
+    backToGamesBtn.onclick = () => {
+      currentGame = null;
+      currentLevel = null;
+      pendingMode = null;
+      data = {};
+  
+      const container = getContainer();
+  
+      if (container) {
+        container.innerHTML = "";
+        container.classList.remove("qp-mode");
+      }
+  
+      $("levelSelector")?.classList.add("hidden");
+      $("gameUI")?.classList.add("hidden");
+      $("modeSelector")?.classList.add("hidden");
+  
+      $("gameSelector")?.classList.remove("hidden");
+    };
+  }
 });
 
 // =====================
