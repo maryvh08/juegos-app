@@ -339,18 +339,9 @@ button:hover {
    SWIPE AREA
 ========================= */
 .swipe-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
   height: 420px;
   margin-top: 20px;
-}
-
-.swipe-container .card {
-  width: 90%;
-  height: 100%;
-  position: relative; /* quitar absolute */
-  transform: none;    /* quitar translate */
 }
 
 /* =========================
@@ -965,25 +956,4 @@ button:hover {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.probable {
-    background: linear-gradient(135deg, #ff9800, #ff5722);
-}
-
-.probable-card {
-    border: 3px solid #ff9800;
-}
-
-.probable-card h2 {
-    font-size: 60px;
-}
-
-.probable-card h3 {
-    margin: 10px 0;
-    color: #ff9800;
-}
-
-.probable-card small {
-    opacity: .7;
 }
