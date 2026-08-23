@@ -1,322 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>🔥 Party Swipe</title>
 
-  <!-- Fuente -->
-  <link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
-  />
+  <!-- Font moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  />
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
-    rel="stylesheet"
-  />
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <!-- =========================
-         SETUP
-    ========================== -->
-    <section
-      id="setup"
-      class="setup"
-    >
+  <!-- =========================
+       SETUP
+  ========================== -->
+  <section class="setup" id="setup">
 
-      <h1>🔥 Party Swipe</h1>
+    <h1>🔥 Party Swipe</h1>
+  
+    <div class="setup-wrapper">
+  
+      <div class="setup-block">
+        <h2>👥 Jugadores</h2>
 
-      <div class="setup-wrapper">
-
-        <!-- JUGADORES -->
-        <div class="setup-block">
-
-          <h2>👥 Jugadores</h2>
-
-          <div class="input-row">
-
-            <input
-              id="playerInput"
-              type="text"
-              placeholder="Nombre del jugador"
-              autocomplete="off"
-              maxlength="30"
-            />
-
-            <button
-              id="addPlayer"
-              type="button"
-              aria-label="Agregar jugador"
-            >
-              ➕
-            </button>
-
-          </div>
-
+        <div class="input-row">
+          <input id="playerInput" type="text" placeholder="Nombre del jugador" />
+          <button id="addPlayer">➕</button>
         </div>
+      </div>
+  
+      <div class="setup-block">
+        <h3>Lista actual</h3>
+        <div id="playersList" class="players-list"></div>
+      </div>
+  
+      <div class="setup-block actions">
+        <button id="startGame" class="primary full">
+          🚀 Empezar juego
+        </button>
+      </div>
+  
+    </div>
+  
+  </section>
 
-        <!-- LISTA -->
-        <div class="setup-block">
+  <!-- =========================
+       SELECT GAME
+  ========================== -->
+  <section id="gameSelector" class="selector hidden">
 
-          <h3>Lista actual</h3>
+    <button id="backHome" class="back">🏠 Inicio</button>
 
-          <div
-            id="playersList"
-            class="players-list"
-            aria-live="polite"
-          ></div>
+    <h2>🎴 Elige el juego</h2>
 
-        </div>
+    <div class="cards">
 
-        <!-- ACCIONES -->
-        <div class="setup-block actions">
+      <div class="select-card verdad" data-game="verdad_shot">
+        Verdad o Shot
+      </div>
 
-          <button
-            id="startGame"
-            type="button"
-            class="primary full"
-          >
-            🚀 Empezar juego
-          </button>
+      <div class="select-card reto" data-game="verdad_reto">
+        Verdad o Reto
+      </div>
 
-        </div>
+      <div class="select-card nunca" data-game="nunca">
+        Yo nunca nunca
+      </div>
 
+      <div class="select-card que-prefieres" data-game="que_prefieres">
+        ¿Qué prefieres?
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       SELECT LEVEL
+  ========================== -->
+  <section id="levelSelector" class="selector hidden">
+
+    <h2>🎚️ Nivel</h2>
+
+    <div class="cards">
+
+      <div class="select-card suave" data-level="suave">
+        Suave
+      </div>
+
+      <div class="select-card medio" data-level="medio">
+        Medio
+      </div>
+
+      <div class="select-card alto" data-level="alto">
+        Alto
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================
+       GAME UI (CORRECTO)
+  ========================== -->
+  <main class="game hidden" id="gameUI">
+
+    <!-- HEADER ÚNICO -->
+    <header class="header">
+
+      <div class="top-bar">
+        <button id="backMenu" class="back">⬅ Juegos</button>
+        <h1>🍷 Party Swipe</h1>
+      </div>
+
+      <div class="hud">
+        <div id="currentPlayer">Turno: -</div>
+      </div>
+
+    </header>
+
+    <!-- SWIPE AREA -->
+    <section class="swipe-container">
+      <!-- cards dinámicas aquí -->
+    </section>
+
+    <!-- MODE SELECTOR -->
+    <section id="modeSelector" class="mode-selector hidden">
+
+      <h2>Elige una opción</h2>
+
+      <div class="mode-buttons">
+        <button id="chooseTruth" class="mode truth">Verdad</button>
+        <button id="chooseDare" class="mode dare">Reto</button>
       </div>
 
     </section>
 
+  </main>
 
-    <!-- =========================
-         SELECT GAME
-    ========================== -->
-    <section
-      id="gameSelector"
-      class="selector hidden"
-    >
+</div>
 
-      <button
-        id="backHome"
-        type="button"
-        class="back"
-      >
-        🏠 Inicio
-      </button>
-
-      <h2>🎴 Elige el juego</h2>
-
-      <div class="cards">
-
-        <!-- VERDAD O SHOT -->
-        <button
-          type="button"
-          class="select-card verdad"
-          data-game="verdad_shot"
-        >
-          <strong>Verdad o Shot</strong>
-        </button>
-
-        <!-- VERDAD O RETO -->
-        <button
-          type="button"
-          class="select-card reto"
-          data-game="verdad_reto"
-        >
-          <strong>Verdad o Reto</strong>
-        </button>
-
-        <!-- YO NUNCA -->
-        <button
-          type="button"
-          class="select-card nunca"
-          data-game="nunca"
-        >
-          <strong>Yo nunca nunca</strong>
-        </button>
-
-        <!-- QUÉ PREFIERES -->
-        <button
-          type="button"
-          class="select-card que-prefieres"
-          data-game="que_prefieres"
-        >
-          <strong>¿Qué prefieres?</strong>
-        </button>
-
-        <!-- MÁS PROBABLE -->
-        <button
-          type="button"
-          class="select-card probable"
-          data-game="quien_es_mas_probable"
-        >
-          <strong>¿Quién es más probable?</strong>
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         SELECT LEVEL
-    ========================== -->
-    <section
-      id="levelSelector"
-      class="selector hidden"
-    >
-
-      <button
-        id="backToGames"
-        type="button"
-        class="back"
-      >
-        ⬅ Juegos
-      </button>
-
-      <h2>🎚️ Elige el nivel</h2>
-
-      <div class="cards">
-
-        <button
-          type="button"
-          class="select-card suave"
-          data-level="suave"
-        >
-          <span>😇</span>
-          <strong>Suave</strong>
-        </button>
-
-        <button
-          type="button"
-          class="select-card medio"
-          data-level="medio"
-        >
-          <span>😏</span>
-          <strong>Medio</strong>
-        </button>
-
-        <button
-          type="button"
-          class="select-card alto"
-          data-level="alto"
-        >
-          <span>🔥</span>
-          <strong>Alto</strong>
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         GAME UI
-    ========================== -->
-    <main
-      id="gameUI"
-      class="game hidden"
-    >
-
-      <!-- HEADER -->
-      <header class="header">
-
-        <div class="top-bar">
-
-          <button
-            id="backMenu"
-            type="button"
-            class="back"
-          >
-            ⬅ Juegos
-          </button>
-
-          <h1>🍷 Party Swipe</h1>
-
-        </div>
-
-        <!-- HUD -->
-        <div class="hud">
-
-          <div
-            id="currentPlayer"
-            aria-live="polite"
-          >
-            Turno: -
-          </div>
-
-        </div>
-
-      </header>
-
-
-      <!-- =========================
-           SWIPE AREA
-      ========================== -->
-      <section
-        class="swipe-container"
-        aria-live="polite"
-      >
-        <!-- Las cartas se generan desde app.js -->
-      </section>
-
-
-      <!-- =========================
-           MODE SELECTOR
-      ========================== -->
-      <section
-        id="modeSelector"
-        class="mode-selector hidden"
-      >
-
-        <h2>Elige una opción</h2>
-
-        <div class="mode-buttons">
-
-          <button
-            id="chooseTruth"
-            type="button"
-            class="mode truth"
-          >
-            🟢 Verdad
-          </button>
-
-          <button
-            id="chooseDare"
-            type="button"
-            class="mode dare"
-          >
-            🔴 Reto
-          </button>
-
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-
-  <!-- JS -->
-  <script src="app.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
