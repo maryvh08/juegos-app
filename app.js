@@ -13,67 +13,190 @@ function getCard() {
   return document.getElementById("card");
 }
 
+function getContainer() {
+  return document.querySelector(".swipe-container");
+}
+
+function $(id) {
+  return document.getElementById(id);
+}
+
 // =====================
 // INIT
 // =====================
 document.addEventListener("DOMContentLoaded", () => {
   renderPlayers();
 
-  document.getElementById("startGame").onclick = () => {
-    if (!GameEngine.state.players.length) return alert("Agrega jugadores");
+  const startGameBtn = $("startGame");
+  const backMenuBtn = $("backMenu");
+  const chooseTruthBtn = $("chooseTruth");
+  const chooseDareBtn = $("chooseDare");
+  const backHomeBtn = $("backHome");
+  const addPlayerBtn = $("addPlayer");
 
-    document.getElementById("setup").classList.add("hidden");
-    document.getElementById("gameSelector").classList.remove("hidden");
-  };
+  // =====================
+  // INICIAR
+  // =====================
+  if (startGameBtn) {
+    startGameBtn.onclick = () => {
+      if (!GameEngine.state.players.length) {
+        alert("Agrega jugadores");
+        return;
+      }
 
+      $("setup")?.classList.add("hidden");
+      $("gameSelector")?.classList.remove("hidden");
+    };
+  }
+
+  // =====================
+  // SELECCIONAR JUEGO
+  // =====================
   document.querySelectorAll("[data-game]").forEach(btn => {
     btn.onclick = () => {
       currentGame = btn.dataset.game;
+      pendingMode = null;
 
-      document.getElementById("gameSelector").classList.add("hidden");
-      document.getElementById("levelSelector").classList.remove("hidden");
+      $("gameSelector")?.classList.add("hidden");
+      $("levelSelector")?.classList.remove("hidden");
     };
   });
 
+  // =====================
+  // SELECCIONAR NIVEL
+  // =====================
   document.querySelectorAll("[data-level]").forEach(btn => {
     btn.onclick = async () => {
       currentLevel = btn.dataset.level;
 
-      document.getElementById("levelSelector").classList.add("hidden");
-      document.getElementById("gameUI").classList.remove("hidden");
+      $("levelSelector")?.classList.add("hidden");
+      $("gameUI")?.classList.remove("hidden");
 
       await startGame();
     };
   });
 
-  document.getElementById("backMenu").onclick = () => {
-    currentGame = null; // 🔥 IMPORTANTE
-    pendingMode = null;
-  
-    const container = document.querySelector(".swipe-container");
-    container.classList.remove("qp-mode");
-    container.innerHTML = "";
-  
-    document.getElementById("gameUI").classList.add("hidden");
-    document.getElementById("gameSelector").classList.remove("hidden");
-  };
+  // =====================
+  // VOLVER AL MENÚ DE JUEGOS
+  // =====================
+  if (backMenuBtn) {
+    backMenuBtn.onclick = () => {
+      resetCurrentGame();
 
-  document.getElementById("chooseTruth").onclick = () => startMode("verdad");
-  document.getElementById("chooseDare").onclick = () => startMode("reto");
+      $("gameUI")?.classList.add("hidden");
+      $("levelSelector")?.classList.add("hidden");
+      $("gameSelector")?.classList.remove("hidden");
+    };
+  }
+
+  // =====================
+  // VERDAD
+  // =====================
+  if (chooseTruthBtn) {
+    chooseTruthBtn.onclick = () => startMode("verdad");
+  }
+
+  // =====================
+  // RETO
+  // =====================
+  if (chooseDareBtn) {
+    chooseDareBtn.onclick = () => startMode("reto");
+  }
+
+  // =====================
+  // VOLVER A HOME
+  // =====================
+  if (backHomeBtn) {
+    backHomeBtn.onclick = () => {
+      resetCurrentGame();
+
+      $("gameUI")?.classList.add("hidden");
+      $("gameSelector")?.classList.add("hidden");
+      $("levelSelector")?.classList.add("hidden");
+      $("modeSelector")?.classList.add("hidden");
+
+      $("setup")?.classList.remove("hidden");
+
+      localStorage.removeItem("currentGame");
+      localStorage.removeItem("currentLevel");
+    };
+  }
+
+  // =====================
+  // AGREGAR JUGADOR
+  // =====================
+  if (addPlayerBtn) {
+    addPlayerBtn.onclick = () => {
+      const input = $("playerInput");
+
+      if (!input) return;
+
+      addPlayer(input.value);
+      input.value = "";
+      input.focus();
+    };
+  }
 });
+
+// =====================
+// RESET GAME
+// =====================
+function resetCurrentGame() {
+  currentGame = null;
+  currentLevel = null;
+  pendingMode = null;
+  data = {};
+
+  const container = getContainer();
+
+  if (container) {
+    container.classList.remove("qp-mode");
+    container.classList.remove("hidden");
+    container.innerHTML = "";
+  }
+
+  $("modeSelector")?.classList.add("hidden");
+
+  // Reiniciar turno al jugador inicial
+  GameEngine.resetTurn();
+}
 
 // =====================
 // DATA
 // =====================
 async function loadData(file = currentGame) {
-  const res = await fetch(`data/${file}.json`);
-  data = await res.json();
+  if (!file) {
+    data = {};
+    return;
+  }
+
+  try {
+    const res = await fetch(`data/${file}.json`);
+
+    if (!res.ok) {
+      throw new Error(`No se pudo cargar data/${file}.json`);
+    }
+
+    data = await res.json();
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+
+    data = {};
+
+    alert(`No se pudo cargar el juego "${file}".`);
+  }
 }
 
 function getRandomQuestion() {
   const list = data[currentLevel];
 
-  if (!list || !list.length) return { opcion1: "Sin datos", opcion2: "Sin datos" };
+  if (!Array.isArray(list) || !list.length) {
+    return {
+      texto: "Sin datos disponibles",
+      opcion1: "Sin datos",
+      opcion2: "Sin datos"
+    };
+  }
 
   return list[Math.floor(Math.random() * list.length)];
 }
@@ -84,8 +207,10 @@ function getRandomQuestion() {
 async function startGame() {
   await loadData();
 
-  // 🔥 RESET IMPORTANTE
-  const container = document.querySelector(".swipe-container");
+  const container = getContainer();
+
+  if (!container) return;
+
   container.classList.remove("qp-mode");
   container.innerHTML = "";
 
@@ -101,22 +226,42 @@ async function startGame() {
 // MODE SELECTOR
 // =====================
 function showModeSelector() {
-  document.getElementById("modeSelector").classList.remove("hidden");
-  document.querySelector(".swipe-container").classList.add("hidden");
+  $("modeSelector")?.classList.remove("hidden");
+
+  const container = getContainer();
+
+  if (container) {
+    container.classList.add("hidden");
+    container.classList.remove("qp-mode");
+    container.innerHTML = "";
+  }
 }
 
 async function startMode(mode) {
   pendingMode = mode;
 
-  await loadData(mode === "verdad" ? "verdad_shot" : "verdad_reto");
+  /*
+   * Ajusta estos nombres si tus archivos JSON son diferentes.
+   *
+   * Ejemplo:
+   * data/verdad_shot.json
+   * data/verdad_reto.json
+   */
+  const file = mode === "verdad"
+    ? "verdad_shot"
+    : "verdad_reto";
 
-  document.getElementById("modeSelector").classList.add("hidden");
+  await loadData(file);
 
-  const container = document.querySelector(".swipe-container");
+  $("modeSelector")?.classList.add("hidden");
+
+  const container = getContainer();
+
+  if (!container) return;
+
   container.classList.remove("qp-mode");
-  container.innerHTML = "";
-
   container.classList.remove("hidden");
+  container.innerHTML = "";
 
   renderCard();
 }
@@ -125,11 +270,16 @@ async function startMode(mode) {
 // MAIN FLOW
 // =====================
 function nextTurn() {
+  if (!GameEngine.state.players.length) return;
+
   GameEngine.nextPlayer();
 
-  const container = document.querySelector(".swipe-container");
-  container.classList.remove("qp-mode");
-  container.innerHTML = ""; // 👈 IMPORTANTE limpiar estado visual
+  const container = getContainer();
+
+  if (container) {
+    container.classList.remove("qp-mode");
+    container.innerHTML = "";
+  }
 
   if (currentGame === "verdad_reto") {
     showModeSelector();
@@ -142,79 +292,70 @@ function nextTurn() {
 // =====================
 // CARD RENDER
 // =====================
- 
 function renderCard() {
-  const container = document.querySelector(".swipe-container");
+  const container = getContainer();
+
+  if (!container) return;
+
   container.innerHTML = "";
   container.classList.remove("hidden");
-  container.classList.remove("qp-mode"); // limpia estado previo
+  container.classList.remove("qp-mode");
 
   const q = getRandomQuestion();
 
   // =========================
-  // 🎯 MODO: QUÉ PREFIERES
+  // QUÉ PREFIERES
   // =========================
   if (currentGame === "que_prefieres") {
-    container.classList.add("qp-mode");
-
-    const card1 = document.createElement("div");
-    const card2 = document.createElement("div");
-
-    card1.className = "card choice-card";
-    card2.className = "card choice-card";
-
-    card1.innerHTML = `<p>${q.opcion1}</p>`;
-    card2.innerHTML = `<p>${q.opcion2}</p>`;
-
-    // 👉 swipe lógico
-    card1.onclick = () => chooseCard(card1, -1); // izquierda
-    card2.onclick = () => chooseCard(card2, 1);  // derecha
-
-    container.appendChild(card1);
-    container.appendChild(card2);
-
+    renderChoiceCards(container, q);
     updateUI();
     return;
   }
 
   // =========================
-  // 🤔 QUIÉN ES MÁS PROBABLE
+  // QUIÉN ES MÁS PROBABLE
   // =========================
   if (currentGame === "quien_es_mas_probable") {
-
     const card = document.createElement("div");
+
     card.className = "card probable-card";
     card.id = "card";
 
-    card.innerHTML = `
-      <div class="probable-content">
-        <div class="emoji">🤔</div>
+    const content = document.createElement("div");
+    content.className = "probable-content";
 
-        <h2>¿Quién es más probable que...?</h2>
-
-        <p class="question">${q.texto}</p>
-
-        <small>👇 Todos señalen al mismo tiempo</small>
-      </div>
+    content.innerHTML = `
+      <div class="emoji">🤔</div>
+      <h2>¿Quién es más probable que...?</h2>
+      <p class="question"></p>
+      <small>👇 Todos señalen al mismo tiempo</small>
     `;
 
+    content.querySelector(".question").textContent =
+      q.texto || "Sin pregunta";
+
+    card.appendChild(content);
     container.appendChild(card);
 
     bindCard();
     animateIn();
     updateUI();
+
     return;
   }
 
   // =========================
-  // 🧱 RESTO DE JUEGOS
+  // RESTO DE JUEGOS
   // =========================
   const card = document.createElement("div");
+
   card.className = "card";
   card.id = "card";
 
-  card.innerHTML = `<p>${q.texto || q}</p>`;
+  const text = document.createElement("p");
+  text.textContent = q.texto || q || "Sin pregunta";
 
+  card.appendChild(text);
   container.appendChild(card);
 
   bindCard();
@@ -223,22 +364,103 @@ function renderCard() {
 }
 
 // =====================
+// QUÉ PREFIERES
+// =====================
+function renderChoiceCards(container, q) {
+  container.classList.add("qp-mode");
+
+  const card1 = document.createElement("div");
+  const card2 = document.createElement("div");
+
+  card1.className = "card choice-card";
+  card2.className = "card choice-card";
+
+  const text1 = document.createElement("p");
+  const text2 = document.createElement("p");
+
+  text1.textContent = q.opcion1 || "Sin opción";
+  text2.textContent = q.opcion2 || "Sin opción";
+
+  card1.appendChild(text1);
+  card2.appendChild(text2);
+
+  card1.onclick = () => chooseCard(card1, -1);
+  card2.onclick = () => chooseCard(card2, 1);
+
+  container.appendChild(card1);
+  container.appendChild(card2);
+
+  animateChoiceCards();
+}
+
+function animateChoiceCards() {
+  const cards = document.querySelectorAll(".choice-card");
+
+  cards.forEach((card, index) => {
+    card.style.opacity = "0";
+    card.style.transform = "scale(0.9)";
+
+    setTimeout(() => {
+      card.style.transition = "0.3s";
+      card.style.opacity = "1";
+      card.style.transform = "scale(1)";
+    }, 50 + index * 50);
+  });
+}
+
+function chooseCard(card, dir) {
+  const cards = document.querySelectorAll(".choice-card");
+
+  if (!cards.length) return;
+
+  cards.forEach(c => {
+    c.style.pointerEvents = "none";
+  });
+
+  cards.forEach(c => {
+    if (c === card) {
+      c.style.transition = "0.25s";
+      c.style.transform =
+        `translateX(${dir * 800}px) scale(1.05)`;
+      c.style.opacity = "0";
+    } else {
+      c.style.transition = "0.25s";
+      c.style.transform = "scale(0.8)";
+      c.style.opacity = "0";
+    }
+  });
+
+  setTimeout(nextTurn, 250);
+}
+
+// =====================
 // SWIPE
 // =====================
 function bindCard() {
   const card = getCard();
+
   if (!card) return;
 
-  let startX = 0;
+  let startX = null;
+  let dragging = false;
 
-  card.onmousedown = (e) => startX = e.clientX;
+  // =====================
+  // MOUSE
+  // =====================
+  card.onmousedown = e => {
+    startX = e.clientX;
+    dragging = true;
 
-  card.onmousemove = (e) => {
-    if (!startX) return;
+    card.style.transition = "none";
+  };
+
+  card.onmousemove = e => {
+    if (!dragging || startX === null) return;
 
     const diff = e.clientX - startX;
 
-    card.style.transform = `translateX(${diff}px) rotate(${diff / 20}deg)`;
+    card.style.transform =
+      `translateX(${diff}px) rotate(${diff / 20}deg)`;
 
     if (diff > 50) {
       card.style.background = "rgba(0,255,100,0.15)";
@@ -249,50 +471,132 @@ function bindCard() {
     }
   };
 
+  card.onmouseup = e => {
+    if (!dragging || startX === null) return;
+
+    const diff = e.clientX - startX;
+
+    finishSwipe(card, diff);
+
+    startX = null;
+    dragging = false;
+  };
+
   card.onmouseleave = () => {
-    startX = 0;
+    if (!dragging) return;
+
+    startX = null;
+    dragging = false;
+
+    card.style.transition = "0.2s";
     card.style.transform = "";
     card.style.background = "";
   };
 
-  card.onmouseup = (e) => {
-    const diff = e.clientX - startX;
+  // =====================
+  // TOUCH
+  // =====================
+  card.ontouchstart = e => {
+    if (!e.touches.length) return;
 
-    if (diff > 80) swipe(1);
-    else if (diff < -80) swipe(-1);
-    else nextTurn();
+    startX = e.touches[0].clientX;
+    dragging = true;
 
-    startX = 0;
+    card.style.transition = "none";
   };
+
+  card.ontouchmove = e => {
+    if (!dragging || startX === null || !e.touches.length) {
+      return;
+    }
+
+    const diff = e.touches[0].clientX - startX;
+
+    card.style.transform =
+      `translateX(${diff}px) rotate(${diff / 20}deg)`;
+
+    if (diff > 50) {
+      card.style.background = "rgba(0,255,100,0.15)";
+    } else if (diff < -50) {
+      card.style.background = "rgba(255,80,80,0.15)";
+    } else {
+      card.style.background = "";
+    }
+  };
+
+  card.ontouchend = e => {
+    if (!dragging || startX === null) return;
+
+    const endX =
+      e.changedTouches?.[0]?.clientX ?? startX;
+
+    const diff = endX - startX;
+
+    finishSwipe(card, diff);
+
+    startX = null;
+    dragging = false;
+  };
+}
+
+function finishSwipe(card, diff) {
+  card.style.transition = "0.2s";
+
+  if (diff > 80) {
+    swipe(1);
+  } else if (diff < -80) {
+    swipe(-1);
+  } else {
+    card.style.transform = "";
+    card.style.background = "";
+
+    /*
+     * Si quieres que tocar una carta sin hacer swipe
+     * avance al siguiente jugador, cambia esto por:
+     *
+     * nextTurn();
+     */
+  }
 }
 
 function swipe(dir) {
   const card = getCard();
+
   if (!card) return;
 
-  card.style.transform = `translateX(${dir * 800}px)`;
+  card.style.transition = "0.2s";
+  card.style.transform =
+    `translateX(${dir * 800}px) rotate(${dir * 10}deg)`;
+  card.style.opacity = "0";
 
-  setTimeout(() => nextTurn(), 200);
+  setTimeout(nextTurn, 200);
 }
 
 // =====================
 // UI
 // =====================
 function updateUI() {
-  document.getElementById("currentPlayer").innerText =
-    "Turno: " + GameEngine.currentPlayer();
+  const currentPlayer = $("currentPlayer");
+
+  if (!currentPlayer) return;
+
+  const player = GameEngine.currentPlayer();
+
+  currentPlayer.innerText =
+    player ? `Turno: ${player}` : "Sin jugadores";
 }
 
 function animateIn() {
   const card = getCard();
+
   if (!card) return;
 
-  card.style.opacity = 0;
+  card.style.opacity = "0";
   card.style.transform = "scale(0.9)";
 
   setTimeout(() => {
     card.style.transition = "0.3s";
-    card.style.opacity = 1;
+    card.style.opacity = "1";
     card.style.transform = "scale(1)";
   }, 50);
 }
@@ -301,34 +605,58 @@ function animateIn() {
 // PLAYERS
 // =====================
 function renderPlayers() {
-  const list = document.getElementById("playersList");
+  const list = $("playersList");
+
+  if (!list) return;
+
   list.innerHTML = "";
 
   GameEngine.state.players.forEach((name, index) => {
-
     const div = document.createElement("div");
+
     div.className = "player-card";
 
-    div.innerHTML = `
-      <span class="player-name">${name}</span>
-      <div class="player-actions">
-        <button class="edit">✏️</button>
-        <button class="delete">❌</button>
-      </div>
-    `;
+    const playerName = document.createElement("span");
+    playerName.className = "player-name";
+    playerName.textContent = name;
+
+    const actions = document.createElement("div");
+    actions.className = "player-actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit";
+    editBtn.textContent = "✏️";
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete";
+    deleteBtn.textContent = "❌";
+
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+
+    div.appendChild(playerName);
+    div.appendChild(actions);
+
+    // =====================
     // ELIMINAR
-    div.querySelector(".delete").onclick = () => {
+    // =====================
+    deleteBtn.onclick = () => {
       GameEngine.removePlayer(index);
       renderPlayers();
+      updateUI();
     };
 
+    // =====================
     // EDITAR
-    div.querySelector(".edit").onclick = () => {
+    // =====================
+    editBtn.onclick = () => {
       const newName = prompt("Nuevo nombre:", name);
-      if (!newName) return;
 
-      GameEngine.editPlayer(index, newName);
+      if (!newName || !newName.trim()) return;
+
+      GameEngine.editPlayer(index, newName.trim());
       renderPlayers();
+      updateUI();
     };
 
     list.appendChild(div);
@@ -336,11 +664,16 @@ function renderPlayers() {
 }
 
 function addPlayer(name) {
-  if (!name || !name.trim()) return;
+  const cleanName = name?.trim();
 
-  GameEngine.state.players.push(name.trim());
+  if (!cleanName) return;
+
+  GameEngine.state.players.push(cleanName);
+
   GameEngine.savePlayers();
+
   renderPlayers();
+  updateUI();
 }
 
 // =====================
@@ -356,115 +689,76 @@ const GameEngine = {
     if (!this.state.players.length) return;
 
     this.state.currentIndex =
-      (this.state.currentIndex + 1) % this.state.players.length;
+      (this.state.currentIndex + 1) %
+      this.state.players.length;
 
-    localStorage.setItem("turn", this.state.currentIndex);
+    this.saveTurn();
   },
 
   currentPlayer() {
-    return this.state.players[this.state.currentIndex];
+    return this.state.players[this.state.currentIndex] || null;
   },
 
-  // ✅ ESTA FUNCIÓN FALTABA
   savePlayers() {
-    localStorage.setItem("players", JSON.stringify(this.state.players));
+    localStorage.setItem(
+      "players",
+      JSON.stringify(this.state.players)
+    );
   },
 
-  // (opcional pero ya lo usas)
+  saveTurn() {
+    localStorage.setItem(
+      "turn",
+      String(this.state.currentIndex)
+    );
+  },
+
+  resetTurn() {
+    this.state.currentIndex = 0;
+    this.saveTurn();
+  },
+
   removePlayer(index) {
+    if (
+      index < 0 ||
+      index >= this.state.players.length
+    ) {
+      return;
+    }
+
     this.state.players.splice(index, 1);
+
+    // No quedan jugadores
+    if (!this.state.players.length) {
+      this.state.currentIndex = 0;
+      this.savePlayers();
+      this.saveTurn();
+      return;
+    }
+
+    // Si el índice quedó fuera del array
+    if (
+      this.state.currentIndex >=
+      this.state.players.length
+    ) {
+      this.state.currentIndex =
+        this.state.players.length - 1;
+    }
+
     this.savePlayers();
+    this.saveTurn();
   },
 
   editPlayer(index, newName) {
-    this.state.players[index] = newName;
+    if (
+      index < 0 ||
+      index >= this.state.players.length
+    ) {
+      return;
+    }
+
+    this.state.players[index] = newName.trim();
+
     this.savePlayers();
   }
-};
-
-// =====================
-// PREFIERES
-// =====================
-function swipeChoice(choice) {
-  const cards = document.querySelectorAll(".card");
-
-  cards.forEach((card, index) => {
-    const dir = (index === 0 ? -1 : 1);
-    card.style.transform = `translateX(${dir * 800}px)`;
-  });
-
-  setTimeout(() => nextTurn(), 200);
-}
-
-function bindChoiceSwipe() {
-  const card = getCard();
-  if (!card) return;
-
-  let startX = 0;
-
-  card.onmousedown = (e) => startX = e.clientX;
-
-  card.onmouseup = (e) => {
-    const diff = e.clientX - startX;
-
-    if (diff > 80) {
-      choose(2); // 👉 derecha
-    } else if (diff < -80) {
-      choose(1); // 👉 izquierda
-    } else {
-      nextTurn();
-    }
-  };
-}
-
-function choose(option) {
-  const card = getCard();
-  if (!card) return;
-
-  const dir = option === 1 ? -1 : 1;
-
-  card.style.transform = `translateX(${dir * 800}px) rotate(${dir * 10}deg)`;
-  card.style.opacity = 0;
-
-  setTimeout(() => nextTurn(), 250);
-}
-
-function chooseCard(card, dir) {
-  const all = document.querySelectorAll(".choice-card");
-
-  all.forEach(c => {
-    if (c === card) {
-      c.style.transform = `translateX(${dir * 800}px) scale(1.05)`;
-      c.style.opacity = 1;
-    } else {
-      c.style.transform = `scale(0.8)`;
-      c.style.opacity = 0;
-    }
-  });
-
-  setTimeout(() => nextTurn(), 250);
-}
-// =====================
-// BOTONES
-// =====================
-document.getElementById("backHome").onclick = () => { 
-  // ocultar todo 
-  document.getElementById("gameUI").classList.add("hidden"); 
-  document.getElementById("gameSelector").classList.add("hidden"); 
-  document.getElementById("levelSelector").classList.add("hidden"); 
-  // mostrar setup (pantalla inicial) 
-  document.getElementById("setup").classList.remove("hidden"); 
-  // limpiar estado de partida actual (pero NO jugadores) 
-  localStorage.removeItem("currentGame"); 
-  localStorage.removeItem("currentLevel"); 
-  currentGame = null; 
-  currentLevel = null; 
-};
-
-document.getElementById("addPlayer").onclick = () => {
-  const input = document.getElementById("playerInput");
-
-  addPlayer(input.value);
-
-  input.value = "";
 };
