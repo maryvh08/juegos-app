@@ -1,15 +1,31 @@
-// =====================
+// ============================================================
+// PARTY SWIPE - APP.JS
+// ============================================================
+
+// ============================================================
 // STATE
-// =====================
+// ============================================================
+
 let data = {};
 let currentGame = null;
 let currentLevel = null;
-let pendingMode = null;
+
+// Control de preguntas utilizadas durante la partida.
+// Estructura:
+// {
+//   "facil": Set,
+//   "medio": Set,
+//   "dificil": Set
+// }
+const usedQuestions = new Map();
+
+let isTransitioning = false;
 
 
-// =====================
-// HELPERS
-// =====================
+// ============================================================
+// DOM HELPERS
+// ============================================================
+
 function $(id) {
   return document.getElementById(id);
 }
@@ -23,24 +39,86 @@ function getContainer() {
 }
 
 
-// =====================
+// ============================================================
+// STORAGE HELPERS
+// ============================================================
+
+function getStoredJSON(key, fallback = null) {
+  try {
+    const value = localStorage.getItem(key);
+
+    if (value === null) {
+      return fallback;
+    }
+
+    return JSON.parse(value);
+
+  } catch (error) {
+    console.error(`Error leyendo localStorage "${key}":`, error);
+    return fallback;
+  }
+}
+
+
+function setStoredJSON(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+
+  } catch (error) {
+    console.error(`Error guardando localStorage "${key}":`, error);
+    return false;
+  }
+}
+
+
+function getStoredNumber(key, fallback = 0) {
+  const value = Number(localStorage.getItem(key));
+
+  return Number.isFinite(value)
+    ? value
+    : fallback;
+}
+
+
+// ============================================================
 // INIT
-// =====================
-document.addEventListener("DOMContentLoaded", () => {
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", init);
+
+
+function init() {
 
   renderPlayers();
   updateUI();
 
-  // =====================
-  // BOTÓN: EMPEZAR JUEGO
-  // =====================
+  setupNavigation();
+  setupGameSelection();
+  setupLevelSelection();
+  setupModeSelection();
+  setupPlayerControls();
+}
+
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+function setupNavigation() {
+
+  // ----------------------------------------------------------
+  // START GAME
+  // ----------------------------------------------------------
+
   const startGameBtn = $("startGame");
 
   if (startGameBtn) {
+
     startGameBtn.onclick = () => {
 
       if (!GameEngine.state.players.length) {
-        alert("Agrega jugadores");
+        alert("Agrega al menos un jugador.");
         return;
       }
 
@@ -50,46 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  // =====================
-  // SELECCIONAR JUEGO
-  // =====================
-  document.querySelectorAll("[data-game]").forEach(btn => {
+  // ----------------------------------------------------------
+  // BACK TO GAMES
+  // ----------------------------------------------------------
 
-    btn.onclick = () => {
-
-      currentGame = btn.dataset.game;
-      currentLevel = null;
-      pendingMode = null;
-      data = {};
-
-      $("gameSelector")?.classList.add("hidden");
-      $("levelSelector")?.classList.remove("hidden");
-    };
-
-  });
-
-
-  // =====================
-  // SELECCIONAR NIVEL
-  // =====================
-  document.querySelectorAll("[data-level]").forEach(btn => {
-
-    btn.onclick = async () => {
-
-      currentLevel = btn.dataset.level;
-
-      $("levelSelector")?.classList.add("hidden");
-      $("gameUI")?.classList.remove("hidden");
-
-      await startGame();
-    };
-
-  });
-
-
-  // =====================
-  // VOLVER A JUEGOS
-  // =====================
   const backMenuBtn = $("backMenu");
 
   if (backMenuBtn) {
@@ -104,13 +146,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       $("gameSelector")?.classList.remove("hidden");
     };
-
   }
 
 
-  // =====================
-  // VOLVER A INICIO
-  // =====================
+  // ----------------------------------------------------------
+  // BACK HOME
+  // ----------------------------------------------------------
+
   const backHomeBtn = $("backHome");
 
   if (backHomeBtn) {
@@ -129,13 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem("currentGame");
       localStorage.removeItem("currentLevel");
     };
-
   }
 
 
-  // =====================
-  // VOLVER DESDE NIVEL
-  // =====================
+  // ----------------------------------------------------------
+  // BACK FROM LEVEL SELECTOR
+  // ----------------------------------------------------------
+
   const backToGamesBtn = $("backToGames");
 
   if (backToGamesBtn) {
@@ -144,19 +186,73 @@ document.addEventListener("DOMContentLoaded", () => {
 
       currentGame = null;
       currentLevel = null;
-      pendingMode = null;
       data = {};
+
+      clearUsedQuestions();
 
       $("levelSelector")?.classList.add("hidden");
       $("gameSelector")?.classList.remove("hidden");
     };
-
   }
+}
 
 
-  // =====================
-  // VERDAD
-  // =====================
+// ============================================================
+// GAME SELECTION
+// ============================================================
+
+function setupGameSelection() {
+
+  document.querySelectorAll("[data-game]").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      currentGame = button.dataset.game;
+      currentLevel = null;
+      data = {};
+
+      clearUsedQuestions();
+
+      localStorage.setItem("currentGame", currentGame);
+
+      $("gameSelector")?.classList.add("hidden");
+      $("levelSelector")?.classList.remove("hidden");
+    });
+
+  });
+}
+
+
+// ============================================================
+// LEVEL SELECTION
+// ============================================================
+
+function setupLevelSelection() {
+
+  document.querySelectorAll("[data-level]").forEach(button => {
+
+    button.addEventListener("click", async () => {
+
+      currentLevel = button.dataset.level;
+
+      localStorage.setItem("currentLevel", currentLevel);
+
+      $("levelSelector")?.classList.add("hidden");
+      $("gameUI")?.classList.remove("hidden");
+
+      await startGame();
+    });
+
+  });
+}
+
+
+// ============================================================
+// MODE SELECTION
+// ============================================================
+
+function setupModeSelection() {
+
   const chooseTruthBtn = $("chooseTruth");
 
   if (chooseTruthBtn) {
@@ -164,13 +260,9 @@ document.addEventListener("DOMContentLoaded", () => {
     chooseTruthBtn.onclick = () => {
       startMode("verdad");
     };
-
   }
 
 
-  // =====================
-  // RETO
-  // =====================
   const chooseDareBtn = $("chooseDare");
 
   if (chooseDareBtn) {
@@ -178,13 +270,16 @@ document.addEventListener("DOMContentLoaded", () => {
     chooseDareBtn.onclick = () => {
       startMode("reto");
     };
-
   }
+}
 
 
-  // =====================
-  // AGREGAR JUGADOR
-  // =====================
+// ============================================================
+// PLAYER CONTROLS
+// ============================================================
+
+function setupPlayerControls() {
+
   const addPlayerBtn = $("addPlayer");
 
   if (addPlayerBtn) {
@@ -193,51 +288,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const input = $("playerInput");
 
-      if (!input) return;
+      if (!input) {
+        return;
+      }
 
       addPlayer(input.value);
 
       input.value = "";
       input.focus();
     };
-
   }
 
 
-  // =====================
-  // ENTER EN INPUT
-  // =====================
   const playerInput = $("playerInput");
 
   if (playerInput) {
 
     playerInput.addEventListener("keydown", event => {
 
-      if (event.key === "Enter") {
-
-        event.preventDefault();
-
-        addPlayer(playerInput.value);
-
-        playerInput.value = "";
+      if (event.key !== "Enter") {
+        return;
       }
 
+      event.preventDefault();
+
+      addPlayer(playerInput.value);
+
+      playerInput.value = "";
     });
-
   }
+}
 
-});
 
+// ============================================================
+// RESET CURRENT GAME
+// ============================================================
 
-// =====================
-// RESET GAME
-// =====================
 function resetCurrentGame() {
 
   currentGame = null;
   currentLevel = null;
-  pendingMode = null;
   data = {};
+
+  clearUsedQuestions();
+
+  isTransitioning = false;
 
   const container = getContainer();
 
@@ -245,6 +340,7 @@ function resetCurrentGame() {
 
     container.classList.remove("qp-mode");
     container.classList.remove("hidden");
+
     container.innerHTML = "";
   }
 
@@ -254,20 +350,24 @@ function resetCurrentGame() {
 }
 
 
-// =====================
+// ============================================================
 // DATA
-// =====================
+// ============================================================
+
 async function loadData(file) {
 
   if (!file) {
 
     data = {};
+
     return false;
   }
 
   try {
 
-    const response = await fetch(`data/${file}.json`);
+    const response = await fetch(`data/${file}.json`, {
+      cache: "no-cache"
+    });
 
     if (!response.ok) {
 
@@ -276,7 +376,18 @@ async function loadData(file) {
       );
     }
 
-    data = await response.json();
+    const json = await response.json();
+
+    if (!json || typeof json !== "object") {
+
+      throw new Error(
+        `El archivo data/${file}.json no contiene un objeto válido.`
+      );
+    }
+
+    data = json;
+
+    clearUsedQuestions();
 
     return true;
 
@@ -293,12 +404,35 @@ async function loadData(file) {
 }
 
 
-// =====================
-// RANDOM QUESTION
-// =====================
+// ============================================================
+// QUESTION MANAGEMENT
+// ============================================================
+
+function clearUsedQuestions() {
+
+  usedQuestions.clear();
+}
+
+
+function getQuestionKey(question, index) {
+
+  if (!question) {
+    return String(index);
+  }
+
+  // Si posteriormente agregas un ID a las preguntas,
+  // automáticamente será utilizado.
+  if (question.id !== undefined) {
+    return String(question.id);
+  }
+
+  return JSON.stringify(question);
+}
+
+
 function getRandomQuestion() {
 
-  const list = data[currentLevel];
+  const list = data?.[currentLevel];
 
   if (!Array.isArray(list) || !list.length) {
 
@@ -309,28 +443,91 @@ function getRandomQuestion() {
     };
   }
 
-  return list[
-    Math.floor(Math.random() * list.length)
-  ];
+
+  if (!usedQuestions.has(currentLevel)) {
+    usedQuestions.set(currentLevel, new Set());
+  }
+
+
+  const used = usedQuestions.get(currentLevel);
+
+
+  // ----------------------------------------------------------
+  // Si ya usamos todas las preguntas, reiniciamos el conjunto
+  // ----------------------------------------------------------
+
+  if (used.size >= list.length) {
+    used.clear();
+  }
+
+
+  // ----------------------------------------------------------
+  // Buscar preguntas disponibles
+  // ----------------------------------------------------------
+
+  const availableIndexes = [];
+
+  list.forEach((question, index) => {
+
+    const key = getQuestionKey(question, index);
+
+    if (!used.has(key)) {
+      availableIndexes.push(index);
+    }
+  });
+
+
+  // ----------------------------------------------------------
+  // Selección aleatoria
+  // ----------------------------------------------------------
+
+  const randomPosition =
+    Math.floor(Math.random() * availableIndexes.length);
+
+  const selectedIndex =
+    availableIndexes[randomPosition];
+
+  const selectedQuestion =
+    list[selectedIndex];
+
+
+  used.add(
+    getQuestionKey(
+      selectedQuestion,
+      selectedIndex
+    )
+  );
+
+
+  return selectedQuestion;
 }
 
 
-// =====================
+// ============================================================
 // START GAME
-// =====================
+// ============================================================
+
 async function startGame() {
 
   const container = getContainer();
 
-  if (!container) return;
+  if (!container) {
+    console.error("No se encontró .swipe-container");
+    return;
+  }
+
+
+  isTransitioning = false;
 
   container.classList.remove("qp-mode");
+  container.classList.remove("hidden");
   container.innerHTML = "";
 
 
-  // =====================
+  // ----------------------------------------------------------
   // VERDAD O RETO
-  // =====================
+  // ----------------------------------------------------------
+
   if (currentGame === "verdad_reto") {
 
     showModeSelector();
@@ -339,20 +536,25 @@ async function startGame() {
   }
 
 
-  // =====================
+  // ----------------------------------------------------------
   // OTROS JUEGOS
-  // =====================
+  // ----------------------------------------------------------
+
   const loaded = await loadData(currentGame);
 
-  if (!loaded) return;
+  if (!loaded) {
+    return;
+  }
+
 
   renderCard();
 }
 
 
-// =====================
+// ============================================================
 // MODE SELECTOR
-// =====================
+// ============================================================
+
 function showModeSelector() {
 
   $("modeSelector")?.classList.remove("hidden");
@@ -363,71 +565,72 @@ function showModeSelector() {
 
     container.classList.add("hidden");
     container.classList.remove("qp-mode");
+
     container.innerHTML = "";
   }
 }
 
 
-// =====================
+// ============================================================
 // START MODE
-// =====================
+// ============================================================
+
 async function startMode(mode) {
 
-  pendingMode = mode;
+  let file = null;
 
 
-  // =====================
-  // VERDAD
-  // =====================
   if (mode === "verdad") {
 
-    // Las preguntas de VERDAD
-    // están en verdad_shot.json
+    file = "verdad_shot";
 
-    const loaded = await loadData("verdad_shot");
+  } else if (mode === "reto") {
 
-    if (!loaded) return;
+    file = "verdad_reto";
+
+  } else {
+
+    console.warn("Modo desconocido:", mode);
+    return;
   }
 
 
-  // =====================
-  // RETO
-  // =====================
-  else {
+  const loaded = await loadData(file);
 
-    // Los RETOS están en verdad_reto.json
-
-    const loaded = await loadData("verdad_reto");
-
-    if (!loaded) return;
+  if (!loaded) {
+    return;
   }
 
 
-  // =====================
-  // MOSTRAR CARTA
-  // =====================
   $("modeSelector")?.classList.add("hidden");
 
   const container = getContainer();
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
+
 
   container.classList.remove("qp-mode");
   container.classList.remove("hidden");
+
   container.innerHTML = "";
+
 
   renderCard();
 }
 
 
-// =====================
+// ============================================================
 // NEXT TURN
-// =====================
+// ============================================================
+
 function nextTurn() {
 
   if (!GameEngine.state.players.length) {
     return;
   }
+
 
   GameEngine.nextPlayer();
 
@@ -440,48 +643,13 @@ function nextTurn() {
   }
 
 
-  // =====================
+  // ----------------------------------------------------------
   // VERDAD O RETO
-  // =====================
+  // ----------------------------------------------------------
+
   if (currentGame === "verdad_reto") {
 
     showModeSelector();
-
-    return;
-  }
-
-
-  // =====================
-  // RESTO
-  // =====================
-  renderCard();
-}
-
-
-// =====================
-// RENDER CARD
-// =====================
-function renderCard() {
-
-  const container = getContainer();
-
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  container.classList.remove("hidden");
-  container.classList.remove("qp-mode");
-
-
-  const q = getRandomQuestion();
-
-
-  // ==================================================
-  // QUÉ PREFIERES
-  // ==================================================
-  if (currentGame === "que_prefieres") {
-
-    renderChoiceCards(container, q);
 
     updateUI();
 
@@ -489,9 +657,62 @@ function renderCard() {
   }
 
 
-  // ==================================================
+  // ----------------------------------------------------------
+  // RESTO DE JUEGOS
+  // ----------------------------------------------------------
+
+  renderCard();
+}
+
+
+// ============================================================
+// RENDER CARD
+// ============================================================
+
+function renderCard() {
+
+  const container = getContainer();
+
+  if (!container) {
+    return;
+  }
+
+
+  if (isTransitioning) {
+    return;
+  }
+
+
+  container.innerHTML = "";
+
+  container.classList.remove("hidden");
+  container.classList.remove("qp-mode");
+
+
+  const question = getRandomQuestion();
+
+
+  // ==========================================================
+  // QUÉ PREFIERES
+  // ==========================================================
+
+  if (currentGame === "que_prefieres") {
+
+    renderChoiceCards(
+      container,
+      question
+    );
+
+    updateUI();
+
+    return;
+  }
+
+
+  // ==========================================================
   // QUIÉN ES MÁS PROBABLE
-  // ==================================================
+  // ==========================================================
+
   if (currentGame === "quien_es_mas_probable") {
 
     const card = document.createElement("div");
@@ -517,11 +738,12 @@ function renderCard() {
       "¿Quién es más probable que...?";
 
 
-    const question = document.createElement("p");
+    const questionText = document.createElement("p");
 
-    question.className = "question";
-    question.textContent =
-      q.texto || "Sin pregunta";
+    questionText.className = "question";
+
+    questionText.textContent =
+      question?.texto || "Sin pregunta";
 
 
     const instruction = document.createElement("small");
@@ -532,7 +754,7 @@ function renderCard() {
 
     content.appendChild(emoji);
     content.appendChild(title);
-    content.appendChild(question);
+    content.appendChild(questionText);
     content.appendChild(instruction);
 
     card.appendChild(content);
@@ -548,9 +770,10 @@ function renderCard() {
   }
 
 
-  // ==================================================
+  // ==========================================================
   // RESTO DE JUEGOS
-  // ==================================================
+  // ==========================================================
+
   const card = document.createElement("div");
 
   card.className = "card";
@@ -560,7 +783,7 @@ function renderCard() {
   const text = document.createElement("p");
 
   text.textContent =
-    q.texto || "Sin pregunta";
+    question?.texto || "Sin pregunta";
 
 
   card.appendChild(text);
@@ -574,16 +797,20 @@ function renderCard() {
 }
 
 
-// =====================
+// ============================================================
 // QUÉ PREFIERES
-// =====================
-function renderChoiceCards(container, q) {
+// ============================================================
+
+function renderChoiceCards(container, question) {
 
   container.classList.add("qp-mode");
 
 
-  const card1 = document.createElement("div");
-  const card2 = document.createElement("div");
+  const card1 =
+    document.createElement("div");
+
+  const card2 =
+    document.createElement("div");
 
 
   card1.className =
@@ -593,31 +820,48 @@ function renderChoiceCards(container, q) {
     "card choice-card";
 
 
-  const text1 = document.createElement("p");
-  const text2 = document.createElement("p");
+  const text1 =
+    document.createElement("p");
+
+  const text2 =
+    document.createElement("p");
 
 
   text1.textContent =
-    q.opcion1 || "Sin opción";
+    question?.opcion1 || "Sin opción";
 
   text2.textContent =
-    q.opcion2 || "Sin opción";
+    question?.opcion2 || "Sin opción";
 
 
   card1.appendChild(text1);
   card2.appendChild(text2);
 
 
+  // ----------------------------------------------------------
   // IZQUIERDA
-  card1.onclick = () => {
-    chooseCard(card1, -1);
-  };
+  // ----------------------------------------------------------
+
+  card1.addEventListener("click", () => {
+
+    chooseCard(
+      card1,
+      -1
+    );
+  });
 
 
+  // ----------------------------------------------------------
   // DERECHA
-  card2.onclick = () => {
-    chooseCard(card2, 1);
-  };
+  // ----------------------------------------------------------
+
+  card2.addEventListener("click", () => {
+
+    chooseCard(
+      card2,
+      1
+    );
+  });
 
 
   container.appendChild(card1);
@@ -628,9 +872,10 @@ function renderChoiceCards(container, q) {
 }
 
 
-// =====================
+// ============================================================
 // ANIMATE CHOICE CARDS
-// =====================
+// ============================================================
+
 function animateChoiceCards() {
 
   const cards =
@@ -642,307 +887,346 @@ function animateChoiceCards() {
     card.style.opacity = "0";
     card.style.transform = "scale(0.9)";
 
-    setTimeout(() => {
 
-      card.style.transition = "0.3s";
-      card.style.opacity = "1";
-      card.style.transform = "scale(1)";
+    requestAnimationFrame(() => {
 
-    }, 50 + index * 50);
+      setTimeout(() => {
+
+        card.style.transition =
+          "opacity 0.3s ease, transform 0.3s ease";
+
+        card.style.opacity = "1";
+        card.style.transform = "scale(1)";
+
+      }, 50 + index * 50);
+
+    });
 
   });
 }
 
 
-// =====================
+// ============================================================
 // CHOOSE CARD
-// =====================
-function chooseCard(card, dir) {
+// ============================================================
+
+function chooseCard(card, direction) {
 
   const cards =
     document.querySelectorAll(".choice-card");
 
 
-  if (!cards.length) return;
+  if (!cards.length || isTransitioning) {
+    return;
+  }
 
 
-  // Evita doble clic
-  cards.forEach(c => {
-    c.style.pointerEvents = "none";
-  });
+  isTransitioning = true;
 
 
-  cards.forEach(c => {
+  cards.forEach(currentCard => {
 
-    c.style.transition = "0.25s";
+    currentCard.style.pointerEvents = "none";
+
+    currentCard.style.transition =
+      "transform 0.25s ease, opacity 0.25s ease";
 
 
-    if (c === card) {
+    if (currentCard === card) {
 
-      c.style.transform =
-        `translateX(${dir * 800}px) scale(1.05)`;
+      currentCard.style.transform =
+        `translateX(${direction * 800}px) scale(1.05)`;
 
-      c.style.opacity = "0";
+      currentCard.style.opacity = "0";
 
     } else {
 
-      c.style.transform =
+      currentCard.style.transform =
         "scale(0.8)";
 
-      c.style.opacity = "0";
+      currentCard.style.opacity = "0";
     }
 
   });
 
 
   setTimeout(() => {
+
+    isTransitioning = false;
+
     nextTurn();
+
   }, 250);
 }
 
 
-// =====================
-// SWIPE
-// =====================
+// ============================================================
+// SWIPE - POINTER EVENTS
+// ============================================================
+
 function bindCard() {
 
   const card = getCard();
 
-  if (!card) return;
+  if (!card) {
+    return;
+  }
 
 
   let startX = null;
+  let startY = null;
   let dragging = false;
+  let pointerId = null;
 
 
-  // ==================================================
-  // MOUSE DOWN
-  // ==================================================
-  card.onmousedown = event => {
+  // ----------------------------------------------------------
+  // POINTER DOWN
+  // ----------------------------------------------------------
 
-    startX = event.clientX;
-    dragging = true;
+  card.onpointerdown = event => {
 
-    card.style.transition = "none";
-  };
-
-
-  // ==================================================
-  // MOUSE MOVE
-  // ==================================================
-  card.onmousemove = event => {
-
-    if (!dragging || startX === null) {
+    if (isTransitioning) {
       return;
     }
 
 
-    const diff =
+    // Solo botón izquierdo para mouse
+    if (
+      event.pointerType === "mouse" &&
+      event.button !== 0
+    ) {
+      return;
+    }
+
+
+    startX = event.clientX;
+    startY = event.clientY;
+
+    dragging = true;
+    pointerId = event.pointerId;
+
+
+    card.style.transition = "none";
+
+
+    try {
+      card.setPointerCapture(event.pointerId);
+    } catch (error) {
+      // Algunos navegadores pueden no soportarlo.
+    }
+  };
+
+
+  // ----------------------------------------------------------
+  // POINTER MOVE
+  // ----------------------------------------------------------
+
+  card.onpointermove = event => {
+
+    if (
+      !dragging ||
+      startX === null ||
+      event.pointerId !== pointerId
+    ) {
+      return;
+    }
+
+
+    const diffX =
       event.clientX - startX;
+
+    const diffY =
+      event.clientY - startY;
+
+
+    // --------------------------------------------------------
+    // Evita interpretar un desplazamiento principalmente
+    // vertical como swipe horizontal.
+    // --------------------------------------------------------
+
+    if (
+      Math.abs(diffY) > Math.abs(diffX) * 1.5
+    ) {
+
+      return;
+    }
 
 
     card.style.transform =
-      `translateX(${diff}px) rotate(${diff / 20}deg)`;
+      `translateX(${diffX}px) rotate(${diffX / 20}deg)`;
 
 
-    if (diff > 50) {
+    // --------------------------------------------------------
+    // FEEDBACK VISUAL
+    // --------------------------------------------------------
+
+    if (diffX > 50) {
 
       card.style.background =
         "rgba(0,255,100,0.15)";
 
-    }
-
-    else if (diff < -50) {
+    } else if (diffX < -50) {
 
       card.style.background =
         "rgba(255,80,80,0.15)";
 
-    }
-
-    else {
+    } else {
 
       card.style.background = "";
     }
   };
 
 
-  // ==================================================
-  // MOUSE UP
-  // ==================================================
-  card.onmouseup = event => {
+  // ----------------------------------------------------------
+  // POINTER UP
+  // ----------------------------------------------------------
 
-    if (!dragging || startX === null) {
-      return;
-    }
-
-
-    const diff =
-      event.clientX - startX;
-
-
-    finishSwipe(card, diff);
-
-
-    startX = null;
-    dragging = false;
-  };
-
-
-  // ==================================================
-  // MOUSE LEAVE
-  // ==================================================
-  card.onmouseleave = () => {
-
-    if (!dragging) return;
-
-
-    startX = null;
-    dragging = false;
-
-
-    card.style.transition = "0.2s";
-    card.style.transform = "";
-    card.style.background = "";
-  };
-
-
-  // ==================================================
-  // TOUCH START
-  // ==================================================
-  card.ontouchstart = event => {
-
-    if (!event.touches.length) {
-      return;
-    }
-
-
-    startX =
-      event.touches[0].clientX;
-
-    dragging = true;
-
-    card.style.transition = "none";
-  };
-
-
-  // ==================================================
-  // TOUCH MOVE
-  // ==================================================
-  card.ontouchmove = event => {
+  card.onpointerup = event => {
 
     if (
       !dragging ||
       startX === null ||
-      !event.touches.length
+      event.pointerId !== pointerId
     ) {
       return;
     }
 
 
     const diff =
-      event.touches[0].clientX - startX;
+      event.clientX - startX;
 
 
-    card.style.transform =
-      `translateX(${diff}px) rotate(${diff / 20}deg)`;
+    finishSwipe(
+      card,
+      diff
+    );
 
 
-    if (diff > 50) {
-
-      card.style.background =
-        "rgba(0,255,100,0.15)";
-
-    }
-
-    else if (diff < -50) {
-
-      card.style.background =
-        "rgba(255,80,80,0.15)";
-
-    }
-
-    else {
-
-      card.style.background = "";
-    }
+    resetPointerState();
   };
 
 
-  // ==================================================
-  // TOUCH END
-  // ==================================================
-  card.ontouchend = event => {
+  // ----------------------------------------------------------
+  // POINTER CANCEL
+  // ----------------------------------------------------------
 
-    if (!dragging || startX === null) {
+  card.onpointercancel = () => {
+
+    if (!dragging) {
       return;
     }
 
 
-    const touch =
-      event.changedTouches?.[0];
+    resetCardPosition(card);
+    resetPointerState();
+  };
 
 
-    const endX =
-      touch ? touch.clientX : startX;
+  // ----------------------------------------------------------
+  // POINTER LEAVE
+  // ----------------------------------------------------------
+
+  card.onpointerleave = event => {
+
+    // Para mouse solamente.
+    // En touch no queremos cancelar el gesto
+    // simplemente porque salió del elemento.
+    if (event.pointerType !== "mouse") {
+      return;
+    }
 
 
-    const diff =
-      endX - startX;
+    if (!dragging) {
+      return;
+    }
 
 
-    finishSwipe(card, diff);
+    resetCardPosition(card);
+    resetPointerState();
+  };
 
+
+  function resetPointerState() {
 
     startX = null;
+    startY = null;
     dragging = false;
-  };
+    pointerId = null;
+  }
 }
 
 
-// =====================
+// ============================================================
+// RESET CARD POSITION
+// ============================================================
+
+function resetCardPosition(card) {
+
+  if (!card) {
+    return;
+  }
+
+
+  card.style.transition =
+    "transform 0.2s ease, background 0.2s ease";
+
+  card.style.transform = "";
+  card.style.background = "";
+}
+
+
+// ============================================================
 // FINISH SWIPE
-// =====================
+// ============================================================
+
 function finishSwipe(card, diff) {
 
-  card.style.transition = "0.2s";
+  if (!card || isTransitioning) {
+    return;
+  }
+
+
+  card.style.transition =
+    "transform 0.2s ease, opacity 0.2s ease";
 
 
   if (diff > 80) {
 
     swipe(1);
 
-  }
-
-  else if (diff < -80) {
+  } else if (diff < -80) {
 
     swipe(-1);
 
-  }
+  } else {
 
-  else {
-
-    card.style.transform = "";
-    card.style.background = "";
+    resetCardPosition(card);
   }
 }
 
 
-// =====================
+// ============================================================
 // SWIPE CARD
-// =====================
-function swipe(dir) {
+// ============================================================
+
+function swipe(direction) {
 
   const card = getCard();
 
-  if (!card) return;
+  if (!card || isTransitioning) {
+    return;
+  }
+
+
+  isTransitioning = true;
 
 
   card.style.transition =
-    "0.2s";
+    "transform 0.2s ease, opacity 0.2s ease";
 
 
   card.style.transform =
-    `translateX(${dir * 800}px) rotate(${dir * 10}deg)`;
+    `translateX(${direction * 800}px) rotate(${direction * 10}deg)`;
 
 
   card.style.opacity = "0";
@@ -950,22 +1234,27 @@ function swipe(dir) {
 
   setTimeout(() => {
 
+    isTransitioning = false;
+
     nextTurn();
 
   }, 200);
 }
 
 
-// =====================
+// ============================================================
 // UI
-// =====================
+// ============================================================
+
 function updateUI() {
 
   const currentPlayer =
     $("currentPlayer");
 
 
-  if (!currentPlayer) return;
+  if (!currentPlayer) {
+    return;
+  }
 
 
   const player =
@@ -979,14 +1268,17 @@ function updateUI() {
 }
 
 
-// =====================
+// ============================================================
 // CARD ANIMATION
-// =====================
+// ============================================================
+
 function animateIn() {
 
   const card = getCard();
 
-  if (!card) return;
+  if (!card) {
+    return;
+  }
 
 
   card.style.opacity = "0";
@@ -995,30 +1287,42 @@ function animateIn() {
     "scale(0.9)";
 
 
-  setTimeout(() => {
+  requestAnimationFrame(() => {
 
-    card.style.transition =
-      "0.3s";
+    setTimeout(() => {
 
-    card.style.opacity = "1";
+      if (!card.isConnected) {
+        return;
+      }
 
-    card.style.transform =
-      "scale(1)";
 
-  }, 50);
+      card.style.transition =
+        "opacity 0.3s ease, transform 0.3s ease";
+
+      card.style.opacity = "1";
+
+      card.style.transform =
+        "scale(1)";
+
+    }, 50);
+
+  });
 }
 
 
-// =====================
+// ============================================================
 // PLAYERS
-// =====================
+// ============================================================
+
 function renderPlayers() {
 
   const list =
     $("playersList");
 
 
-  if (!list) return;
+  if (!list) {
+    return;
+  }
 
 
   list.innerHTML = "";
@@ -1035,34 +1339,41 @@ function renderPlayers() {
         "player-card";
 
 
-      // =====================
-      // NOMBRE
-      // =====================
+      // --------------------------------------------------------
+      // NAME
+      // --------------------------------------------------------
+
       const playerName =
         document.createElement("span");
 
+
       playerName.className =
         "player-name";
+
 
       playerName.textContent =
         name;
 
 
-      // =====================
+      // --------------------------------------------------------
       // ACTIONS
-      // =====================
+      // --------------------------------------------------------
+
       const actions =
         document.createElement("div");
+
 
       actions.className =
         "player-actions";
 
 
-      // =====================
+      // --------------------------------------------------------
       // EDIT
-      // =====================
+      // --------------------------------------------------------
+
       const editBtn =
         document.createElement("button");
+
 
       editBtn.className =
         "edit";
@@ -1073,17 +1384,20 @@ function renderPlayers() {
       editBtn.textContent =
         "✏️";
 
+
       editBtn.setAttribute(
         "aria-label",
         `Editar ${name}`
       );
 
 
-      // =====================
+      // --------------------------------------------------------
       // DELETE
-      // =====================
+      // --------------------------------------------------------
+
       const deleteBtn =
         document.createElement("button");
+
 
       deleteBtn.className =
         "delete";
@@ -1093,6 +1407,7 @@ function renderPlayers() {
 
       deleteBtn.textContent =
         "❌";
+
 
       deleteBtn.setAttribute(
         "aria-label",
@@ -1108,9 +1423,10 @@ function renderPlayers() {
       div.appendChild(actions);
 
 
-      // =====================
+      // --------------------------------------------------------
       // DELETE PLAYER
-      // =====================
+      // --------------------------------------------------------
+
       deleteBtn.onclick = () => {
 
         GameEngine.removePlayer(index);
@@ -1120,9 +1436,10 @@ function renderPlayers() {
       };
 
 
-      // =====================
+      // --------------------------------------------------------
       // EDIT PLAYER
-      // =====================
+      // --------------------------------------------------------
+
       editBtn.onclick = () => {
 
         const newName =
@@ -1133,7 +1450,7 @@ function renderPlayers() {
 
 
         if (
-          !newName ||
+          newName === null ||
           !newName.trim()
         ) {
           return;
@@ -1157,16 +1474,37 @@ function renderPlayers() {
 }
 
 
-// =====================
+// ============================================================
 // ADD PLAYER
-// =====================
+// ============================================================
+
 function addPlayer(name) {
 
   const cleanName =
-    name?.trim();
+    String(name ?? "").trim();
 
 
   if (!cleanName) {
+    return;
+  }
+
+
+  // ----------------------------------------------------------
+  // Evitar jugadores duplicados
+  // ----------------------------------------------------------
+
+  const exists =
+    GameEngine.state.players.some(
+      player =>
+        player.toLowerCase() ===
+        cleanName.toLowerCase()
+    );
+
+
+  if (exists) {
+
+    alert("Ese jugador ya está agregado.");
+
     return;
   }
 
@@ -1178,40 +1516,78 @@ function addPlayer(name) {
 
   GameEngine.savePlayers();
 
-
   renderPlayers();
   updateUI();
 }
 
 
-// =====================
+// ============================================================
 // GAME ENGINE
-// =====================
+// ============================================================
+
 const GameEngine = {
+
+  // ==========================================================
+  // STATE
+  // ==========================================================
 
   state: {
 
     players:
-      JSON.parse(
-        localStorage.getItem("players")
-      ) || [],
+      getStoredJSON(
+        "players",
+        []
+      ),
 
     currentIndex:
-      Number(
-        localStorage.getItem("turn")
-      ) || 0
-
+      getStoredNumber(
+        "turn",
+        0
+      )
   },
 
 
-  // =====================
-  // NEXT PLAYER
-  // =====================
-  nextPlayer() {
+  // ==========================================================
+  // VALIDATE STATE
+  // ==========================================================
+
+  validateState() {
+
+    if (!Array.isArray(this.state.players)) {
+
+      this.state.players = [];
+    }
+
+
+    if (!this.state.players.length) {
+
+      this.state.currentIndex = 0;
+
+      return;
+    }
+
 
     if (
-      !this.state.players.length
+      this.state.currentIndex < 0 ||
+      this.state.currentIndex >=
+      this.state.players.length
     ) {
+
+      this.state.currentIndex = 0;
+    }
+  },
+
+
+  // ==========================================================
+  // NEXT PLAYER
+  // ==========================================================
+
+  nextPlayer() {
+
+    this.validateState();
+
+
+    if (!this.state.players.length) {
       return;
     }
 
@@ -1227,10 +1603,14 @@ const GameEngine = {
   },
 
 
-  // =====================
+  // ==========================================================
   // CURRENT PLAYER
-  // =====================
+  // ==========================================================
+
   currentPlayer() {
+
+    this.validateState();
+
 
     return (
       this.state.players[
@@ -1240,23 +1620,23 @@ const GameEngine = {
   },
 
 
-  // =====================
+  // ==========================================================
   // SAVE PLAYERS
-  // =====================
+  // ==========================================================
+
   savePlayers() {
 
-    localStorage.setItem(
+    setStoredJSON(
       "players",
-      JSON.stringify(
-        this.state.players
-      )
+      this.state.players
     );
   },
 
 
-  // =====================
+  // ==========================================================
   // SAVE TURN
-  // =====================
+  // ==========================================================
+
   saveTurn() {
 
     localStorage.setItem(
@@ -1268,20 +1648,24 @@ const GameEngine = {
   },
 
 
-  // =====================
+  // ==========================================================
   // RESET TURN
-  // =====================
+  // ==========================================================
+
   resetTurn() {
 
     this.state.currentIndex = 0;
 
     this.saveTurn();
+
+    updateUI();
   },
 
 
-  // =====================
+  // ==========================================================
   // REMOVE PLAYER
-  // =====================
+  // ==========================================================
+
   removePlayer(index) {
 
     if (
@@ -1292,16 +1676,20 @@ const GameEngine = {
     }
 
 
+    const removedIndex = index;
+
+
     this.state.players.splice(
-      index,
+      removedIndex,
       1
     );
 
 
+    // --------------------------------------------------------
     // No quedan jugadores
-    if (
-      !this.state.players.length
-    ) {
+    // --------------------------------------------------------
+
+    if (!this.state.players.length) {
 
       this.state.currentIndex = 0;
 
@@ -1312,14 +1700,31 @@ const GameEngine = {
     }
 
 
-    // Corregir índice
+    // --------------------------------------------------------
+    // Si eliminamos un jugador anterior al jugador actual,
+    // debemos desplazar el índice una posición hacia atrás.
+    // --------------------------------------------------------
+
+    if (
+      removedIndex <
+      this.state.currentIndex
+    ) {
+
+      this.state.currentIndex--;
+    }
+
+
+    // --------------------------------------------------------
+    // Si el índice queda fuera de rango,
+    // lo llevamos al primer jugador.
+    // --------------------------------------------------------
+
     if (
       this.state.currentIndex >=
       this.state.players.length
     ) {
 
-      this.state.currentIndex =
-        this.state.players.length - 1;
+      this.state.currentIndex = 0;
     }
 
 
@@ -1328,9 +1733,10 @@ const GameEngine = {
   },
 
 
-  // =====================
+  // ==========================================================
   // EDIT PLAYER
-  // =====================
+  // ==========================================================
+
   editPlayer(index, newName) {
 
     if (
@@ -1342,10 +1748,33 @@ const GameEngine = {
 
 
     const cleanName =
-      newName?.trim();
+      String(newName ?? "").trim();
 
 
     if (!cleanName) {
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // Evitar duplicados
+    // --------------------------------------------------------
+
+    const duplicate =
+      this.state.players.some(
+        (player, playerIndex) =>
+          playerIndex !== index &&
+          player.toLowerCase() ===
+          cleanName.toLowerCase()
+      );
+
+
+    if (duplicate) {
+
+      alert(
+        "Ya existe un jugador con ese nombre."
+      );
+
       return;
     }
 
@@ -1356,5 +1785,11 @@ const GameEngine = {
 
     this.savePlayers();
   }
-
 };
+
+
+// ============================================================
+// INITIAL STATE VALIDATION
+// ============================================================
+
+GameEngine.validateState();
